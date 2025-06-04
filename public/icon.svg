@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="512" height="512" viewBox="0 0 512 512" version="1.1" xmlns="http://www.w3.org/2000/svg">
+    <!-- 黑色圆角矩形背景 -->
+    <rect width="512" height="512" rx="80" fill="#000000"/>
+    <!-- 白色字母 H - 横线居中设计 -->
+    <path d="
+        M 176 128 
+        h 48 
+        v 108
+        h 64 
+        v -108
+        h 48 
+        v 256 
+        h -48 
+        v -116
+        h -64 
+        v 116
+        h -48 
+        v -256
+        z" 
+        fill="#FFFFFF"
+        stroke="#FFFFFF"
+        stroke-width="1"
+    />
+</svg>

@@ -18,23 +18,36 @@ function Navbar() {
   }, [])
 
   return (
-    <header className={`fixed left-0 right-0 top-0 z-40 transition-all duration-300 ${
-      isScrolled ? 'bg-white/90 backdrop-blur shadow-sm dark:bg-gray-900/90' : 'bg-white dark:bg-gray-900'
-    }`}>
+    <header
+      className={`fixed left-0 right-0 top-0 z-40 transition-all duration-300 ${
+        isScrolled
+          ? 'bg-white/90 backdrop-blur shadow-sm dark:bg-gray-900/90'
+          : 'bg-white dark:bg-gray-900'
+      }`}
+    >
       <div className="mx-auto max-w-6xl px-4">
         <div className="flex h-16 items-center justify-between">
-          <Link href="/" className="text-xl font-medium text-gray-900 dark:text-white">
+          <Link
+            href="/"
+            className="text-xl font-medium text-gray-900 dark:text-white"
+          >
             H_dajun Blog
           </Link>
           <nav className="hidden md:flex md:items-center md:space-x-6">
-            <Link 
-              href="/blog" 
+            <Link
+              href="/chat"
+              className="text-sm font-medium text-gray-600 transition-colors hover:text-black dark:text-gray-300 dark:hover:text-white"
+            >
+              CHAT
+            </Link>
+            <Link
+              href="/blog"
               className="text-sm font-medium text-gray-600 transition-colors hover:text-black dark:text-gray-300 dark:hover:text-white"
             >
               博客
             </Link>
-            <Link 
-              href="/about" 
+            <Link
+              href="/about"
               className="text-sm font-medium text-gray-600 transition-colors hover:text-black dark:text-gray-300 dark:hover:text-white"
             >
               关于
@@ -57,14 +70,14 @@ function Navbar() {
         {isMenuOpen && (
           <div className="md:hidden">
             <div className="space-y-1 pb-3 pt-2">
-              <Link 
+              <Link
                 href="/blog"
                 className="block rounded-lg px-3 py-2 text-base font-medium text-gray-600 transition-colors hover:bg-gray-100 hover:text-black dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-white"
                 onClick={() => setIsMenuOpen(false)}
               >
                 博客
               </Link>
-              <Link 
+              <Link
                 href="/about"
                 className="block rounded-lg px-3 py-2 text-base font-medium text-gray-600 transition-colors hover:bg-gray-100 hover:text-black dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-white"
                 onClick={() => setIsMenuOpen(false)}

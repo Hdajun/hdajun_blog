@@ -9,19 +9,29 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@ant-design/nextjs-registry": "^1.0.2",
+    "@ant-design/x": "^1.4.0",
     "@heroicons/react": "^2.2.0",
     "@tailwindcss/typography": "^0.5.10",
+    "@types/markdown-it": "^14.1.2",
+    "@types/uuid": "^10.0.0",
     "antd": "^5.25.4",
+    "antd-style": "^3.7.1",
+    "axios": "^1.9.0",
+    "cheerio": "^1.0.0-rc.12",
     "clsx": "^2.1.1",
     "contentlayer": "^0.3.4",
     "date-fns": "^3.6.0",
+    "markdown-it": "^14.1.0",
     "next": "14.1.0",
     "next-contentlayer": "^0.3.4",
     "next-themes": "^0.2.1",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "uuid": "^11.1.0"
   },
   "devDependencies": {
+    "@svgr/webpack": "^8.1.0",
     "@types/node": "^20.11.24",
     "@types/react": "^18.2.61",
     "@types/react-dom": "^18.2.19",

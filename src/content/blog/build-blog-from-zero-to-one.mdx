@@ -1,0 +1,305 @@
+---
+title: '从零搭建个人博客：Next.js + MDX + Tailwind CSS 完整指南'
+description: '详细记录使用 Next.js、MDX 和 Tailwind CSS 搭建个人博客的全过程，包括项目初始化、核心功能实现、样式美化到最终部署的完整教程。'
+date: '2024-03-20'
+tags:
+  - Next.js
+  - React
+  - MDX
+  - Tailwind CSS
+  - Vercel
+---
+
+# 从零搭建个人博客完整指南
+
+在这篇文章中，我将详细记录如何使用现代 Web 技术栈从零开始搭建一个个人博客系统。这个博客系统使用了 Next.js 14、MDX、Tailwind CSS 等最新技术，并且部署在 Vercel 平台上。
+
+## 技术栈选择
+
+- **Next.js 14**: React 框架，提供服务端渲染、路由等核心功能
+- **MDX**: 支持在 Markdown 中使用 React 组件
+- **Tailwind CSS**: 原子化 CSS 框架，用于样式设计
+- **Contentlayer**: 将 MDX 内容转换为类型安全的数据
+- **TypeScript**: 提供类型安全和更好的开发体验
+
+## 项目初始化
+
+1. 创建 Next.js 项目：
+
+```bash
+npx create-next-app@latest my-blog
+cd my-blog
+```
+
+在初始化过程中，选择以下配置：
+
+```plaintext
+✔ Would you like to use TypeScript? Yes
+✔ Would you like to use ESLint? Yes
+✔ Would you like to use Tailwind CSS? Yes
+✔ Would you like to use `src/` directory? Yes
+✔ Would you like to use App Router? Yes
+✔ Would you like to customize the default import alias? No
+```
+
+2. 安装必要依赖：
+
+```bash
+npm install contentlayer next-contentlayer date-fns
+```
+
+## 项目结构
+
+项目的主要目录结构如下：
+
+```
+my-blog/
+├── src/
+│   ├── content/
+│   │   └── blog/     # 博客文章 MDX 文件
+│   ├── app/          # 页面路由
+│   ├── components/   # React 组件
+│   └── styles/       # 样式文件
+├── public/           # 静态资源
+├── contentlayer.config.ts  # Contentlayer 配置
+├── next.config.js    # Next.js 配置
+├── tailwind.config.js # Tailwind 配置
+└── package.json
+```
+
+## 配置 Contentlayer
+
+1. 创建 `contentlayer.config.ts` 文件：
+
+```typescript
+import { defineDocumentType, makeSource } from 'contentlayer/source-files'
+
+export const Blog = defineDocumentType(() => ({
+  name: 'Blog',
+  filePathPattern: `blog/**/*.mdx`,
+  contentType: 'mdx',
+  fields: {
+    title: { type: 'string', required: true },
+    description: { type: 'string', required: true },
+    date: { type: 'date', required: true },
+    tags: { type: 'list', of: { type: 'string' }, required: true }
+  },
+  computedFields: {
+    url: {
+      type: 'string',
+      resolve: (post) => `/blog/${post._raw.flattenedPath}`,
+    },
+  },
+}))
+
+export default makeSource({
+  contentDirPath: 'src/content',
+  documentTypes: [Blog],
+})
+```
+
+2. 更新 `next.config.js`：
+
+```javascript
+const { withContentlayer } = require('next-contentlayer')
+
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  reactStrictMode: true,
+  swcMinify: true,
+}
+
+module.exports = withContentlayer(nextConfig)
+```
+
+## 创建博客页面
+
+1. 博客列表页面 (`src/app/page.tsx`)：
+
+```typescript
+import { allBlogs } from 'contentlayer/generated'
+import { compareDesc } from 'date-fns'
+
+export default function Home() {
+  const posts = allBlogs.sort((a, b) => 
+    compareDesc(new Date(a.date), new Date(b.date))
+  )
+
+  return (
+    <div className="max-w-4xl mx-auto py-8">
+      <h1 className="text-3xl font-bold mb-8">博客文章</h1>
+      <div className="space-y-8">
+        {posts.map((post) => (
+          <article key={post._id}>
+            <h2 className="text-2xl font-bold">
+              <a href={post.url}>{post.title}</a>
+            </h2>
+            <time className="text-gray-500">
+              {new Date(post.date).toLocaleDateString()}
+            </time>
+            <p className="mt-2">{post.description}</p>
+          </article>
+        ))}
+      </div>
+    </div>
+  )
+}
+```
+
+2. 文章详情页面 (`src/app/blog/[slug]/page.tsx`)：
+
+```typescript
+import { allBlogs } from 'contentlayer/generated'
+import { getMDXComponent } from 'next-contentlayer/hooks'
+
+export const generateStaticParams = async () => 
+  allBlogs.map((post) => ({ slug: post._raw.flattenedPath }))
+
+export default function BlogPost({ params }: { params: { slug: string } }) {
+  const post = allBlogs.find((post) => post._raw.flattenedPath === params.slug)
+  
+  if (!post) return <div>404</div>
+  
+  const Content = getMDXComponent(post.body.code)
+  
+  return (
+    <article className="max-w-4xl mx-auto py-8">
+      <h1 className="text-3xl font-bold">{post.title}</h1>
+      <time className="text-gray-500">
+        {new Date(post.date).toLocaleDateString()}
+      </time>
+      <div className="prose prose-lg mt-8">
+        <Content />
+      </div>
+    </article>
+  )
+}
+```
+
+## 样式设置
+
+1. 配置 Tailwind CSS (`tailwind.config.js`)：
+
+```javascript
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  content: [
+    './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/components/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/app/**/*.{js,ts,jsx,tsx,mdx}',
+  ],
+  theme: {
+    extend: {
+      typography: {
+        DEFAULT: {
+          css: {
+            maxWidth: '100%',
+          },
+        },
+      },
+    },
+  },
+  plugins: [
+    require('@tailwindcss/typography'),
+  ],
+}
+```
+
+2. 安装 Typography 插件：
+
+```bash
+npm install -D @tailwindcss/typography
+```
+
+## 部署到 Vercel
+
+1. 创建 GitHub 仓库并推送代码：
+
+```bash
+git init
+git add .
+git commit -m "Initial commit"
+git remote add origin <你的GitHub仓库地址>
+git push -u origin main
+```
+
+2. Vercel 部署步骤：
+
+- 访问 [Vercel](https://vercel.com) 并登录
+- 点击 "New Project"
+- 选择你的 GitHub 仓库
+- 保持默认配置，点击 "Deploy"
+
+部署完成后，Vercel 会自动生成一个域名，你可以通过这个域名访问你的博客。
+
+## 自定义域名设置（可选）
+
+如果你有自己的域名，可以在 Vercel 项目设置中添加：
+
+1. 在 Vercel 项目中点击 "Settings" → "Domains"
+2. 添加你的域名
+3. 按照 Vercel 的指引配置 DNS 记录
+4. 等待 DNS 生效（通常需要几分钟到几小时）
+
+## 性能优化
+
+1. 图片优化：使用 Next.js 的 Image 组件
+
+```typescript
+import Image from 'next/image'
+
+<Image
+  src="/path/to/image.jpg"
+  alt="Description"
+  width={800}
+  height={400}
+  priority
+/>
+```
+
+2. 元数据优化：在页面中添加 metadata
+
+```typescript
+export const metadata = {
+  title: '我的博客',
+  description: '使用 Next.js 搭建的个人博客',
+}
+```
+
+## 常见问题解决
+
+1. MDX 内容不显示
+- 检查 `contentlayer.config.ts` 配置
+- 确保文件路径正确
+- 检查 MDX 文件的 frontmatter 格式
+
+2. 样式问题
+- 确保 Tailwind 配置正确
+- 检查类名是否正确应用
+- 使用开发者工具检查样式覆盖情况
+
+3. 部署问题
+- 确保所有依赖都已正确安装
+- 检查 `next.config.js` 配置
+- 查看 Vercel 部署日志
+
+## 后续优化建议
+
+1. 添加评论功能
+2. 实现搜索功能
+3. 添加标签筛选
+4. 优化加载性能
+5. 添加统计分析
+6. 实现深色模式
+7. RSS 订阅功能
+
+## 结语
+
+通过以上步骤，你已经成功搭建了一个现代化的个人博客系统。这个系统具有良好的可扩展性，你可以根据需求不断添加新的功能。记住，好的博客不仅需要优秀的技术实现，更重要的是持续输出有价值的内容。
+
+## 参考资源
+
+- [Next.js 官方文档](https://nextjs.org/docs)
+- [Contentlayer 文档](https://contentlayer.dev/)
+- [Tailwind CSS 文档](https://tailwindcss.com/docs)
+- [Vercel 部署文档](https://vercel.com/docs)

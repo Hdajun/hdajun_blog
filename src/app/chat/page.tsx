@@ -35,6 +35,7 @@ import {
   Typography,
   message,
 } from 'antd'
+import { useTheme } from 'next-themes'
 import { createStyles } from 'antd-style'
 import React, { useRef, useState, useEffect } from 'react'
 import markdownit from 'markdown-it'
@@ -132,11 +133,15 @@ const useStyle = createStyles(({ token, css }) => {
       top: 64px;
       left: 0;
       width: 100vw;
-      min-width: 1000px;
+      min-width: 320px;
       height: calc(100vh - 64px);
       display: flex;
       background: ${token.colorBgContainer};
       font-family: AlibabaPuHuiTi, ${token.fontFamily}, sans-serif;
+
+      @media (max-width: 768px) {
+        height: calc(100vh - 64px);
+      }
     `,
     // sider 样式
     sider: css`
@@ -194,6 +199,10 @@ const useStyle = createStyles(({ token, css }) => {
       flex-direction: column;
       padding-block: ${token.paddingLG}px;
       gap: 16px;
+
+      @media (max-width: 768px) {
+        padding: 12px;
+      }
     `,
     chatPrompt: css`
       flex: 1;
@@ -212,6 +221,10 @@ const useStyle = createStyles(({ token, css }) => {
     chatList: css`
       flex: 1;
       overflow: auto;
+
+      @media (max-width: 768px) {
+        padding: 0;
+      }
     `,
     loadingMessage: css`
       background-image: linear-gradient(
@@ -232,6 +245,11 @@ const useStyle = createStyles(({ token, css }) => {
       width: 100%;
       max-width: 700px;
       margin: 0 auto;
+
+      @media (max-width: 768px) {
+        max-width: 100%;
+        padding: 0 8px;
+      }
     `,
     speechButton: css`
       font-size: 18px;
@@ -246,16 +264,47 @@ const useStyle = createStyles(({ token, css }) => {
   }
 })
 
-const renderMarkdown: BubbleProps['messageRender'] = content => {
-  return (
-    <Typography>
-      <div dangerouslySetInnerHTML={{ __html: md.render(content) }} />
-    </Typography>
-  )
-}
+const useDarkStyle = createStyles(({ css }) => {
+  return {
+    layout: css`
+      background: #000;
+    `,
+    sender: css`
+      .ant-sender-input {
+        color: #fff;
+      } // #1F293780
+    `,
+    senderPrompt: css`
+      .ant-prompts-item {
+        color: #fff;
+        background-color: #1f293780;
+      }
+    `,
+    chatPrompt: css`
+      flex: 1;
+      min-height: 220px;
+      .ant-prompts-label {
+        color: #fff !important;
+
+        span {
+          color: #fff !important;
+        }
+      }
+      .ant-prompts-desc {
+        color: #fff !important;
+        width: 100%;
+      }
+      .ant-prompts-icon {
+        color: #fff !important;
+      }
+    `,
+  }
+})
 
 const Independent: React.FC = () => {
+  const { theme } = useTheme()
   const { styles } = useStyle()
+  const { styles: darkStyles } = useDarkStyle()
   const abortController = useRef<AbortController | null>(null)
   const [attachmentsOpen, setAttachmentsOpen] = useState(false)
   const [attachedFiles, setAttachedFiles] = useState<
@@ -433,6 +482,17 @@ const Independent: React.FC = () => {
     }
   }
 
+  const renderMarkdown: BubbleProps['messageRender'] = content => {
+    return (
+      <Typography>
+        <div
+          style={{ color: theme === 'light' ? '' : '#fff' }}
+          dangerouslySetInnerHTML={{ __html: md.render(content) }}
+        />
+      </Typography>
+    )
+  }
+
   const chatList = (
     <div className={styles.chatList}>
       {messages?.length ? (
@@ -458,12 +518,12 @@ const Independent: React.FC = () => {
                     ),
                   }
                 : undefined,
-            messageRender:
-              i.message.role === 'assistant' ? renderMarkdown : undefined,
+            messageRender: renderMarkdown,
           }))}
           style={{
             height: '100%',
-            paddingInline: 'calc(calc(100% - 700px) /2)',
+            paddingInline:
+              window.innerWidth > 768 ? 'calc(calc(100% - 700px) /2)' : '8px',
           }}
           roles={{
             assistant: {
@@ -499,15 +559,32 @@ const Independent: React.FC = () => {
         <Space
           direction="vertical"
           size={16}
-          style={{ paddingInline: 'calc(calc(100% - 700px) /2)' }}
+          style={{
+            paddingInline: 'calc(calc(100% - 700px) /2)',
+            width: '100%',
+          }}
           className={styles.placeholder}
         >
           <Welcome
             variant="borderless"
-            title="Hello, I'm H_dajun"
-            description="欢迎来到我的博客！我是一名前端开发练习生，很高兴能和你交流。有任何问题都可以问我 (｡･ω･｡)"
+            title={
+              <span style={{ color: theme === 'light' ? '' : '#fff' }}>
+                {window.innerWidth > 768 ? "Hello, I'm H_dajun" : 'Hi 👋'}
+              </span>
+            }
+            description={
+              <span style={{ color: theme === 'light' ? '' : '#fff' }}>
+                {window.innerWidth > 768
+                  ? '欢迎来到我的博客！我是一名前端开发练习生，很高兴能和你交流。有任何问题都可以问我 (｡･ω･｡)'
+                  : '有什么想问的，随时告诉我'}
+              </span>
+            }
           />
-          <Flex gap={16} justify="space-between">
+          <Flex
+            gap={16}
+            justify="space-between"
+            vertical={window.innerWidth < 768}
+          >
             <div style={{ flex: 1 }}>
               <Spin spinning={bookLoading}>
                 <Prompts
@@ -516,18 +593,21 @@ const Independent: React.FC = () => {
                     list: { height: '100%' },
                     item: {
                       flex: 1,
-                      backgroundImage:
-                        'linear-gradient(123deg, #e5f4ff 0%, #efe7ff 100%)',
+                      backgroundColor: theme === 'light' ? '' : '#1f293780',
                       borderRadius: 12,
-                      border: 'none',
-                      color: 'rgba(0, 0, 0, 0.65)',
+                      border:
+                        theme === 'light'
+                          ? '1px solid rgba(0, 0, 0, 0.06)'
+                          : '1px solid #fff',
                     },
                     subItem: { padding: 0, background: 'transparent' },
                   }}
                   onItemClick={(info: any) => {
                     window.open(info.data?.url, '_blank')
                   }}
-                  className={styles.chatPrompt}
+                  className={`${styles.chatPrompt} ${
+                    theme === 'dark' ? darkStyles.chatPrompt : ''
+                  }`}
                 />
               </Spin>
             </div>
@@ -537,12 +617,16 @@ const Independent: React.FC = () => {
                 list: { height: '100%' },
                 item: {
                   flex: 1,
-                  backgroundImage:
-                    'linear-gradient(123deg, #e5f4ff 0%, #efe7ff 100%)',
+                  backgroundColor: theme === 'light' ? '' : '#1f293780',
                   borderRadius: 12,
-                  border: 'none',
+                  border:
+                    theme === 'light'
+                      ? '1px solid rgba(0, 0, 0, 0.06)'
+                      : '1px solid #fff',
                 },
-                subItem: { background: '#ffffffa6' },
+                subItem: {
+                  background: theme === 'light' ? '#f9f9f9' : '#1f293780',
+                },
               }}
               onItemClick={(info: any) => {
                 const url = info.data.url
@@ -550,7 +634,9 @@ const Independent: React.FC = () => {
                   window.open(url, '_blank')
                 }
               }}
-              className={styles.chatPrompt}
+              className={`${styles.chatPrompt} ${
+                theme === 'dark' ? darkStyles.chatPrompt : ''
+              }`}
             />
           </Flex>
         </Space>
@@ -595,7 +681,9 @@ const Independent: React.FC = () => {
         styles={{
           item: { padding: '6px 12px' },
         }}
-        className={styles.senderPrompt}
+        className={`${styles.senderPrompt} ${
+          theme === 'dark' ? darkStyles.senderPrompt : ''
+        }`}
       />
       {/* 🌟 输入框 */}
       <Sender
@@ -617,7 +705,9 @@ const Independent: React.FC = () => {
           />
         } */
         loading={loading}
-        className={styles.sender}
+        className={`${styles.sender} ${
+          theme === 'dark' ? darkStyles.sender : ''
+        }`}
         // allowSpeech
         actions={(_, info) => {
           const { SendButton, LoadingButton } = info.components
@@ -637,7 +727,11 @@ const Independent: React.FC = () => {
   )
 
   return (
-    <div className={styles.layout}>
+    <div
+      className={`${styles.layout} ${
+        theme === 'dark' ? darkStyles.layout : ''
+      }`}
+    >
       <div className={styles.chat}>
         {chatList}
         {chatSender}

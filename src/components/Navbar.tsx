@@ -71,6 +71,13 @@ function Navbar() {
           <div className="md:hidden">
             <div className="space-y-1 pb-3 pt-2">
               <Link
+                href="/chat"
+                className="block rounded-lg px-3 py-2 text-base font-medium text-gray-600 transition-colors hover:bg-gray-100 hover:text-black dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-white"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                CHAT
+              </Link>
+              <Link
                 href="/blog"
                 className="block rounded-lg px-3 py-2 text-base font-medium text-gray-600 transition-colors hover:bg-gray-100 hover:text-black dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-white"
                 onClick={() => setIsMenuOpen(false)}

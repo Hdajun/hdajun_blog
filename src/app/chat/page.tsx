@@ -302,7 +302,7 @@ const useDarkStyle = createStyles(({ css }) => {
 })
 
 const Independent: React.FC = () => {
-  const { theme } = useTheme()
+  const { theme = 'light' } = useTheme()
   const { styles } = useStyle()
   const { styles: darkStyles } = useDarkStyle()
   const abortController = useRef<AbortController | null>(null)

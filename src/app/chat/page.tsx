@@ -302,7 +302,7 @@ const useDarkStyle = createStyles(({ css }) => {
 })
 
 const Independent: React.FC = () => {
-  const { theme = 'light' } = useTheme()
+  const { theme } = useTheme()
   const { styles } = useStyle()
   const { styles: darkStyles } = useDarkStyle()
   const abortController = useRef<AbortController | null>(null)
@@ -486,7 +486,7 @@ const Independent: React.FC = () => {
     return (
       <Typography>
         <div
-          style={{ color: theme === 'light' ? '' : '#fff' }}
+          style={{ color: theme === 'dark' ? '#fff':'' }}
           dangerouslySetInnerHTML={{ __html: md.render(content) }}
         />
       </Typography>
@@ -568,12 +568,12 @@ const Independent: React.FC = () => {
           <Welcome
             variant="borderless"
             title={
-              <span style={{ color: theme === 'light' ? '' : '#fff' }}>
+              <span style={{ color: theme === 'dark' ? '#fff':'' }}>
                 {window.innerWidth > 768 ? "Hello, I'm H_dajun" : 'Hi 👋'}
               </span>
             }
             description={
-              <span style={{ color: theme === 'light' ? '' : '#fff' }}>
+              <span style={{ color: theme === 'dark' ? '#fff' : '' }}>
                 {window.innerWidth > 768
                   ? '欢迎来到我的博客！我是一名前端开发练习生，很高兴能和你交流。有任何问题都可以问我 (｡･ω･｡)'
                   : '有什么想问的，随时告诉我'}
@@ -593,12 +593,11 @@ const Independent: React.FC = () => {
                     list: { height: '100%' },
                     item: {
                       flex: 1,
-                      backgroundColor: theme === 'light' ? '' : '#1f293780',
+                      backgroundColor: theme === 'dark' ? '#1f293780':'',
                       borderRadius: 12,
                       border:
-                        theme === 'light'
-                          ? '1px solid rgba(0, 0, 0, 0.06)'
-                          : '1px solid #fff',
+                        theme === 'dark'
+                          ? '1px solid #fff': '1px solid rgba(0, 0, 0, 0.06)'
                     },
                     subItem: { padding: 0, background: 'transparent' },
                   }}
@@ -617,15 +616,14 @@ const Independent: React.FC = () => {
                 list: { height: '100%' },
                 item: {
                   flex: 1,
-                  backgroundColor: theme === 'light' ? '' : '#1f293780',
+                  backgroundColor: theme === 'dark' ? '' : '#1f293780',
                   borderRadius: 12,
                   border:
-                    theme === 'light'
-                      ? '1px solid rgba(0, 0, 0, 0.06)'
-                      : '1px solid #fff',
+                    theme === 'dark'
+                      ? '1px solid #fff':'1px solid rgba(0, 0, 0, 0.06)'
                 },
                 subItem: {
-                  background: theme === 'light' ? '#f9f9f9' : '#1f293780',
+                  background: theme === 'dark' ?   '#1f293780':'#f9f9f9',
                 },
               }}
               onItemClick={(info: any) => {

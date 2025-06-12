@@ -616,7 +616,7 @@ const Independent: React.FC = () => {
                 list: { height: '100%' },
                 item: {
                   flex: 1,
-                  backgroundColor: theme === 'dark' ? '' : '#1f293780',
+                  backgroundColor: theme === 'dark' ?  '#1f293780':'',
                   borderRadius: 12,
                   border:
                     theme === 'dark'

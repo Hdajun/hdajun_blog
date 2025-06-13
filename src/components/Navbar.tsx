@@ -50,12 +50,6 @@ function Navbar() {
             >
               博客
             </Link>
-            <Link
-              href="/about"
-              className="text-sm font-medium text-gray-600 transition-all duration-300 hover:text-black dark:text-gray-300 dark:hover:text-white"
-            >
-              关于
-            </Link>
             <ThemeToggle />
           </nav>
           <div className="flex items-center md:hidden">
@@ -87,13 +81,6 @@ function Navbar() {
                 onClick={() => setIsMenuOpen(false)}
               >
                 博客
-              </Link>
-              <Link
-                href="/about"
-                className="block rounded-lg px-3 py-2 text-base font-medium text-gray-600 transition-colors hover:bg-gray-100 hover:text-black dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-white"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                关于
               </Link>
             </div>
           </div>

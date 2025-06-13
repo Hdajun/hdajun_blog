@@ -29,26 +29,30 @@ function Navbar() {
         <div className="flex h-16 items-center justify-between">
           <Link
             href="/"
-            className="text-xl font-medium text-gray-900 dark:text-white"
+            className="group relative text-xl font-bold tracking-tight"
           >
-            H_dajun Blog
+            <span className="bg-gradient-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent transition-all duration-300 group-hover:from-violet-400 group-hover:to-indigo-400">
+              H_dajun
+            </span>
+            <span className="ml-2 text-gray-600 dark:text-gray-300">Blog</span>
+            <span className="absolute -bottom-1 left-0 h-0.5 w-0 bg-gradient-to-r from-indigo-400 to-violet-400 transition-all duration-300 group-hover:w-full"></span>
           </Link>
           <nav className="hidden md:flex md:items-center md:space-x-6">
             <Link
               href="/chat"
-              className="text-sm font-medium text-gray-600 transition-colors hover:text-black dark:text-gray-300 dark:hover:text-white"
+              className="text-sm font-medium text-gray-600 transition-all duration-300 hover:text-black dark:text-gray-300 dark:hover:text-white"
             >
               CHAT
             </Link>
             <Link
               href="/blog"
-              className="text-sm font-medium text-gray-600 transition-colors hover:text-black dark:text-gray-300 dark:hover:text-white"
+              className="text-sm font-medium text-gray-600 transition-all duration-300 hover:text-black dark:text-gray-300 dark:hover:text-white"
             >
               博客
             </Link>
             <Link
               href="/about"
-              className="text-sm font-medium text-gray-600 transition-colors hover:text-black dark:text-gray-300 dark:hover:text-white"
+              className="text-sm font-medium text-gray-600 transition-all duration-300 hover:text-black dark:text-gray-300 dark:hover:text-white"
             >
               关于
             </Link>

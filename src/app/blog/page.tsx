@@ -69,10 +69,11 @@ export default function BlogPage() {
             探索技术、分享见解
           </p>
         </div>
-        <div className="relative mx-auto max-w-lg">
-          <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+        <div className="relative mx-auto max-w-lg group flex justify-center">
+          <div className="absolute left-[2.5%] top-1/2 -translate-y-1/2 flex items-center pl-3 z-10">
             <svg
-              className="h-5 w-5 text-gray-400"
+              className="h-5 w-5 text-gray-400 transition-colors duration-300
+              group-focus-within:text-[#818cf8]"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -91,14 +92,14 @@ export default function BlogPage() {
             placeholder="搜索文章标题、描述或标签..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full rounded-full border border-gray-200 bg-gray-50 py-2.5 pl-10 pr-4 text-sm 
-            transition-all duration-500 ease-out placeholder:text-gray-400
-            hover:border-gray-300 hover:bg-gray-100/50 hover:shadow hover:shadow-gray-200/60
-            focus:border-gray-400 focus:bg-white focus:shadow-lg focus:shadow-gray-200/50 focus:outline-none focus:ring-1 focus:ring-gray-200/50
-            focus:transition-shadow focus:duration-700
-            dark:border-gray-700 dark:bg-gray-800/50 dark:text-white dark:placeholder:text-gray-500
-            dark:hover:border-gray-600 dark:hover:bg-gray-700/50 dark:hover:shadow-gray-800/40
-            dark:focus:border-gray-500 dark:focus:bg-gray-800 dark:focus:ring-gray-700/50 dark:focus:shadow-gray-800/30"
+            className="w-[95%] h-[48px] rounded-xl border border-gray-200 bg-transparent pl-10 pr-4 text-sm relative
+            transition-all duration-300 ease-out placeholder:text-gray-400
+            hover:border-[#818cf8] hover:bg-gray-100/50
+            focus:border-transparent focus:bg-white focus:outline-none focus:ring-0
+            focus:shadow-[0_0_0_1px_#818cf8,0_0_0_2px_#a78bfa] focus:-translate-y-[1px]
+            dark:border-gray-700 dark:bg-transparent dark:text-white dark:placeholder:text-gray-400
+            dark:hover:border-[#818cf8] dark:hover:bg-gray-700/50
+            dark:focus:bg-gray-800"
           />
         </div>
       </div>

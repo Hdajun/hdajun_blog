@@ -26,14 +26,13 @@ export async function GET() {
       }
     )
 
-
-    if (!response.data || !Array.isArray(response.data.data)) {
+    if (!response.data || !response.data.data || !Array.isArray(response.data.data)) {
       throw new Error('Invalid API response format')
     }
 
     const articles: JuejinArticle[] = response.data.data
-      .filter((item: any) => item.item_info && item.item_info.article_info)
-      .slice(0, 5)
+      .filter((item: any) => item.item_type === 2 && item.item_info && item.item_info.article_info)
+      .slice(0, 20)
       .map((item: any) => ({
         title: item.item_info.article_info.title,
         url: `https://juejin.cn/post/${item.item_info.article_info.article_id}`,

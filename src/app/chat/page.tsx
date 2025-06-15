@@ -226,10 +226,14 @@ const useStyle = createStyles(({ token, css }) => {
     `,
     chatPrompt: css`
       flex: 1;
-      min-height: 220px;
+      /* min-height: 220px; */
       .ant-prompts-label {
         /* color: #6b7280 !important; */
         font-weight: 400 !important;
+      }
+      .ant-prompts {
+        overflow-y: auto;
+        max-height: 212px;
       }
       .ant-prompts-desc {
         color: #6b7280 !important;
@@ -654,8 +658,6 @@ const Independent: React.FC = () => {
                         theme === 'dark'
                           ? '0px solid #fff'
                           : '1px solid rgba(0, 0, 0, 0.06)',
-                      overflowY: 'auto',
-                      maxHeight: 262,
                     },
                     subItem: { padding: 0, background: 'transparent' },
                   }}

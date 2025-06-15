@@ -1,0 +1,162 @@
+---
+title: '服务器基础环境配置记录'
+description: '记录阿里云服务器的购买和基础环境配置过程，包括系统设置、安全配置、环境安装等内容'
+date: '2024-03-21'
+tags: ['服务器', '部署', 'Linux']
+---
+
+# 服务器基础环境配置记录
+
+本文记录了从购买阿里云服务器到完成基础环境配置的完整过程，以供日后参考。
+
+## 一、服务器选购
+
+### 1.1 服务器配置
+- 服务商：阿里云 ECS
+- 配置：2核4G
+- 系统：Ubuntu 22.04 LTS
+- 付费方式：按量付费（方便测试使用）
+
+### 1.2 注意事项
+- 选择合适的区域（国内推荐华东/华北区域）
+- 按量付费可以随时更改配置
+- 建议选择长期支持版本的系统
+
+## 二、基础安全配置
+
+### 2.1 创建普通用户
+```bash
+# 创建新用户
+sudo adduser hdajun
+
+# 赋予 sudo 权限
+sudo usermod -aG sudo hdajun
+
+# 切换到新用户
+su - hdajun
+```
+
+### 2.2 配置 SSH 密钥登录
+```bash
+# 在本地生成 SSH 密钥对
+ssh-keygen -t rsa -b 4096
+
+# 将公钥复制到服务器
+ssh-copy-id hdajun@服务器IP
+
+# 禁用密码登录（编辑 /etc/ssh/sshd_config）
+PasswordAuthentication no
+
+# 重启 SSH 服务
+sudo systemctl restart sshd
+```
+
+### 2.3 配置防火墙
+```bash
+# 安装 UFW
+sudo apt install ufw
+
+# 设置默认策略
+sudo ufw default deny incoming
+sudo ufw default allow outgoing
+
+# 开放必要端口
+sudo ufw allow ssh        # SSH - 22端口
+sudo ufw allow http      # HTTP - 80端口
+sudo ufw allow https     # HTTPS - 443端口
+sudo ufw allow 27017     # MongoDB端口（后续可能需要限制IP）
+
+# 启用防火墙
+sudo ufw enable
+```
+
+## 三、环境安装
+
+### 3.1 系统更新
+```bash
+# 更新软件包列表
+sudo apt update
+
+# 升级已安装的包
+sudo apt upgrade -y
+```
+
+### 3.2 安装 Node.js
+```bash
+# 添加 NodeSource 仓库
+curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+
+# 安装 Node.js
+sudo apt install -y nodejs
+
+# 验证安装
+node --version
+npm --version
+```
+
+### 3.3 安装 MongoDB
+```bash
+# 导入 MongoDB 公钥
+curl -fsSL https://pgp.mongodb.com/server-6.0.asc | sudo gpg -o /usr/share/keyrings/mongodb-server-6.0.gpg --dearmor
+
+# 添加 MongoDB 源
+echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-6.0.gpg ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/6.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-6.0.list
+
+# 更新包列表并安装 MongoDB
+sudo apt update
+sudo apt install -y mongodb-org
+
+# 启动 MongoDB 服务
+sudo systemctl start mongod
+sudo systemctl enable mongod
+
+# 验证 MongoDB 状态
+sudo systemctl status mongod
+```
+
+### 3.4 安装 PM2
+```bash
+# 全局安装 PM2
+sudo npm install -g pm2
+
+# 设置 PM2 开机自启
+pm2 startup
+```
+
+### 3.5 安装 Nginx
+```bash
+# 安装 Nginx
+sudo apt install nginx
+
+# 启动 Nginx 服务
+sudo systemctl start nginx
+sudo systemctl enable nginx
+```
+
+## 四、项目准备
+
+### 4.1 创建项目目录
+```bash
+# 创建项目目录
+mkdir -p ~/projects/blog
+
+# 设置目录权限
+sudo chown -R hdajun:hdajun ~/projects/blog
+```
+
+## 五、后续步骤
+
+完成基础环境配置后，接下来需要：
+1. 配置 MongoDB 数据库（创建用户、设置访问权限）
+2. 配置 Nginx 反向代理
+3. 部署后端 API 服务
+4. 配置域名和 SSL 证书
+
+## 总结
+
+基础环境配置是整个部署过程的重要基础。通过以上步骤，我们完成了：
+- 服务器的基础安全配置
+- 必要软件的安装
+- 运行环境的准备
+
+这为后续的应用部署打下了良好的基础。记得定期检查服务器状态，保持系统和软件包的更新，确保服务器的安全性和稳定性。 

@@ -1,6 +1,8 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@import 'prismjs/themes/prism-tomorrow.css';
+/* 你也可以用 prism-okaidia.css、prism-coy.css、prism-solarizedlight.css 等 */
 
 @layer base {
   body {

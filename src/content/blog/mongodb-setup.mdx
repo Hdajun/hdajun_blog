@@ -1,0 +1,144 @@
+---
+title: 'MongoDB 数据库配置记录'
+description: '详细记录在阿里云服务器上配置 MongoDB 数据库的完整过程，包括安装、用户配置、权限设置等'
+date: '2024-03-21'
+tags: ['MongoDB', '数据库', '服务器配置']
+---
+
+# MongoDB 数据库配置记录
+
+本文详细记录了在阿里云服务器上配置 MongoDB 数据库的完整过程，包括修复遇到的各种问题。
+
+## 一、修复配置文件
+
+### 1.1 检查并修改配置文件
+```bash
+# 编辑 MongoDB 配置文件
+sudo nano /etc/mongod.conf
+```
+
+配置文件的正确内容应该是：
+```yaml
+# network interfaces
+net:
+  port: 27017
+  bindIp: 0.0.0.0  # 允许远程连接
+
+# security
+security:
+  authorization: enabled  # 启用身份验证
+```
+
+注意事项：
+- 确保没有重复的 `bindIp` 配置
+- 使用空格进行缩进（不要用 tab）
+- 每个配置项使用 2 个空格缩进
+
+### 1.2 重启服务
+```bash
+# 重启 MongoDB 服务
+sudo systemctl restart mongod
+
+# 检查服务状态
+sudo systemctl status mongod
+```
+
+## 二、用户配置
+
+### 2.1 创建管理员用户
+```javascript
+// 连接到 MongoDB
+mongosh
+
+// 切换到 admin 数据库
+use admin
+
+// 创建管理员用户
+db.createUser({
+  user: "blogAdmin",
+  pwd: "your_secure_password",  // 使用安全的密码
+  roles: [ { role: "userAdminAnyDatabase", db: "admin" } ]
+})
+```
+
+### 2.2 创建应用用户
+```javascript
+// 切换到博客数据库
+use blog
+
+// 创建应用用户
+db.createUser({
+  user: "blogApp",
+  pwd: "your_app_password",  // 使用安全的密码
+  roles: [
+    { role: "readWrite", db: "blog" }
+  ]
+})
+```
+
+## 三、验证配置
+
+### 3.1 测试管理员连接
+```bash
+# 使用管理员账号连接
+mongosh --host localhost --port 27017 -u blogAdmin -p your_secure_password --authenticationDatabase admin
+
+# 查看用户列表
+use admin
+db.getUsers()
+```
+
+### 3.2 测试应用用户连接
+```bash
+# 使用应用用户连接
+mongosh --host localhost --port 27017 -u blogApp -p your_app_password --authenticationDatabase blog
+
+# 测试数据写入
+use blog
+db.test.insertOne({ test: "Hello MongoDB" })
+```
+
+成功的返回结果应该类似：
+```javascript
+{
+  acknowledged: true,
+  insertedId: ObjectId('...')
+}
+```
+
+## 四、注意事项
+
+1. 安全配置
+   - MongoDB 默认只监听 localhost
+   - 启用身份验证很重要
+   - 使用强密码
+   - 考虑限制 IP 访问
+
+2. 常见问题
+   - 配置文件格式错误（YAML 语法）
+   - 重复的配置项
+   - 权限问题
+   - 服务启动失败
+
+3. 连接字符串格式
+```
+mongodb://blogApp:your_app_password@服务器IP:27017/blog
+```
+
+## 五、后续步骤
+
+完成数据库配置后，接下来需要：
+1. 设计数据库结构（题库的集合设计）
+2. 创建后端 API 接口
+3. 配置前端连接
+4. 添加数据库备份策略
+
+## 总结
+
+通过以上步骤，我们成功：
+- 修复了配置文件问题
+- 创建了必要的用户
+- 配置了适当的权限
+- 验证了数据库操作
+
+这为后续开发题库功能打下了良好的基础。记得定期备份数据库，并保持关注服务器和数据库的安全更新。 

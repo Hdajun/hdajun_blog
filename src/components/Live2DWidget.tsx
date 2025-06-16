@@ -103,7 +103,7 @@ const Live2DWidget: React.FC<Live2DWidgetProps> = ({ config = {} }) => {
       container.appendChild(app.view);
 
       // 设置模型加载器的基础路径
-      (window as any).PIXI.live2d.Live2DModel.from('/live2d/miku_sample_t04/miku_sample_t04.model3.json', {
+      (window as any).PIXI.live2d.Live2DModel.from('/live2d/rice_pro_t03/rice_pro_t03.model3.json', {
         autoInteract: true,
         autoUpdate: true,
         antialias: true, // 为模型启用抗锯齿
@@ -113,9 +113,9 @@ const Live2DWidget: React.FC<Live2DWidgetProps> = ({ config = {} }) => {
         app.stage.addChild(model);
 
         // 调整模型位置和大小
-        model.scale.set(0.2); // 稍微增加模型大小
+        model.scale.set(0.1); // 稍微增加模型大小
         // 将模型放置在容器中心，稍微向上调整
-        model.x = defaultConfig.width / 2;
+        model.x = defaultConfig.width / 6;
         model.y = (defaultConfig.height / 2) + 50; // 向下移动一点以显示完整模型
         model.anchor.set(0.5, 0.5);
 

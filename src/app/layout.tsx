@@ -1,22 +1,23 @@
-import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
-import './globals.css'
-import { ThemeProvider } from '@/components/ThemeProvider'
-import { AntdRegistry } from '@ant-design/nextjs-registry'
-import { NavbarWrapper } from '@/components/Navbar'
+import type { Metadata } from "next";
+import { Inter } from "next/font/google";
+import "./globals.css";
+import { ThemeProvider } from "@/components/ThemeProvider";
+import { AntdRegistry } from "@ant-design/nextjs-registry";
+import { NavbarWrapper } from "@/components/Navbar";
+import Live2DWidget from "@/components/Live2DWidget";
 
-const inter = Inter({ subsets: ['latin'] })
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: 'H_dajun 的博客',
-  description: '一个使用 Next.js 构建的个人博客',
-  icons: [{ rel: 'icon', url: '/icon.svg', type: 'image/svg+xml' }],
-}
+  title: "H_dajun 的博客",
+  description: "一个使用 Next.js 构建的个人博客",
+  icons: [{ rel: "icon", url: "/icon.svg", type: "image/svg+xml" }],
+};
 
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
@@ -37,7 +38,8 @@ export default function RootLayout({
             </div>
           </ThemeProvider>
         </AntdRegistry>
+        <Live2DWidget />
       </body>
     </html>
-  )
+  );
 }

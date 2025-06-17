@@ -63,7 +63,26 @@ const CodeBlock = ({
 
 // 添加代码检测和格式化函数
 const formatCodeContent = (content: string) => {
-  // 检测是否可能是代码（包含特定关键字、符号等）
+  // 如果内容已经包含 Markdown 语法（标题、列表、代码块等），直接返回
+  const markdownIndicators = [
+    /^#+ /m, // 标题
+    /^\* /m, // 无序列表
+    /^\d+\. /m, // 有序列表
+    /^```/m, // 代码块
+    /^\- /m, // 列表项
+    /^> /m, // 引用
+  ]
+
+  const hasMarkdownSyntax = markdownIndicators.some(indicator =>
+    indicator.test(content)
+  )
+
+  // 如果已经包含 Markdown 语法，直接返回原内容
+  if (hasMarkdownSyntax) {
+    return content
+  }
+
+  // 检测是否可能是纯代码（包含特定关键字、符号等）
   const codeIndicators = [
     'function',
     '=>',
@@ -88,7 +107,7 @@ const formatCodeContent = (content: string) => {
   )
   const hasJSSymbols = /[{}\[\]()=>;]/.test(content)
 
-  // 如果包含代码指示器和JS符号，且不是已经格式化的Markdown代码块
+  // 只有当内容看起来像纯代码且不包含 Markdown 语法时才包装
   if (hasCodeIndicators && hasJSSymbols && !content.trim().startsWith('```')) {
     // 检测内容是否已经被```包裹
     if (!/^```[\s\S]*```$/.test(content.trim())) {
@@ -173,33 +192,12 @@ export default function QuestionList() {
     })
   }, [])
 
-  const handleClearCategory = useCallback((e: React.MouseEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
-    setSelectedCategory(null)
-  }, [])
-
-  const handleClearDifficulty = useCallback((e: React.MouseEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
-    setSelectedDifficulty(null)
-  }, [])
-
   const inputStyles = `w-full rounded-xl border border-gray-200 bg-transparent px-4 py-3 text-sm
     transition-all duration-300 ease-out placeholder:text-gray-400
     hover:border-[#818cf8] hover:bg-gray-100/50
     focus:border-transparent focus:bg-white focus:outline-none focus:ring-0
     focus:shadow-[0_0_0_1px_#818cf8,0_0_0_2px_#a78bfa] focus:-translate-y-[1px]
     dark:border-gray-700 dark:bg-transparent dark:text-white dark:placeholder:text-gray-400
-    dark:hover:border-[#818cf8] dark:hover:bg-gray-700/50
-    dark:focus:bg-gray-800`
-
-  const listboxButtonStyles = `relative w-full rounded-xl border border-gray-200 bg-transparent pl-4 pr-10 py-3 text-left text-sm
-    transition-all duration-300 ease-out
-    hover:border-[#818cf8] hover:bg-gray-100/50
-    focus:border-transparent focus:bg-white focus:outline-none focus:ring-0
-    focus:shadow-[0_0_0_1px_#818cf8,0_0_0_2px_#a78bfa] focus:-translate-y-[1px]
-    dark:border-gray-700 dark:bg-transparent dark:text-white
     dark:hover:border-[#818cf8] dark:hover:bg-gray-700/50
     dark:focus:bg-gray-800`
 
@@ -214,7 +212,7 @@ export default function QuestionList() {
   return (
     <div className="min-h-screen pb-8">
       {/* 筛选器区域 - 固定在顶部 */}
-      <div className="sticky top-0 z-50 py-4">
+      <div className="sticky top-0 z-50 pb-4">
         <div className="bg-white/30 backdrop-blur-xl rounded-2xl p-4 shadow-lg border border-gray-200/50 max-w-[1200px] mx-auto">
           <div className="flex items-center gap-8">
             <div className="flex-1 flex gap-4">
@@ -317,25 +315,32 @@ export default function QuestionList() {
                   onClick={() => toggleQuestion(question._id?.toString() || '')}
                 >
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                      <h3 className="text-lg font-medium text-gray-900 group-hover:text-[#818cf8] transition-colors">
-                        {question.title}
-                      </h3>
-                      <span className="px-2.5 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-700">
-                        {questionCategories.find(
-                          cat => cat.value === question.category
-                        )?.label || question.category}
-                      </span>
-                      <span
-                        className={`px-2.5 py-1 text-xs font-medium rounded-full ${
-                          difficultyColors[question.difficulty.toLowerCase()]
-                        }`}
-                      >
-                        {question.difficulty}
-                      </span>
+                    <div className="flex-1">
+                      <div className="flex items-center space-x-3 mb-2">
+                        <h3 className="text-lg font-medium text-gray-900 group-hover:text-[#818cf8] transition-colors">
+                          {question.title}
+                        </h3>
+                        <span className="px-2.5 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-700">
+                          {questionCategories.find(
+                            cat => cat.value === question.category
+                          )?.label || question.category}
+                        </span>
+                        <span
+                          className={`px-2.5 py-1 text-xs font-medium rounded-full ${
+                            difficultyColors[question.difficulty.toLowerCase()]
+                          }`}
+                        >
+                          {difficulties.find(
+                            diff => diff.value === question.difficulty
+                          )?.label || question.difficulty}
+                        </span>
+                      </div>
+                      <div className="text-sm text-gray-600">
+                        {question.content || '暂无描述'}
+                      </div>
                     </div>
                     <button
-                      className="text-gray-400 group-hover:text-[#818cf8] transition-colors duration-150"
+                      className="text-gray-400 group-hover:text-[#818cf8] transition-colors duration-150 ml-4 flex-shrink-0"
                       aria-expanded={isExpanded}
                     >
                       <svg
@@ -355,11 +360,6 @@ export default function QuestionList() {
                       </svg>
                     </button>
                   </div>
-                  {question.content && (
-                    <div className="mt-2 text-sm text-gray-600">
-                      {question.content}
-                    </div>
-                  )}
                 </div>
 
                 {/* 展开的答案区域 */}
@@ -477,14 +477,26 @@ export default function QuestionList() {
                   d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z"
                 />
               </svg>
-              <p className="mt-2 text-gray-500">还没有添加任何题目，现在就去创建一个吧！</p>
+              <p className="mt-2 text-gray-500">
+                还没有添加任何题目，现在就去创建一个吧！
+              </p>
               <div className="mt-6">
                 <Link
                   href="/questions/create"
                   className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-[#818cf8] hover:bg-[#635bff] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#818cf8] transition-all duration-200 ease-out transform hover:-translate-y-0.5"
                 >
-                  <svg className="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                  <svg
+                    className="w-5 h-5 mr-2"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 4v16m8-8H4"
+                    />
                   </svg>
                   创建新题目
                 </Link>

@@ -634,7 +634,7 @@ const Independent: React.FC = () => {
             description={
               <span style={{ color: theme === 'dark' ? darkTextColor : '' }}>
                 {window.innerWidth > 768
-                  ? '欢迎来到我的博客！我是一名前端开发练习生，很高兴能和你交流。有任何问题都可以问我 (｡･ω･｡)'
+                  ? '欢迎来到我的个人空间！我是一名前端开发练习生，很高兴能和你交流。有任何问题都可以问我 (｡･ω･｡)'
                   : '有什么想问的，随时告诉我'}
               </span>
             }

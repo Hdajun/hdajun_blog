@@ -1,51 +1,127 @@
 'use client'
 
+import { motion } from 'framer-motion'
 import { allPosts } from 'contentlayer/generated'
 import { compareDesc } from 'date-fns'
 import Link from 'next/link'
 import { useState, useMemo } from 'react'
+import { ArrowRightOutlined } from '@ant-design/icons'
+import { CalendarIcon, ClockIcon, TagIcon, EyeIcon } from '@heroicons/react/24/outline'
+import { useBlogStats } from '@/hooks/useBlogStats'
+import { formatReadingTime } from '@/lib/reading-time'
 
-function PostCard({ post }: { post: any }) {
+function PostCard({ post, index }: { post: any; index: number }) {
+  const { getStatsForPost } = useBlogStats()
+  const slug = post._raw.flattenedPath.split('/').pop() || post._id
+  const stats = getStatsForPost(slug)
+
   return (
-    <div className="mb-8">
-      <h2 className="mb-1 text-xl">
-        <Link
-          href={post.url}
-          className="text-gray-900 hover:text-gray-600 dark:text-gray-100 dark:hover:text-gray-300"
-        >
-          {post.title}
-        </Link>
-      </h2>
-      <time dateTime={post.date} className="mb-2 block text-xs text-gray-500 dark:text-gray-400">
-        {new Date(post.date).toLocaleDateString('zh-CN', {
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric',
-        })}
-      </time>
-      {post.description && (
-        <p className="text-sm text-gray-600 dark:text-gray-400">{post.description}</p>
-      )}
-      {post.tags && (
-        <div className="mt-4 flex flex-wrap gap-2">
-          {post.tags.map((tag: string) => (
-            <span
-              key={tag}
-              className="rounded-full bg-gradient-to-r from-gray-50 to-gray-100 px-3 py-1.5 text-xs font-medium text-gray-600 
-              transition-all duration-300 ease-in-out hover:scale-105 hover:from-gray-100 hover:to-gray-200 hover:shadow-sm hover:text-gray-800
-              dark:from-gray-800 dark:to-gray-700 dark:text-gray-300 dark:hover:from-gray-700 dark:hover:to-gray-600 dark:hover:text-gray-200"
-            >
-              {tag}
-            </span>
-          ))}
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6, delay: index * 0.1 }}
+      className="group relative overflow-hidden rounded-2xl bg-white/80 shadow-md backdrop-blur-sm 
+      transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] 
+      hover:-translate-y-2 hover:scale-[1.02] hover:shadow-xl dark:bg-gray-800/80"
+    >
+      {/* 背景渐变效果 */}
+      <div className="absolute inset-0 bg-gradient-to-br from-gray-50/50 via-white/50 to-gray-100/50 opacity-0 
+        transition-all duration-500 ease-out group-hover:opacity-100 
+        dark:from-gray-800/50 dark:via-gray-700/50 dark:to-gray-900/50" />
+      
+      {/* 装饰性圆形 */}
+      <div className="absolute -right-12 -top-12 h-24 w-24 rounded-full bg-indigo-100/20 
+        transition-transform duration-500 ease-out group-hover:scale-150 dark:bg-indigo-900/20" />
+      <div className="absolute -right-6 -top-6 h-12 w-12 rounded-full bg-indigo-100/40
+        transition-transform duration-500 ease-out group-hover:scale-150 dark:bg-indigo-900/40" />
+
+      <div className="relative p-6">
+        {/* 文章标题 */}
+        <h2 className="mb-3 text-xl font-semibold">
+          <span className="text-gray-900 transition-colors duration-300 group-hover:text-[#818cf8] 
+            dark:text-gray-100 dark:group-hover:text-[#818cf8]">
+            {post.title}
+          </span>
+        </h2>
+
+        {/* 文章元信息 */}
+        <div className="mb-4 flex flex-wrap items-center gap-4 text-xs text-gray-500 dark:text-gray-400">
+          <div className="flex items-center gap-1.5">
+            <CalendarIcon className="h-4 w-4 text-[#818cf8]" />
+            <time dateTime={post.date}>
+              {new Date(post.date).toLocaleDateString('zh-CN', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+              })}
+            </time>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <ClockIcon className="h-4 w-4 text-[#818cf8]" />
+            <span>{stats ? formatReadingTime(stats.readingTime) : '计算中...'}</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <EyeIcon className="h-4 w-4 text-[#818cf8]" />
+            <span>{stats ? `${stats.views.toLocaleString()} views` : '统计中...'}</span>
+          </div>
         </div>
-      )}
-    </div>
+
+        {/* 文章描述 */}
+        {post.description && (
+          <p className="mb-4 text-sm leading-relaxed text-gray-600 line-clamp-2 
+          dark:text-gray-400 group-hover:text-gray-700 dark:group-hover:text-gray-300">
+            {post.description}
+          </p>
+        )}
+
+        {/* 标签区域 */}
+        {post.tags && (
+          <div className="flex items-center gap-2">
+            <TagIcon className="h-4 w-4 text-[#818cf8]" />
+            <div className="flex flex-wrap gap-2">
+              {post.tags.map((tag: string) => (
+                <span
+                  key={tag}
+                  className="rounded-full bg-gradient-to-r from-gray-50 to-gray-100 px-3 py-1 text-xs font-medium 
+                  text-gray-600 transition-all duration-300 ease-in-out hover:scale-105 
+                  hover:from-[#818cf8]/10 hover:to-[#818cf8]/20 hover:text-[#818cf8]
+                  dark:from-gray-800 dark:to-gray-700 dark:text-gray-300 
+                  dark:hover:from-[#818cf8]/20 dark:hover:to-[#818cf8]/30 dark:hover:text-[#818cf8]"
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* 底部虚化背景区域 */}
+      <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t 
+        from-white/90 via-white/60 via-white/30 to-transparent backdrop-blur-sm opacity-0
+        transition-all duration-500 ease-out group-hover:opacity-100 z-10
+        dark:from-gray-800/90 dark:via-gray-800/60 dark:via-gray-800/30" />
+
+      {/* 底部居中的阅读更多按钮 */}
+      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 transform
+        translate-y-2 opacity-0 scale-95
+        transition-all duration-500 ease-out group-hover:translate-y-0 group-hover:opacity-100 group-hover:scale-100 z-20">
+        <Link 
+          href={post.url}
+          className="group/btn flex items-center gap-1 text-sm text-[#818cf8] font-medium
+          hover:text-[#6366f1] transition-colors duration-300"
+        >
+          阅读更多
+          <ArrowRightOutlined className="text-xs transition-transform duration-300 group-hover/btn:translate-x-1" />
+        </Link>
+      </div>
+    </motion.div>
   )
 }
 
 export default function BlogPage() {
   const [searchQuery, setSearchQuery] = useState('')
+  const { loading, error, initializeStats } = useBlogStats()
   const posts = allPosts.sort((a, b) => compareDesc(new Date(a.date), new Date(b.date)))
   
   const filteredPosts = useMemo(() => {
@@ -58,65 +134,85 @@ export default function BlogPage() {
     })
   }, [posts, searchQuery])
 
+  // 显示初始化按钮（仅用于开发测试）
+  const showInitButton = process.env.NODE_ENV === 'development'
+
   return (
-    <div className="mx-auto max-w-xl">
-      <div className="mb-12 space-y-6">
-        <div className="text-center">
-          <h1 className="mb-2 bg-gradient-to-r from-gray-700 to-gray-900 bg-clip-text text-4xl font-bold text-transparent dark:from-gray-200 dark:to-gray-400">
-            博客文章
-          </h1>
-          <p className="text-sm text-gray-600 dark:text-gray-400">
-            探索技术、分享见解
-          </p>
-        </div>
-        <div className="relative mx-auto max-w-lg group flex justify-center">
-          <div className="absolute left-[2.5%] top-1/2 -translate-y-1/2 flex items-center pl-3 z-10">
-            <svg
-              className="h-5 w-5 text-gray-400 transition-colors duration-300
-              group-focus-within:text-[#818cf8]"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-              />
-            </svg>
+    <div className="relative min-h-screen">
+      <div className="sticky top-0 z-50 bg-white/80 px-4 py-6 backdrop-blur-lg dark:bg-gray-900/80">
+        <div className="mx-auto max-w-7xl">
+          <div className="relative mx-auto max-w-lg group flex justify-center">
+            <div className="absolute left-[2.5%] top-1/2 -translate-y-1/2 flex items-center pl-3 z-10">
+              <svg
+                className="h-5 w-5 text-gray-400 transition-colors duration-300
+                group-focus-within:text-[#818cf8]"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                />
+              </svg>
+            </div>
+            <input
+              type="text"
+              placeholder="搜索文章标题、描述或标签..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-[95%] h-[48px] rounded-xl border border-gray-200 bg-transparent pl-10 pr-4 text-sm relative
+              transition-all duration-300 ease-out placeholder:text-gray-400
+              hover:border-[#818cf8] hover:bg-gray-100/50
+              focus:border-transparent focus:bg-white focus:outline-none focus:ring-0
+              focus:shadow-[0_0_0_1px_#818cf8,0_0_0_2px_#a78bfa] focus:-translate-y-[1px]
+              dark:border-gray-700 dark:bg-transparent dark:text-white dark:placeholder:text-gray-400
+              dark:hover:border-[#818cf8] dark:hover:bg-gray-700/50
+              dark:focus:bg-gray-800"
+            />
           </div>
-          <input
-            type="text"
-            placeholder="搜索文章标题、描述或标签..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-[95%] h-[48px] rounded-xl border border-gray-200 bg-transparent pl-10 pr-4 text-sm relative
-            transition-all duration-300 ease-out placeholder:text-gray-400
-            hover:border-[#818cf8] hover:bg-gray-100/50
-            focus:border-transparent focus:bg-white focus:outline-none focus:ring-0
-            focus:shadow-[0_0_0_1px_#818cf8,0_0_0_2px_#a78bfa] focus:-translate-y-[1px]
-            dark:border-gray-700 dark:bg-transparent dark:text-white dark:placeholder:text-gray-400
-            dark:hover:border-[#818cf8] dark:hover:bg-gray-700/50
-            dark:focus:bg-gray-800"
-          />
+          
+          {/* 开发环境下显示初始化按钮 */}
+          {showInitButton && (
+            <div className="mt-4 text-center">
+              <button
+                onClick={initializeStats}
+                disabled={loading}
+                className="px-4 py-2 bg-[#818cf8] text-white rounded-lg hover:bg-[#6366f1] 
+                disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-300"
+              >
+                {loading ? '初始化中...' : '初始化文章统计'}
+              </button>
+              {error && (
+                <p className="mt-2 text-red-500 text-sm">{error}</p>
+              )}
+            </div>
+          )}
         </div>
       </div>
       
-      {filteredPosts.length === 0 ? (
-        <div className="mt-8 text-center">
-          <p className="text-gray-600 dark:text-gray-400">没有找到匹配的文章</p>
-          <button
-            onClick={() => setSearchQuery('')}
-            className="mt-2 text-sm text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200"
-          >
-            清除搜索
-          </button>
-        </div>
-      ) : (
-        filteredPosts.map((post, idx) => <PostCard key={idx} post={post} />)
-      )}
+      <div className="mx-auto max-w-7xl px-4 py-8">
+        {filteredPosts.length === 0 ? (
+          <div className="mt-8 text-center">
+            <p className="text-gray-600 dark:text-gray-400">没有找到匹配的文章</p>
+            <button
+              onClick={() => setSearchQuery('')}
+              className="mt-2 text-sm text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200"
+            >
+              清除搜索
+            </button>
+          </div>
+        ) : (
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {filteredPosts.map((post, idx) => (
+              <PostCard key={post._id} post={post} index={idx} />
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   )
 }

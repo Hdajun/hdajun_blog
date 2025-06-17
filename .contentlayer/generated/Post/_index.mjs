@@ -4,7 +4,8 @@ import blog__buildBlogFromZeroToOneMdx from './blog__build-blog-from-zero-to-one
 import blog__chatComponentAndJuejinCrawlerMdx from './blog__chat-component-and-juejin-crawler.mdx.json' assert { type: 'json' }
 import blog__mongodbSetupAndNextjsIntegrationMdx from './blog__mongodb-setup-and-nextjs-integration.mdx.json' assert { type: 'json' }
 import blog__mongodbSetupMdx from './blog__mongodb-setup.mdx.json' assert { type: 'json' }
+import blog__serMongdbTutorialMdx from './blog__ser-mongdb-tutorial.mdx.json' assert { type: 'json' }
 import blog__serverBasicSetupMdx from './blog__server-basic-setup.mdx.json' assert { type: 'json' }
 import blog__serverEssentialCommandsMdx from './blog__server-essential-commands.mdx.json' assert { type: 'json' }
 
-export const allPosts = [blog__buildBlogFromZeroToOneMdx, blog__chatComponentAndJuejinCrawlerMdx, blog__mongodbSetupAndNextjsIntegrationMdx, blog__mongodbSetupMdx, blog__serverBasicSetupMdx, blog__serverEssentialCommandsMdx]
+export const allPosts = [blog__buildBlogFromZeroToOneMdx, blog__chatComponentAndJuejinCrawlerMdx, blog__mongodbSetupAndNextjsIntegrationMdx, blog__mongodbSetupMdx, blog__serMongdbTutorialMdx, blog__serverBasicSetupMdx, blog__serverEssentialCommandsMdx]

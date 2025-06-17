@@ -1,0 +1,303 @@
+---
+title: '服务器连接与 MongoDB 操作完整指南'
+date: '2024-12-19'
+description: '从零开始学习如何连接云服务器、操作 MongoDB 数据库的实用教程，包含常用命令和故障排除方法。'
+tags: ['服务器', 'MongoDB', 'SSH', '数据库', '运维']
+---
+
+# 服务器连接与 MongoDB 操作完整指南
+
+本文记录了从连接云服务器到操作 MongoDB 数据库的完整流程，适合初学者学习服务器运维基础知识。
+
+## 🔗 SSH 连接服务器
+
+### 基本连接命令格式
+
+```bash
+# 基本连接
+ssh username@server_ip
+
+# 使用密钥文件连接
+ssh -i /path/to/your/private_key username@server_ip
+
+# 使用自定义端口连接
+ssh -p port_number username@server_ip
+```
+
+### 连接准备清单
+
+连接前需要确认以下信息：
+
+1. **服务器IP地址** (例如: 123.456.789.012)
+2. **用户名** (通常是 `root`, `ubuntu`, `centos` 等)
+3. **认证方式**：
+   - 密码认证
+   - SSH密钥认证 (更安全)
+4. **端口号** (默认是22)
+
+### 生成SSH密钥 (推荐)
+
+```bash
+# 检查是否已有SSH密钥
+ls ~/.ssh/
+
+# 生成新的SSH密钥
+ssh-keygen -t rsa -b 4096 -C "your_email@example.com"
+
+# 将公钥复制到服务器
+ssh-copy-id username@server_ip
+```
+
+## 🗄️ MongoDB 连接与操作
+
+### 检查 MongoDB 服务状态
+
+```bash
+# 检查 MongoDB 服务状态
+sudo systemctl status mongod
+
+# 启动 MongoDB 服务
+sudo systemctl start mongod
+
+# 停止 MongoDB 服务
+sudo systemctl stop mongod
+
+# 重启 MongoDB 服务
+sudo systemctl restart mongod
+```
+
+### 连接到 MongoDB
+
+```bash
+# 使用新版 MongoDB Shell 连接
+mongosh
+
+# 连接到特定数据库
+mongosh blog
+
+# 使用认证连接
+mongosh -u username -p password
+
+# 连接到指定数据库并认证
+mongosh blog -u bloguser -p
+```
+
+### MongoDB 基本操作命令
+
+#### 数据库级别操作
+
+```javascript
+// 查看当前数据库名称
+db.getName()
+
+// 查看所有数据库
+show dbs
+
+// 切换到指定数据库
+use blog
+
+// 查看当前数据库的所有集合
+show collections
+```
+
+#### 集合数据查询
+
+```javascript
+// 查看集合中的所有数据
+db.blog_stats.find()
+
+// 格式化显示数据 (更易读)
+db.blog_stats.find().pretty()
+
+// 查看数据条数
+db.blog_stats.count()
+db.blog_stats.countDocuments()
+
+// 限制显示条数
+db.blog_stats.find().limit(10)
+
+// 查看特定条件的数据
+db.blog_stats.find({slug: "your-article-slug"})
+
+// 查看前几条数据预览
+db.blog_stats.find().limit(3)
+```
+
+#### 数据删除操作
+
+```javascript
+// 删除集合中的所有文档 (推荐)
+db.questions.deleteMany({})
+
+// 删除符合条件的文档
+db.questions.deleteMany({status: "inactive"})
+
+// 删除单个文档
+db.questions.deleteOne({_id: ObjectId("...")})
+
+// 完全删除集合 (包括索引)
+db.questions.drop()
+```
+
+#### 数据插入操作
+
+```javascript
+// 插入单个文档
+db.blog_stats.insertOne({
+  slug: "new-article",
+  views: 0,
+  readingTime: 5,
+  lastViewed: new Date()
+})
+
+// 插入多个文档
+db.blog_stats.insertMany([
+  {slug: "article1", views: 10, readingTime: 3},
+  {slug: "article2", views: 20, readingTime: 7}
+])
+```
+
+#### 数据更新操作
+
+```javascript
+// 更新单个文档
+db.blog_stats.updateOne(
+  {slug: "article-slug"},
+  {$set: {views: 100}}
+)
+
+// 更新多个文档
+db.blog_stats.updateMany(
+  {views: {$lt: 10}},
+  {$inc: {views: 1}}
+)
+
+// 如果不存在则插入 (upsert)
+db.blog_stats.updateOne(
+  {slug: "new-article"},
+  {$set: {views: 1}},
+  {upsert: true}
+)
+```
+
+## 🔐 MongoDB 认证问题处理
+
+### 常见认证错误
+
+如果遇到 `MongoServerError[Unauthorized]: command listDatabases requires authentication` 错误：
+
+#### 解决方法1: 重新连接并认证
+
+```bash
+# 退出当前连接
+exit
+
+# 使用管理员账户重新连接
+mongosh -u admin -p --authenticationDatabase admin
+
+# 或连接到特定数据库
+mongosh blog -u bloguser -p
+```
+
+#### 解决方法2: 在当前连接中认证
+
+```javascript
+// 切换到admin数据库并认证
+use admin
+db.auth("username", "password")
+
+// 或在业务数据库中认证
+use blog
+db.auth("bloguser", "password")
+```
+
+#### 解决方法3: 检查配置
+
+```bash
+# 查看 MongoDB 配置文件
+cat /etc/mongod.conf
+
+# 查看认证相关配置
+grep -i "auth" /etc/mongod.conf
+```
+
+## 🛠️ 常用运维命令
+
+### 系统监控
+
+```bash
+# 查看系统资源使用
+top
+htop
+
+# 查看磁盘使用情况
+df -h
+
+# 查看内存使用
+free -h
+
+# 查看网络连接
+netstat -tlnp
+```
+
+### 日志查看
+
+```bash
+# 查看 MongoDB 日志
+sudo tail -f /var/log/mongodb/mongod.log
+
+# 查看系统日志
+sudo journalctl -u mongod -f
+
+# 查看最近的错误日志
+sudo journalctl -u mongod --since "1 hour ago"
+```
+
+### 备份与恢复
+
+```bash
+# 备份数据库
+mongodump --db blog --out /backup/
+
+# 恢复数据库
+mongorestore --db blog /backup/blog/
+
+# 备份特定集合
+mongodump --db blog --collection blog_stats --out /backup/
+
+# 恢复特定集合
+mongorestore --db blog --collection blog_stats /backup/blog/blog_stats.bson
+```
+
+## 📚 扩展学习
+
+### 推荐学习资源
+
+1. **MongoDB 官方文档**: [https://docs.mongodb.com/](https://docs.mongodb.com/)
+2. **SSH 安全配置**: 学习如何配置密钥认证和禁用密码登录
+3. **服务器安全**: 了解防火墙配置和定期安全更新
+4. **监控工具**: 学习使用 MongoDB Compass、htop 等监控工具
+
+### 最佳实践
+
+1. **定期备份**: 设置自动备份任务
+2. **安全配置**: 使用强密码和密钥认证
+3. **权限管理**: 为不同用途创建不同权限的用户
+4. **监控告警**: 设置资源使用和错误告警
+5. **版本更新**: 定期更新系统和软件版本
+
+## 🎯 总结
+
+通过本教程，你应该掌握了：
+
+- 如何通过 SSH 连接云服务器
+- MongoDB 的基本连接和操作方法
+- 常见问题的故障排除技巧
+- 数据库的增删改查操作
+- 基本的运维监控命令
+
+这些技能是 Web 开发和运维工作的基础，熟练掌握后可以大大提高工作效率。继续实践和深入学习，你会发现服务器管理其实并不复杂！
+
+---
+
+*本文档记录于实际操作过程中，包含真实的命令和解决方案。如有疑问或需要补充，欢迎随时更新。*

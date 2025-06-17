@@ -1,7 +1,7 @@
 import { allPosts } from 'contentlayer/generated'
 import { getMDXComponent } from 'next-contentlayer/hooks'
 import { notFound } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import BlogPostClient from './BlogPostClient'
 
 export const generateStaticParams = async () =>
   allPosts.map((post) => ({ slug: post._raw.flattenedPath.split('/').pop() }))
@@ -26,33 +26,22 @@ const PostLayout = ({ params }: { params: { slug: string } }) => {
   const Content = getMDXComponent(post.body.code)
 
   return (
-    <article className="mx-auto max-w-xl py-8">
-      <div className="mb-8 text-center">
-        <h1 className="mb-2 text-3xl font-bold">{post.title}</h1>
-        <time dateTime={post.date} className="text-sm text-gray-600 dark:text-gray-400">
-          {new Date(post.date).toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-          })}
-        </time>
-        {post.tags && (
-          <div className="mt-4 flex flex-wrap justify-center gap-2">
-            {post.tags.map((tag: string) => (
-              <span
-                key={tag}
-                className="rounded-full bg-gray-100 px-2 py-1 text-xs text-gray-600 dark:bg-gray-800 dark:text-gray-300"
-              >
-                {tag}
-              </span>
-            ))}
-          </div>
-        )}
-      </div>
-      <div className="prose prose-blue max-w-none dark:prose-invert">
+    <div className="mx-auto max-w-4xl py-8 px-4">
+      {/* 客户端组件处理统计和头部信息 */}
+      <BlogPostClient post={post} slug={params.slug} />
+      
+      {/* 服务端渲染的文章内容 */}
+      <div className="prose prose-lg prose-blue max-w-none dark:prose-invert
+        prose-headings:text-gray-900 dark:prose-headings:text-white
+        prose-p:text-gray-700 dark:prose-p:text-gray-300
+        prose-a:text-[#818cf8] hover:prose-a:text-[#6366f1]
+        prose-strong:text-gray-900 dark:prose-strong:text-white
+        prose-code:text-[#818cf8] prose-code:bg-gray-100 dark:prose-code:bg-gray-800
+        prose-pre:bg-gray-50 dark:prose-pre:bg-gray-900
+        prose-blockquote:border-[#818cf8] prose-blockquote:text-gray-700 dark:prose-blockquote:text-gray-300">
         <Content />
       </div>
-    </article>
+    </div>
   )
 }
 

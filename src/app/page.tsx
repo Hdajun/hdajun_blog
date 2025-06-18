@@ -1,11 +1,42 @@
 'use client'
 
 import { motion } from 'framer-motion'
+import { useState, useEffect } from 'react'
 import {
   ArrowRightOutlined,
   BookOutlined,
   MessageOutlined,
 } from '@ant-design/icons'
+
+// 打字机效果组件
+const TypewriterText = ({ text, className = '' }: { text: string; className?: string }) => {
+  const [displayText, setDisplayText] = useState('')
+  const [currentIndex, setCurrentIndex] = useState(0)
+
+  useEffect(() => {
+    if (currentIndex < text.length) {
+      const timeout = setTimeout(() => {
+        setDisplayText(prev => prev + text[currentIndex])
+        setCurrentIndex(prev => prev + 1)
+      }, 100) // 每个字符的打字间隔时间
+
+      return () => clearTimeout(timeout)
+    }
+  }, [currentIndex, text])
+
+  return (
+    <span className={className}>
+      {displayText}
+      <motion.span
+        animate={{ opacity: [1, 0] }}
+        transition={{ duration: 0.8, repeat: Infinity, repeatType: 'reverse' }}
+        className="inline-block"
+      >
+        |
+      </motion.span>
+    </span>
+  )
+}
 
 export default function Home() {
   return (
@@ -19,7 +50,7 @@ export default function Home() {
           className="mb-14"
         >
           <h1 className="text-2xl font-medium tracking-tight text-gray-900 dark:text-white sm:text-4xl">
-            Hi, 我是大俊
+            <TypewriterText text="Hi, 我是大俊" />
           </h1>
           <motion.p
             initial={{ opacity: 0, y: 20 }}
@@ -32,7 +63,7 @@ export default function Home() {
         </motion.div>
 
         {/* 功能卡片 */}
-        <div className="mb-0 grid gap-6 sm:grid-cols-2">
+        <div className="mb-2 grid gap-6 sm:grid-cols-2">
           <motion.a
             href="/chat"
             initial={{ opacity: 0, x: -20 }}
@@ -93,7 +124,7 @@ export default function Home() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.6 }}
-          className="mt-10 w-full"
+          className="mt-12 w-full"
         >
           <div className="relative mx-auto h-[200px] w-full">
             {[

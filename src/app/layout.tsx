@@ -4,7 +4,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
 import { NavbarWrapper } from "@/components/Navbar";
-import Live2DWidget from "@/components/Live2DWidget";
+// import Live2DWidget from "@/components/Live2DWidget";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -38,7 +38,7 @@ export default function RootLayout({
             </div>
           </ThemeProvider>
         </AntdRegistry>
-        <Live2DWidget />
+        {/* <Live2DWidget /> */}
       </body>
     </html>
   );

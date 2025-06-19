@@ -11,9 +11,9 @@ import { useBlogStats } from '@/hooks/useBlogStats'
 import { formatReadingTime } from '@/lib/reading-time'
 
 function PostCard({ post, index }: { post: any; index: number }) {
-  const { getStatsForPost } = useBlogStats()
+  // const { getStatsForPost } = useBlogStats()
   const slug = post._raw.flattenedPath.split('/').pop() || post._id
-  const stats = getStatsForPost(slug)
+  // const stats = getStatsForPost(slug)
 
   return (
     <motion.div
@@ -56,14 +56,14 @@ function PostCard({ post, index }: { post: any; index: number }) {
               })}
             </time>
           </div>
-          <div className="flex items-center gap-1.5">
+          {/* <div className="flex items-center gap-1.5">
             <ClockIcon className="h-4 w-4 text-[#818cf8]" />
             <span>{stats ? formatReadingTime(stats.readingTime) : '计算中...'}</span>
           </div>
           <div className="flex items-center gap-1.5">
             <EyeIcon className="h-4 w-4 text-[#818cf8]" />
             <span>{stats ? `${stats.views.toLocaleString()} views` : '统计中...'}</span>
-          </div>
+          </div> */}
         </div>
 
         {/* 文章描述 */}

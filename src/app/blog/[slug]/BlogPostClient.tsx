@@ -11,13 +11,13 @@ interface BlogPostClientProps {
 }
 
 export default function BlogPostClient({ post, slug }: BlogPostClientProps) {
-  const { getStatsForPost, incrementViews } = useBlogStats()
-  const stats = getStatsForPost(slug)
+  // const { getStatsForPost, incrementViews } = useBlogStats()
+  // const stats = getStatsForPost(slug)
 
-  // 每次访问都记录阅读量
-  useEffect(() => {
-    incrementViews(slug)
-  }, [slug, incrementViews])
+  // // 每次访问都记录阅读量
+  // useEffect(() => {
+  //   incrementViews(slug)
+  // }, [slug, incrementViews])
 
   return (
     <div className="mb-8 text-center">
@@ -38,7 +38,7 @@ export default function BlogPostClient({ post, slug }: BlogPostClientProps) {
           </time>
         </div>
         
-        {stats && (
+        {/* {stats && (
           <>
             <div className="flex items-center gap-2">
               <ClockIcon className="h-4 w-4 text-[#818cf8]" />
@@ -50,7 +50,7 @@ export default function BlogPostClient({ post, slug }: BlogPostClientProps) {
               <span>{stats.views.toLocaleString()} views</span>
             </div>
           </>
-        )}
+        )} */}
       </div>
 
       {/* 文章描述 */}

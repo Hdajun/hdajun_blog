@@ -14,7 +14,7 @@ import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { Highlight, themes } from 'prism-react-renderer'
 import { Dropdown } from '@/app/questions/create/CreateQuestionClient'
-import { ConfigProvider, Modal } from 'antd'
+import { Modal } from 'antd'
 import Link from 'next/link'
 
 const difficultyColors: Record<string, string> = {
@@ -130,7 +130,7 @@ const formatCodeContent = (content: string) => {
   return content
 }
 
-const QuestionList = () => {
+export default function QuestionList() {
   const [questions, setQuestions] = useState<Question[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedDifficulty, setSelectedDifficulty] = useState<
@@ -288,10 +288,10 @@ const QuestionList = () => {
       {/* 筛选器区域 - 固定在顶部 */}
       <div className="sticky top-0 z-50 pb-4">
         <div className="bg-white/30 dark:bg-gray-800/30 backdrop-blur-xl rounded-2xl p-4 shadow-lg border border-gray-200/50 dark:border-gray-700/50 max-w-[1200px] mx-auto">
-          <div className="flex items-center gap-8">
-            <div className="flex-1 flex gap-4">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-8">
+            <div className="flex flex-col sm:flex-row flex-1 gap-4">
               {/* 分类选择 */}
-              <div className="w-48">
+              <div className="w-full sm:w-48">
                 <Dropdown
                   value={selectedCategory?.value || ''}
                   options={questionCategories}
@@ -322,7 +322,7 @@ const QuestionList = () => {
               </div>
 
               {/* 难度选择 */}
-              <div className="w-36">
+              <div className="w-full sm:w-36">
                 <Dropdown
                   value={selectedDifficulty?.value || ''}
                   options={difficulties}
@@ -353,7 +353,7 @@ const QuestionList = () => {
             </div>
 
             {/* 搜索框 */}
-            <div className="w-64 relative">
+            <div className="w-full sm:w-64 relative">
               <input
                 type="text"
                 value={searchQuery}
@@ -390,8 +390,8 @@ const QuestionList = () => {
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex-1">
-                      <div className="flex items-center space-x-3 mb-2">
-                        <h3 className="text-lg font-medium text-gray-900 dark:text-white group-hover:text-[#818cf8] transition-colors">
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-3 mb-2">
+                        <h3 className="text-lg font-medium text-gray-900 dark:text-white group-hover:text-[#818cf8] transition-colors mb-2 sm:mb-0">
                           {question.title}
                         </h3>
                         <div className="flex items-center gap-2">
@@ -466,7 +466,7 @@ const QuestionList = () => {
                               title="删除题目"
                             >
                               <TrashIcon className="w-4 h-4" />
-                              <span>
+                              <span className="hidden sm:inline">
                                 {deletingId === question._id?.toString()
                                   ? '删除中...'
                                   : '删除'}
@@ -478,7 +478,7 @@ const QuestionList = () => {
                               title="编辑题目"
                             >
                               <PencilSquareIcon className="w-4 h-4" />
-                              <span>编辑</span>
+                              <span className="hidden sm:inline">编辑</span>
                             </Link>
                             <button
                               onClick={() =>
@@ -492,12 +492,12 @@ const QuestionList = () => {
                               {copiedId === question._id?.toString() ? (
                                 <>
                                   <ClipboardDocumentCheckIcon className="w-4 h-4" />
-                                  <span>已复制</span>
+                                  <span className="hidden sm:inline">已复制</span>
                                 </>
                               ) : (
                                 <>
                                   <ClipboardDocumentIcon className="w-4 h-4" />
-                                  <span>复制答案</span>
+                                  <span className="hidden sm:inline">复制答案</span>
                                 </>
                               )}
                             </button>
@@ -616,5 +616,3 @@ const QuestionList = () => {
     </div>
   )
 }
-
-export default QuestionList

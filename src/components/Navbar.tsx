@@ -19,7 +19,7 @@ function Navbar() {
 
   return (
     <header
-      className={`fixed left-0 right-0 top-0 z-40 transition-all duration-300 ${
+      className={`fixed left-0 right-0 top-0 z-[60] transition-all duration-300 ${
         isScrolled
           ? 'bg-white/90 backdrop-blur shadow-sm dark:bg-gray-900/90'
           : 'bg-white dark:bg-gray-900'
@@ -72,7 +72,7 @@ function Navbar() {
 
         {/* 移动端导航 */}
         {isMenuOpen && (
-          <div className="md:hidden">
+          <div className="md:hidden relative z-[9999]">
             <div className="space-y-1 pb-3 pt-2">
               <Link
                 href="/chat"

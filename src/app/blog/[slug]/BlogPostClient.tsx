@@ -1,24 +1,13 @@
 'use client'
 
-import { useEffect } from 'react'
-import { useBlogStats } from '@/hooks/useBlogStats'
-import { formatReadingTime } from '@/lib/reading-time'
-import { CalendarIcon, ClockIcon, EyeIcon } from '@heroicons/react/24/outline'
+import { CalendarIcon } from '@heroicons/react/24/outline'
 
 interface BlogPostClientProps {
   post: any
   slug: string
 }
 
-export default function BlogPostClient({ post, slug }: BlogPostClientProps) {
-  // const { getStatsForPost, incrementViews } = useBlogStats()
-  // const stats = getStatsForPost(slug)
-
-  // // 每次访问都记录阅读量
-  // useEffect(() => {
-  //   incrementViews(slug)
-  // }, [slug, incrementViews])
-
+export default function BlogPostClient({ post }: BlogPostClientProps) {
   return (
     <div className="mb-8 text-center">
       <h1 className="mb-4 text-3xl font-bold text-gray-900 dark:text-white">
@@ -37,20 +26,6 @@ export default function BlogPostClient({ post, slug }: BlogPostClientProps) {
             })}
           </time>
         </div>
-        
-        {/* {stats && (
-          <>
-            <div className="flex items-center gap-2">
-              <ClockIcon className="h-4 w-4 text-[#818cf8]" />
-              <span>{formatReadingTime(stats.readingTime)}</span>
-            </div>
-            
-            <div className="flex items-center gap-2">
-              <EyeIcon className="h-4 w-4 text-[#818cf8]" />
-              <span>{stats.views.toLocaleString()} views</span>
-            </div>
-          </>
-        )} */}
       </div>
 
       {/* 文章描述 */}

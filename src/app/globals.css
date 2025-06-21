@@ -32,3 +32,23 @@
     scrollbar-width: none;  /* Firefox */
   }
 }
+
+/* 自定义消息提示样式 */
+.custom-message {
+  @apply font-medium;
+}
+
+.custom-message .ant-message-notice-content {
+  @apply rounded-xl shadow-lg bg-white/90 backdrop-blur-sm border border-gray-100 px-6 py-3 
+  dark:bg-gray-800/90 dark:border-gray-700 dark:text-white;
+}
+
+/* 成功消息图标颜色 */
+.custom-message .ant-message-success .anticon {
+  @apply text-[#818cf8] !important;
+}
+
+/* 成功消息图标动画 */
+.custom-message .ant-message-success .anticon svg {
+  @apply transition-all duration-300;
+}

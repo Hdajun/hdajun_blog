@@ -12,6 +12,8 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { questionCategories, difficulties } from '@/config/questions'
 import { Question } from '@/types/question'
+import { api } from '@/lib/api-client'
+import { message } from 'antd'
 
 // 自定义下拉菜单组件
 interface DropdownProps<T> {
@@ -182,24 +184,19 @@ export default function EditQuestionClient({ questionId }: EditQuestionClientPro
     const fetchQuestion = async () => {
       try {
         setIsLoading(true)
-        const response = await fetch(`/api/questions/${questionId}`)
-        const result = await response.json()
+        const { success, data, message: responseMessage } = await api.get<Question>(`/questions/${questionId}`)
 
-        if (result.success && result.data) {
-          const question: Question = result.data
+        if (success && data) {
           setFormData({
-            title: question.title,
-            content: question.content,
-            answer: question.answer,
-            category: question.category,
-            difficulty: question.difficulty,
+            title: data.title,
+            content: data.content,
+            answer: data.answer,
+            category: data.category,
+            difficulty: data.difficulty,
           })
-        } else {
-          throw new Error(result.msg || '获取题目详情失败')
         }
       } catch (error) {
         console.error('Error fetching question:', error)
-        alert(error instanceof Error ? error.message : '获取题目详情失败，请重试')
         router.push('/questions/practice')
       } finally {
         setIsLoading(false)
@@ -229,37 +226,32 @@ export default function EditQuestionClient({ questionId }: EditQuestionClientPro
     setIsSubmitting(true)
 
     try {
-      const response = await fetch('/api/questions', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          _id: questionId,
-          title: formData.title,
-          content: formData.content,
-          answer: formData.answer,
-          category: formData.category,
-          difficulty: formData.difficulty,
-        }),
+      const { success, message: responseMessage } = await api.put('/questions', {
+        _id: questionId,
+        title: formData.title,
+        content: formData.content,
+        answer: formData.answer,
+        category: formData.category,
+        difficulty: formData.difficulty,
       })
 
-      const result = await response.json()
-
-      if (result.success) {
-        // 显示成功提示
-        setShowSuccess(true)
-
-        // 3秒后跳转到题库列表
+      if (success) {
+        message.success({
+          content: '题目更新成功！即将返回题目列表...',
+          className: 'custom-message',
+          duration: 2,
+          style: {
+            marginTop: '4vh',
+          },
+        })
+        
+        // 延迟跳转
         setTimeout(() => {
           router.push('/questions/practice')
-        }, 3000)
-      } else {
-        throw new Error(result.msg || '更新失败')
-      }
+        }, 2000)
+      } 
     } catch (error) {
       console.error('Error updating question:', error)
-      alert(error instanceof Error ? error.message : '更新题目失败，请重试')
     } finally {
       setIsSubmitting(false)
     }

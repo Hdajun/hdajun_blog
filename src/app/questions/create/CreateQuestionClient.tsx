@@ -11,6 +11,8 @@ import {
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { questionCategories, difficulties } from '@/config/questions'
+import { message } from 'antd'
+import { api } from '@/lib/api-client'
 
 // 自定义下拉菜单组件
 interface DropdownProps<T> {
@@ -189,23 +191,15 @@ export default function CreateQuestionClient() {
     setIsSubmitting(true)
 
     try {
-      const response = await fetch('/api/questions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          title: formData.title,
-          content: formData.content,
-          answer: formData.answer,
-          category: formData.category,
-          difficulty: formData.difficulty,
-        }),
+      const { success, message: responseMessage } = await api.post('/questions', {
+        title: formData.title,
+        content: formData.content,
+        answer: formData.answer,
+        category: formData.category,
+        difficulty: formData.difficulty,
       })
 
-      const result = await response.json()
-
-      if (result.success) {
+      if (success) {
         // 重置表单
         setFormData({
           title: '',
@@ -222,19 +216,23 @@ export default function CreateQuestionClient() {
           answer: false,
         })
 
-        // 显示成功提示
         setShowSuccess(true)
-
-        // 3秒后跳转到题库列表
+        message.success({
+          content: '题目创建成功！即将跳转题目列表...',
+          className: 'custom-message',
+          duration: 2,
+          style: {
+            marginTop: '4vh',
+          },
+        })
+        
+        // 延迟跳转
         setTimeout(() => {
           router.push('/questions/practice')
-        }, 3000)
-      } else {
-        throw new Error(result.msg || '创建失败')
-      }
+        }, 2000)
+      } 
     } catch (error) {
       console.error('Error creating question:', error)
-      alert(error instanceof Error ? error.message : '创建题目失败，请重试')
     } finally {
       setIsSubmitting(false)
     }
@@ -508,23 +506,6 @@ export default function CreateQuestionClient() {
             </div>
           </form>
         </motion.div>
-
-        {/* 成功提示 */}
-        <AnimatePresence>
-          {showSuccess && (
-            <motion.div
-              initial={{ opacity: 0, y: -50 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -50 }}
-              className="fixed top-6 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-[#818cf8] to-[#a78bfa] text-white px-6 py-3 rounded-xl shadow-lg flex items-center space-x-2 z-50"
-            >
-              <CheckIcon className="w-5 h-5" />
-              <span className="font-medium">
-                题目创建成功！即将跳转题目列表...
-              </span>
-            </motion.div>
-          )}
-        </AnimatePresence>
       </div>
     </div>
   )

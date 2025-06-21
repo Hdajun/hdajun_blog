@@ -1,0 +1,35 @@
+import { SignJWT, jwtVerify } from 'jose'
+import { JWTPayload } from '@/types/auth'
+
+const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET)
+
+export async function signJWT(payload: Omit<JWTPayload, 'exp' | 'iat'>) {
+  try {
+    const iat = Math.floor(Date.now() / 1000)
+    const exp = iat + 60 * 60 * 24 * 7 // 7 days
+
+    return new SignJWT({ ...payload, iat, exp })
+      .setProtectedHeader({ alg: 'HS256', typ: 'JWT' })
+      .sign(JWT_SECRET)
+  } catch (error) {
+    console.error('Error signing JWT:', error)
+    throw error
+  }
+}
+
+export async function verifyJWT(token: string): Promise<JWTPayload> {
+  try {
+    const { payload } = await jwtVerify(token, JWT_SECRET)
+    return payload as unknown as JWTPayload
+  } catch (error) {
+    console.error('Error verifying JWT:', error)
+    throw error
+  }
+}
+
+export function getJWTFromHeader(authHeader?: string): string | undefined {
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return undefined
+  }
+  return authHeader.split(' ')[1]
+}

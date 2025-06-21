@@ -16,6 +16,8 @@ import { Highlight, themes } from 'prism-react-renderer'
 import { Dropdown } from '@/app/questions/create/CreateQuestionClient'
 import { Modal } from 'antd'
 import Link from 'next/link'
+import { api } from '@/lib/api-client'
+import { message } from 'antd'
 
 const difficultyColors: Record<string, string> = {
   easy: 'bg-emerald-50 text-emerald-700 border-emerald-200 shadow-emerald-100',
@@ -179,13 +181,9 @@ export default function QuestionList() {
         onOk: async () => {
           try {
             setDeletingId(questionId)
-            const response = await fetch(`/api/questions?id=${questionId}`, {
-              method: 'DELETE',
-            })
+            const { success, message: responseMessage } = await api.delete(`/questions?id=${questionId}`)
 
-            const data = await response.json()
-
-            if (data.success) {
+            if (success) {
               // 从本地状态中移除已删除的题目
               setQuestions(prev =>
                 prev.filter(q => q._id?.toString() !== questionId)
@@ -196,22 +194,18 @@ export default function QuestionList() {
                 newSet.delete(questionId)
                 return newSet
               })
-              Modal.success({
-                title: '删除成功',
+              message.success({
                 content: '题目已成功删除',
+                className: 'custom-message',
+                style: {
+                  marginTop: '4vh',
+                }
               })
             } else {
-              throw new Error(data.msg || '删除失败')
+              throw new Error(responseMessage || '删除失败')
             }
           } catch (error) {
             console.error('删除题目失败:', error)
-            Modal.error({
-              title: '删除失败',
-              content:
-                error instanceof Error
-                  ? error.message
-                  : '删除题目时发生错误，请稍后重试',
-            })
           } finally {
             setDeletingId(null)
           }
@@ -235,13 +229,12 @@ export default function QuestionList() {
         queryParams.append('search', actualSearchTerm)
       }
 
-      const response = await fetch(`/api/questions?${queryParams.toString()}`)
-      const data: FetchQuestionsResponse = await response.json()
+      const { success, data, message: responseMessage } = await api.get<Question[]>(`/questions?${queryParams.toString()}`, {
+        requireAuth: false,
+      })
 
-      if (data.success) {
-        setQuestions(data.data)
-      } else {
-        console.error('Failed to fetch questions:', data.msg)
+      if (success) {
+        setQuestions(data || [])
       }
     } catch (error) {
       console.error('Error fetching questions:', error)
@@ -456,10 +449,7 @@ export default function QuestionList() {
                           <div className="flex items-center gap-2">
                             <button
                               onClick={() =>
-                                handleDelete(
-                                  question._id?.toString() || '',
-                                  question.title
-                                )
+                                handleDelete(question._id?.toString() || '', question.title)
                               }
                               disabled={deletingId === question._id?.toString()}
                               className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"

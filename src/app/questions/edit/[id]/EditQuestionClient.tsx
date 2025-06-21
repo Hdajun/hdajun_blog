@@ -164,7 +164,6 @@ export default function EditQuestionClient({ questionId }: EditQuestionClientPro
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
-  const [showSuccess, setShowSuccess] = useState(false)
   const [formData, setFormData] = useState({
     title: '',
     content: '',
@@ -537,23 +536,6 @@ export default function EditQuestionClient({ questionId }: EditQuestionClientPro
             </div>
           </form>
         </motion.div>
-
-        {/* 成功提示 */}
-        <AnimatePresence>
-          {showSuccess && (
-            <motion.div
-              initial={{ opacity: 0, y: -50 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -50 }}
-              className="fixed top-6 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-[#818cf8] to-[#a78bfa] text-white px-6 py-3 rounded-xl shadow-lg flex items-center space-x-2 z-50"
-            >
-              <CheckIcon className="w-5 h-5" />
-              <span className="font-medium">
-                题目更新成功！即将跳转题目列表...
-              </span>
-            </motion.div>
-          )}
-        </AnimatePresence>
       </div>
     </div>
   )

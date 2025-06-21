@@ -158,7 +158,6 @@ export function Dropdown<T>({
 export default function CreateQuestionClient() {
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [showSuccess, setShowSuccess] = useState(false)
   const [formData, setFormData] = useState({
     title: '',
     content: '',
@@ -216,7 +215,6 @@ export default function CreateQuestionClient() {
           answer: false,
         })
 
-        setShowSuccess(true)
         message.success({
           content: '题目创建成功！即将跳转题目列表...',
           className: 'custom-message',

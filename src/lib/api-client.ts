@@ -1,6 +1,5 @@
 import { STORAGE_KEYS } from '@/constants/storage'
 import { message } from 'antd'
-import { verifyJWT } from '@/lib/jwt'
 
 interface RequestOptions extends RequestInit {
   requireAuth?: boolean
@@ -10,6 +9,24 @@ interface ApiResponse<T = any> {
   success: boolean
   data?: T
   message?: string
+}
+
+// 验证 token 的函数
+async function verifyToken(token: string): Promise<boolean> {
+  try {
+    const response = await fetch('/api/auth/verify', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ token }),
+    })
+    const data = await response.json()
+    return data.success
+  } catch (error) {
+    console.error('Token verification failed:', error)
+    return false
+  }
 }
 
 export async function apiClient<T>(
@@ -26,21 +43,19 @@ export async function apiClient<T>(
   if (requireAuth) {
     const token = localStorage.getItem(STORAGE_KEYS.AUTH_TOKEN)
     if (!token) {
-      message.warning('此功能需要登录后才能使用')
+      message.error('此功能需要登录后才能使用')
       throw new Error('请先登录')
     }
 
-    try {
-      // 验证token是否有效
-      await verifyJWT(token)
-      headers.set('Authorization', `Bearer ${token}`)
-    } catch (error) {
-      // token无效，清除并提示重新登录
+    // 每次请求前验证 token
+    const isValid = await verifyToken(token)
+    if (!isValid) {
       localStorage.removeItem(STORAGE_KEYS.AUTH_TOKEN)
       message.error('登录已过期，请重新登录')
-      // window.location.reload()
       throw new Error('登录已过期')
     }
+
+    headers.set('Authorization', `Bearer ${token}`)
   }
 
   try {
@@ -55,9 +70,8 @@ export async function apiClient<T>(
       // 处理401未授权的情况
       if (response.status === 401) {
         message.error(responseData.message || '请先登录')
-        // 可以在这里触发登出逻辑
+        // 清除无效的token
         localStorage.removeItem(STORAGE_KEYS.AUTH_TOKEN)
-        // window.location.reload() // 刷新页面以更新认证状态
       } else {
         message.error(responseData.message || '请求失败，请稍后重试')
       }

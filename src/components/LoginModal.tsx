@@ -92,7 +92,7 @@ export function LoginModal({ isOpen, onClose, onLoginSuccess }: LoginModalProps)
             initial={{ scale: 0.95, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.95, opacity: 0 }}
-            className="relative w-full max-w-md rounded-2xl bg-white p-6 shadow-xl dark:bg-gray-800"
+            className="relative w-full max-w-md mx-4 rounded-2xl bg-white p-6 shadow-xl dark:bg-gray-800"
           >
             {/* Close button */}
             <button

@@ -6,6 +6,7 @@ import { ThemeToggle } from './ThemeToggle'
 import { Bars3Icon as MenuIcon } from '@heroicons/react/24/outline'
 import { LoginModal } from './LoginModal'
 import { useAuth } from '@/contexts/AuthContext'
+import { AnimatePresence, motion } from 'framer-motion'
 
 function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -93,6 +94,62 @@ function Navbar() {
               </button>
             </div>
           </div>
+          <AnimatePresence>
+            {isMenuOpen && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.2 }}
+                className="md:hidden overflow-hidden"
+              >
+                <nav className="flex flex-col space-y-4 py-4">
+                  <Link
+                    href="/chat"
+                    className="text-sm font-medium text-gray-600 transition-all duration-300 hover:text-black dark:text-gray-300 dark:hover:text-white"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    CHAT
+                  </Link>
+                  <Link
+                    href="/blog"
+                    className="text-sm font-medium text-gray-600 transition-all duration-300 hover:text-black dark:text-gray-300 dark:hover:text-white"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    博客
+                  </Link>
+                  <Link
+                    href="/questions"
+                    className="text-sm font-medium text-gray-600 transition-all duration-300 hover:text-black dark:text-gray-300 dark:hover:text-white"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    题库
+                  </Link>
+                  {isAuthenticated ? (
+                    <button
+                      onClick={() => {
+                        logout()
+                        setIsMenuOpen(false)
+                      }}
+                      className="text-left text-sm font-medium text-[#818cf8] transition-all duration-300 hover:text-[#635bff]"
+                    >
+                      退出登录
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => {
+                        setIsLoginModalOpen(true)
+                        setIsMenuOpen(false)
+                      }}
+                      className="text-left text-sm font-medium text-[#818cf8] transition-all duration-300 hover:text-[#635bff]"
+                    >
+                      系统登录
+                    </button>
+                  )}
+                </nav>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </header>
 

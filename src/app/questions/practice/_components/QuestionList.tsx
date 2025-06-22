@@ -437,7 +437,7 @@ export default function QuestionList() {
                   <div className="flex items-center justify-between">
                     <div className="flex-1">
                       <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4 mb-3">
-                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white group-hover:text-[rgb(31,41,55)] transition-colors mb-2 sm:mb-0">
+                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white transition-colors mb-2 sm:mb-0">
                           {question.title}
                         </h3>
                         <div className="flex items-center gap-2">

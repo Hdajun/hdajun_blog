@@ -98,8 +98,8 @@ function PostCard({ post, index }: { post: any; index: number }) {
       >
         <Link
           href={post.url}
-          className="group/btn flex items-center gap-1 text-sm text-gray-800 font-medium
-          hover:text-gray-900 transition-colors duration-300"
+          className="group/btn flex items-center gap-1 text-sm text-gray-800 dark:text-gray-200 font-medium
+          hover:text-gray-900 dark:hover:text-white transition-colors duration-300"
         >
           阅读更多
           <ArrowRightOutlined className="text-xs transition-transform duration-300 group-hover/btn:translate-x-1" />

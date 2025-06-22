@@ -72,11 +72,11 @@ function Dropdown<T>({
           onClick={() => setIsOpen(!isOpen)}
           className={`relative w-full rounded-xl border border-gray-200 bg-transparent pl-4 pr-10 py-3 text-left text-sm
             transition-all duration-300 ease-out
-            hover:border-[#818cf8] hover:bg-gray-100/50
+            hover:border-[rgb(31,41,55)] hover:bg-gray-100/50
             focus:border-transparent focus:bg-white focus:outline-none focus:ring-0
-            focus:shadow-[0_0_0_1px_#818cf8,0_0_0_2px_#a78bfa] focus:-translate-y-[1px]
+            focus:shadow-[0_0_0_1px_rgb(55,65,81),0_0_0_2px_rgb(31,41,55)] focus:-translate-y-[1px]
             dark:border-gray-700 dark:bg-transparent dark:text-white
-            dark:hover:border-[#818cf8] dark:hover:bg-gray-700/50
+            dark:hover:border-[rgb(31,41,55)] dark:hover:bg-gray-700/50
             dark:focus:bg-gray-800 ${className}`}
         >
           <span className="block truncate">
@@ -120,8 +120,8 @@ function Dropdown<T>({
                   type="button"
                   className={`relative w-full cursor-pointer select-none py-2.5 pl-10 pr-4 text-left rounded-lg transition-colors duration-150 ${
                     isSelected
-                      ? 'bg-[#a78bfa]/10 text-[#a78bfa]'
-                      : 'text-gray-900 dark:text-gray-100 hover:bg-[#a78bfa]/5 hover:text-[#a78bfa]'
+                      ? 'bg-gray-800/10 text-gray-800'
+                      : 'text-gray-900 dark:text-gray-100 hover:bg-gray-800/5 hover:text-gray-800'
                   }`}
                   onClick={() => {
                     onChange(optionValue)
@@ -140,7 +140,7 @@ function Dropdown<T>({
                         {getLabel(option)}
                       </span>
                       {isSelected && (
-                        <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-[#a78bfa]">
+                        <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-800">
                           <CheckIcon className="h-5 w-5" aria-hidden="true" />
                         </span>
                       )}
@@ -282,16 +282,16 @@ export default function EditQuestionClient({ questionId }: EditQuestionClientPro
 
   const inputStyles = `w-full rounded-xl border border-gray-200 bg-transparent px-4 py-3 text-sm
     transition-all duration-300 ease-out placeholder:text-gray-400
-    hover:border-[#818cf8] hover:bg-gray-100/50
+    hover:border-[rgb(31,41,55)] hover:bg-gray-100/50
     focus:border-transparent focus:bg-white focus:outline-none focus:ring-0
-    focus:shadow-[0_0_0_1px_#818cf8,0_0_0_2px_#a78bfa] focus:-translate-y-[1px]
+    focus:shadow-[0_0_0_1px_rgb(55,65,81),0_0_0_2px_rgb(31,41,55)] focus:-translate-y-[1px]
     dark:border-gray-700 dark:bg-transparent dark:text-white dark:placeholder:text-gray-400
-    dark:hover:border-[#818cf8] dark:hover:bg-gray-700/50
+    dark:hover:border-[rgb(31,41,55)] dark:hover:bg-gray-700/50
     dark:focus:bg-gray-800`
 
   const labelStyles =
     'flex items-center text-base font-medium text-gray-700 dark:text-gray-300 mb-2'
-  const requiredStyles = 'ml-1 text-[#a78bfa] text-sm font-normal'
+  const requiredStyles = 'ml-1 text-gray-800 text-sm font-normal'
   const errorStyles = 'mt-1.5 text-sm text-red-500 dark:text-red-400'
 
   if (isLoading) {
@@ -321,7 +321,7 @@ export default function EditQuestionClient({ questionId }: EditQuestionClientPro
             >
               <ArrowLeftIcon className="h-6 w-6" />
             </Link>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+            <h1 className="text-2xl text-gray-900 dark:text-white">
               编辑题目
             </h1>
           </div>
@@ -417,9 +417,7 @@ export default function EditQuestionClient({ questionId }: EditQuestionClientPro
                     <>
                       <span
                         className={`block truncate ${
-                          isSelected
-                            ? 'font-medium text-[#a78bfa]'
-                            : 'font-normal'
+                          isSelected ? 'font-medium text-gray-800' : 'font-normal'
                         }`}
                       >
                         {option.label}
@@ -427,9 +425,7 @@ export default function EditQuestionClient({ questionId }: EditQuestionClientPro
                       {option.description && (
                         <span
                           className={`block truncate text-xs mt-0.5 ${
-                            isSelected
-                              ? 'text-[#a78bfa]/70'
-                              : 'text-gray-500 dark:text-gray-400'
+                            isSelected ? 'text-gray-800/70' : 'text-gray-500 dark:text-gray-400'
                           }`}
                         >
                           {option.description}
@@ -479,10 +475,10 @@ export default function EditQuestionClient({ questionId }: EditQuestionClientPro
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="relative w-full py-3 px-6 bg-[#818cf8] text-white rounded-xl 
+                className="relative w-full py-3 px-6 bg-[rgb(31,41,55)] text-white rounded-xl 
                   transition-all duration-300 ease-out
-                  hover:bg-[#635bff]
-                  focus:outline-none focus:ring-2 focus:ring-[#818cf8] focus:ring-offset-2 
+                  hover:bg-[rgb(55,65,81)]
+                  focus:outline-none focus:ring-2 focus:ring-[rgb(31,41,55)] focus:ring-offset-2 
                   text-base font-medium
                   group
                   transform hover:-translate-y-[2px] hover:shadow-lg

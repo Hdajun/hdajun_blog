@@ -254,9 +254,9 @@ const useStyle = createStyles(({ token, css }) => {
     loadingMessage: css`
       background-image: linear-gradient(
         90deg,
-        #818cf8 0%,
-        #a78bfa 50%,
-        #818cf8 100%
+        rgb(31,41,55) 0%,
+        rgb(55,65,81) 50%,
+        rgb(31,41,55) 100%
       );
       background-size: 100% 2px;
       background-repeat: no-repeat;
@@ -268,12 +268,16 @@ const useStyle = createStyles(({ token, css }) => {
     // sender 样式
     sender: css`
       width: 100%;
-      max-width: 700px;
+      max-width: 900px;
       margin: 0 auto;
       transition: all 0.3s ease;
 
+      .ant-btn {
+        box-shadow: none !important;
+      }
+
       &:focus-within {
-        border-color: #a78bfa;
+        border-color: rgb(31, 41, 55);
         transform: translateY(-1px);
       }
 
@@ -288,7 +292,7 @@ const useStyle = createStyles(({ token, css }) => {
     `,
     senderPrompt: css`
       width: 100%;
-      max-width: 700px;
+      max-width: 900px;
       margin: 0 auto;
       color: ${token.colorText};
     `,
@@ -344,14 +348,14 @@ const RecommendList = ({ items }: { items: typeof HOT_TOPICS }) => {
             href={item.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="group flex items-center rounded-xl bg-gray-50 px-4 py-3 transition-all duration-300 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700"
+            className={`group flex items-center rounded-xl bg-gray-50 px-4 py-3 transition-all duration-300 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700`}
             style={{ textDecoration: 'none' }}
           >
             <span className="mr-3 text-[14px]">{item.icon}</span>
             <span className="flex-1 text-[14px] font-normal text-[#000000E0] dark:text-gray-400">{item.label}</span>
             <ArrowRightOutlined
-              className="ml-2 text-[#a78bfa] transition-transform duration-300 group-hover:translate-x-1"
-              style={{ fontSize: 14, color: '#a78bfa' }}
+              className="ml-2 text-gray-800 transition-transform duration-300 group-hover:translate-x-1"
+              style={{ fontSize: 14, color: 'rgb(31,41,55)' }}
             />
           </a>
         ))}
@@ -582,7 +586,7 @@ const Independent: React.FC = () => {
           style={{
             height: '100%',
             paddingInline:
-              window.innerWidth > 768 ? 'calc(calc(100% - 700px) /2)' : '8px',
+              window.innerWidth > 768 ? 'calc(calc(100% - 900px) /2)' : '8px',
           }}
           roles={{
             assistant: {
@@ -619,7 +623,7 @@ const Independent: React.FC = () => {
           direction="vertical"
           size={16}
           style={{
-            paddingInline: 'calc(calc(100% - 700px) /2)',
+            paddingInline: 'calc(calc(100% - 850px) /2)',
             width: '100%',
           }}
           className={styles.placeholder}
@@ -628,14 +632,14 @@ const Independent: React.FC = () => {
             variant="borderless"
             title={
               <span style={{ color: theme === 'dark' ? darkTextColor : '' }}>
-                {window.innerWidth > 768 ? "Hello, I'm H_dajun" : 'Hi 👋'}
+                {window.innerWidth > 768 ? "Hi, I'm Your AI Assistant" : 'Hi 👋'}
               </span>
             }
             description={
               <span style={{ color: theme === 'dark' ? darkTextColor : '' }}>
                 {window.innerWidth > 768
-                  ? '欢迎来到我的个人空间！我是一名前端开发练习生，很高兴能和你交流。有任何问题都可以问我 (｡･ω･｡)'
-                  : '有什么想问的，随时告诉我'}
+                  ? '我是你的 AI 助手，可以帮你解答任何前端技术问题，也可以在这了解我老大的个人经历。让我们开始愉快的交谈吧！'
+                  : '让我们开始愉快的交谈吧！'}
               </span>
             }
           />
@@ -647,7 +651,10 @@ const Independent: React.FC = () => {
             <div style={{ flex: 1 }}>
               <Spin spinning={bookLoading}>
                 <Prompts
-                  items={[DESIGN_GUIDE]}
+                  items={[{
+                    ...DESIGN_GUIDE,
+                    label: '掘金热门文章'
+                  }]}
                   styles={{
                     list: { height: '100%' },
                     item: {
@@ -730,18 +737,10 @@ const Independent: React.FC = () => {
         onCancel={() => {
           abortController.current?.abort()
         }}
-        /*  prefix={
-          <Button
-            type="text"
-            icon={<PaperClipOutlined style={{ fontSize: 18 }} />}
-            onClick={() => setAttachmentsOpen(!attachmentsOpen)}
-          />
-        } */
         loading={loading}
         className={`${styles.sender} ${
           theme === 'dark' ? darkStyles.sender : ''
         }`}
-        // allowSpeech
         actions={(_, info) => {
           const { SendButton, LoadingButton } = info.components
           return (
@@ -754,13 +753,14 @@ const Independent: React.FC = () => {
             </Flex>
           )
         }}
+        style={{ maxWidth: '900px' }}
         placeholder="给 洪大俊 发送消息"
       />
     </>
   )
 
   return (
-    <ConfigProvider theme={{ token: { colorPrimary: '#a78bfa' } }}>
+    <ConfigProvider theme={{ token: { colorPrimary: 'rgb(31,41,55)' } }}>
       <div
         className={`${styles.layout} ${
           theme === 'dark' ? darkStyles.layout : ''

@@ -45,7 +45,7 @@
 
 /* 成功消息图标颜色 */
 .custom-message .ant-message-success .anticon {
-  @apply text-[#818cf8] !important;
+  @apply text-[rgb(31,41,55)] !important;
 }
 
 /* 成功消息图标动画 */

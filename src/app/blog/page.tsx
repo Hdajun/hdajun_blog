@@ -25,22 +25,12 @@ function PostCard({ post, index }: { post: any; index: number }) {
         dark:from-gray-800/50 dark:via-gray-700/50 dark:to-gray-900/50"
       />
 
-      {/* 装饰性圆形 */}
-      <div
-        className="absolute -right-12 -top-12 h-24 w-24 rounded-full bg-indigo-100/20 
-        transition-transform duration-500 ease-out group-hover:scale-150 dark:bg-indigo-900/20"
-      />
-      <div
-        className="absolute -right-6 -top-6 h-12 w-12 rounded-full bg-indigo-100/40
-        transition-transform duration-500 ease-out group-hover:scale-150 dark:bg-indigo-900/40"
-      />
-
       <div className="relative p-6">
         {/* 文章标题 */}
-        <h2 className="mb-3 text-xl font-semibold line-clamp-2">
+        <h2 className="mb-3 text-xl line-clamp-2">
           <span
-            className="text-gray-900 transition-colors duration-300 group-hover:text-[#818cf8] 
-            dark:text-gray-100 dark:group-hover:text-[#818cf8]"
+            className="text-gray-900 transition-colors duration-300 group-hover:text-gray-800
+            dark:text-gray-100 dark:group-hover:text-gray-300"
           >
             {post.title}
           </span>
@@ -49,7 +39,7 @@ function PostCard({ post, index }: { post: any; index: number }) {
         {/* 文章元信息 */}
         <div className="mb-4 flex flex-wrap items-center gap-4 text-xs text-gray-500 dark:text-gray-400">
           <div className="flex items-center gap-1.5">
-            <CalendarIcon className="h-4 w-4 text-[#818cf8]" />
+            <CalendarIcon className="h-4 w-4 text-gray-800" />
             <time dateTime={post.date}>
               {new Date(post.date).toLocaleDateString('zh-CN', {
                 year: 'numeric',
@@ -73,16 +63,16 @@ function PostCard({ post, index }: { post: any; index: number }) {
         {/* 标签区域 */}
         {post.tags && (
           <div className="flex items-center gap-2">
-            <TagIcon className="h-4 w-4 text-[#818cf8] flex-shrink-0" />
+            <TagIcon className="h-4 w-4 text-gray-800 flex-shrink-0" />
             <div className="flex flex-wrap gap-2">
               {post.tags.map((tag: string) => (
                 <span
                   key={tag}
                   className="rounded-full bg-gradient-to-r from-gray-50 to-gray-100 px-3 py-1 text-xs font-medium 
                   text-gray-600 transition-all duration-300 ease-in-out hover:scale-105 
-                  hover:from-[#818cf8]/10 hover:to-[#818cf8]/20 hover:text-[#818cf8]
+                  hover:from-gray-800/10 hover:to-gray-700/20 hover:text-gray-800
                   dark:from-gray-800 dark:to-gray-700 dark:text-gray-300 
-                  dark:hover:from-[#818cf8]/20 dark:hover:to-[#818cf8]/30 dark:hover:text-[#818cf8]"
+                  dark:hover:from-gray-800/20 dark:hover:to-gray-700/30 dark:hover:text-gray-300"
                 >
                   {tag}
                 </span>
@@ -108,8 +98,8 @@ function PostCard({ post, index }: { post: any; index: number }) {
       >
         <Link
           href={post.url}
-          className="group/btn flex items-center gap-1 text-sm text-[#818cf8] font-medium
-          hover:text-[#6366f1] transition-colors duration-300"
+          className="group/btn flex items-center gap-1 text-sm text-gray-800 font-medium
+          hover:text-gray-900 transition-colors duration-300"
         >
           阅读更多
           <ArrowRightOutlined className="text-xs transition-transform duration-300 group-hover/btn:translate-x-1" />
@@ -145,7 +135,7 @@ export default function BlogPage() {
             <div className="absolute left-[2.5%] top-1/2 -translate-y-1/2 flex items-center pl-3 z-10">
               <svg
                 className="h-5 w-5 text-gray-400 transition-colors duration-300
-                group-focus-within:text-[#818cf8]"
+                group-focus-within:text-gray-800"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -166,11 +156,11 @@ export default function BlogPage() {
               onChange={e => setSearchQuery(e.target.value)}
               className="w-[95%] h-[48px] rounded-xl border border-gray-200 bg-transparent pl-10 pr-4 text-sm relative
               transition-all duration-300 ease-out placeholder:text-gray-400
-              hover:border-[#818cf8] hover:bg-gray-100/50
+              hover:border-gray-800 hover:bg-gray-100/50
               focus:border-transparent focus:bg-white focus:outline-none focus:ring-0
-              focus:shadow-[0_0_0_1px_#818cf8,0_0_0_2px_#a78bfa] focus:-translate-y-[1px]
+              focus:shadow-[0_0_0_1px_rgb(31,41,55),0_0_0_2px_rgb(55,65,81)] focus:-translate-y-[1px]
               dark:border-gray-700 dark:bg-transparent dark:text-white dark:placeholder:text-gray-400
-              dark:hover:border-[#818cf8] dark:hover:bg-gray-700/50
+              dark:hover:border-gray-800 dark:hover:bg-gray-700/50
               dark:focus:bg-gray-800"
             />
           </div>

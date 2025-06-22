@@ -34,11 +34,11 @@ const PostLayout = ({ params }: { params: { slug: string } }) => {
       <div className="prose prose-lg prose-blue max-w-none dark:prose-invert
         prose-headings:text-gray-900 dark:prose-headings:text-white
         prose-p:text-gray-700 dark:prose-p:text-gray-300
-        prose-a:text-[#818cf8] hover:prose-a:text-[#6366f1]
+        prose-a:text-gray-800 hover:prose-a:text-gray-900
         prose-strong:text-gray-900 dark:prose-strong:text-white
-        prose-code:text-[#818cf8] prose-code:bg-gray-100 dark:prose-code:bg-gray-800
+        prose-code:text-gray-800 prose-code:bg-gray-100 dark:prose-code:bg-gray-800
         prose-pre:bg-gray-50 dark:prose-pre:bg-gray-900
-        prose-blockquote:border-[#818cf8] prose-blockquote:text-gray-700 dark:prose-blockquote:text-gray-300">
+        prose-blockquote:border-gray-800 prose-blockquote:text-gray-700 dark:prose-blockquote:text-gray-300">
         <Content />
       </div>
     </div>

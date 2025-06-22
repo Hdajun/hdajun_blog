@@ -20,18 +20,18 @@ import { api } from '@/lib/api-client'
 import { message } from 'antd'
 
 const difficultyColors: Record<string, string> = {
-  easy: 'bg-emerald-50 text-emerald-700 border-emerald-200 shadow-emerald-100',
-  medium: 'bg-amber-50 text-amber-700 border-amber-200 shadow-amber-100',
-  hard: 'bg-rose-50 text-rose-700 border-rose-200 shadow-rose-100',
+  easy: 'bg-emerald-50/50 text-emerald-600 border-emerald-100 dark:bg-emerald-400/10 dark:text-emerald-300 dark:border-emerald-400/10',
+  medium: 'bg-amber-50/50 text-amber-600 border-amber-100 dark:bg-amber-400/10 dark:text-amber-300 dark:border-amber-400/10',
+  hard: 'bg-rose-50/50 text-rose-600 border-rose-100 dark:bg-rose-400/10 dark:text-rose-300 dark:border-rose-400/10',
 }
 
 const categoryColors: Record<string, string> = {
-  frontend: 'bg-blue-50 text-blue-700 border-blue-200 shadow-blue-100',
-  backend: 'bg-purple-50 text-purple-700 border-purple-200 shadow-purple-100',
-  algorithm: 'bg-indigo-50 text-indigo-700 border-indigo-200 shadow-indigo-100',
-  database: 'bg-teal-50 text-teal-700 border-teal-200 shadow-teal-100',
-  system: 'bg-orange-50 text-orange-700 border-orange-200 shadow-orange-100',
-  other: 'bg-gray-50 text-gray-700 border-gray-200 shadow-gray-100',
+  frontend: 'bg-blue-50/50 text-blue-600 border-blue-100 dark:bg-blue-400/10 dark:text-blue-300 dark:border-blue-400/10',
+  backend: 'bg-purple-50/50 text-purple-600 border-purple-100 dark:bg-purple-400/10 dark:text-purple-300 dark:border-purple-400/10',
+  algorithm: 'bg-indigo-50/50 text-indigo-600 border-indigo-100 dark:bg-indigo-400/10 dark:text-indigo-300 dark:border-indigo-400/10',
+  database: 'bg-teal-50/50 text-teal-600 border-teal-100 dark:bg-teal-400/10 dark:text-teal-300 dark:border-teal-400/10',
+  system: 'bg-orange-50/50 text-orange-600 border-orange-100 dark:bg-orange-400/10 dark:text-orange-300 dark:border-orange-400/10',
+  other: 'bg-gray-50/50 text-gray-600 border-gray-100 dark:bg-gray-400/10 dark:text-gray-300 dark:border-gray-400/10',
 }
 
 interface FetchQuestionsResponse {
@@ -261,17 +261,17 @@ export default function QuestionList() {
 
   const inputStyles = `w-full rounded-xl border border-gray-200 bg-transparent px-4 py-3 text-sm
     transition-all duration-300 ease-out placeholder:text-gray-400
-    hover:border-[#818cf8] hover:bg-gray-100/50
+    hover:border-[rgb(31,41,55)] hover:bg-gray-100/50
     focus:border-transparent focus:bg-white focus:outline-none focus:ring-0
-    focus:shadow-[0_0_0_1px_#818cf8,0_0_0_2px_#a78bfa] focus:-translate-y-[1px]
+    focus:shadow-[0_0_0_1px_rgb(55,65,81),0_0_0_2px_rgb(31,41,55)] focus:-translate-y-[1px]
     dark:border-gray-700 dark:bg-transparent dark:text-white dark:placeholder:text-gray-400
-    dark:hover:border-[#818cf8] dark:hover:bg-gray-700/50
+    dark:hover:border-[rgb(31,41,55)] dark:hover:bg-gray-700/50
     dark:focus:bg-gray-800`
 
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[rgb(31,41,55)]"></div>
       </div>
     )
   }
@@ -279,12 +279,23 @@ export default function QuestionList() {
   return (
     <div className="min-h-screen pb-8">
       {/* 筛选器区域 - 固定在顶部 */}
-      <div className="sticky top-0 z-50 pb-4">
-        <div className="bg-white/30 dark:bg-gray-800/30 backdrop-blur-xl rounded-2xl p-4 shadow-lg border border-gray-200/50 dark:border-gray-700/50 max-w-[1200px] mx-auto">
-          <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-8">
+      <div className="sticky top-0 z-50 pb-4 pt-2">
+        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-2xl p-5 
+          shadow-[0_8px_30px_rgb(0,0,0,0.04),0_4px_12px_rgb(0,0,0,0.02),inset_0_0_0_1px_rgb(255,255,255,0.04)] 
+          dark:shadow-[0_8px_30px_rgb(0,0,0,0.1),0_4px_12px_rgb(0,0,0,0.04),inset_0_0_0_1px_rgb(255,255,255,0.04)] 
+          ring-1 ring-black/[0.03] dark:ring-white/[0.03] 
+          border border-gray-200/30 dark:border-gray-700/30 
+          max-w-[1200px] mx-auto 
+          hover:shadow-[0_8px_35px_rgb(0,0,0,0.06),0_4px_15px_rgb(0,0,0,0.03),inset_0_0_0_1px_rgb(255,255,255,0.06)] 
+          dark:hover:shadow-[0_8px_35px_rgb(0,0,0,0.12),0_4px_15px_rgb(0,0,0,0.06),inset_0_0_0_1px_rgb(255,255,255,0.06)]
+          transition-all duration-300">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
             <div className="flex flex-col sm:flex-row flex-1 gap-4">
               {/* 分类选择 */}
               <div className="w-full sm:w-48">
+                <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1.5 ml-1">
+                  分类
+                </label>
                 <Dropdown
                   value={selectedCategory?.value || ''}
                   options={questionCategories}
@@ -303,7 +314,7 @@ export default function QuestionList() {
                       <span
                         className={`block truncate ${
                           isSelected
-                            ? 'font-medium text-[#818cf8]'
+                            ? 'font-medium text-[rgb(31,41,55)]'
                             : 'font-normal'
                         }`}
                       >
@@ -316,6 +327,9 @@ export default function QuestionList() {
 
               {/* 难度选择 */}
               <div className="w-full sm:w-36">
+                <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1.5 ml-1">
+                  难度
+                </label>
                 <Dropdown
                   value={selectedDifficulty?.value || ''}
                   options={difficulties}
@@ -346,20 +360,51 @@ export default function QuestionList() {
             </div>
 
             {/* 搜索框 */}
-            <div className="w-full sm:w-64 relative">
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={e => setSearchQuery(e.target.value)}
-                onKeyDown={e => {
-                  if (e.key === 'Enter') {
-                    setActualSearchTerm(searchQuery)
-                  }
-                }}
-                placeholder="输入题目名称回车触发搜索"
-                className={inputStyles}
-              />
-              <MagnifyingGlassIcon className="absolute right-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 dark:text-gray-500" />
+            <div className="w-full sm:w-72">
+              <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1.5 ml-1">
+                搜索
+              </label>
+              <div className="relative group">
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={e => setSearchQuery(e.target.value)}
+                  onKeyDown={e => {
+                    if (e.key === 'Enter') {
+                      setActualSearchTerm(searchQuery)
+                    }
+                  }}
+                  placeholder="输入题目名称回车触发搜索"
+                  className="w-full rounded-xl border border-gray-200 bg-white/50 dark:bg-gray-900/50 px-4 py-2.5 text-sm
+                    transition-all duration-300 ease-out placeholder:text-gray-400
+                    hover:border-[rgb(31,41,55)] hover:bg-white dark:hover:bg-gray-900
+                    focus:border-transparent focus:bg-white dark:focus:bg-gray-900 focus:outline-none focus:ring-0
+                    focus:shadow-[0_0_0_1px_rgb(55,65,81),0_0_0_2px_rgb(31,41,55)] focus:-translate-y-[1px]
+                    dark:border-gray-700 dark:text-white dark:placeholder:text-gray-500
+                    dark:hover:border-[rgb(31,41,55)]"
+                />
+                <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
+                  {searchQuery && (
+                    <button
+                      onClick={() => {
+                        setSearchQuery('')
+                        setActualSearchTerm('')
+                      }}
+                      className="p-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors"
+                    >
+                      <svg className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  )}
+                  <button
+                    onClick={() => setActualSearchTerm(searchQuery)}
+                    className="p-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors"
+                  >
+                    <MagnifyingGlassIcon className="h-4 w-4 text-gray-400 dark:text-gray-500" />
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -375,20 +420,28 @@ export default function QuestionList() {
             return (
               <div
                 key={question._id?.toString()}
-                className="group bg-white dark:bg-gray-800 rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100 dark:border-gray-700"
+                className="group bg-white/90 dark:bg-gray-800/90 rounded-2xl 
+                  shadow-[0_2px_8px_rgb(0,0,0,0.02),0_1px_4px_rgb(0,0,0,0.01)] 
+                  dark:shadow-[0_2px_8px_rgb(0,0,0,0.04),0_1px_4px_rgb(0,0,0,0.02)] 
+                  hover:shadow-[0_4px_12px_rgb(0,0,0,0.03),0_2px_6px_rgb(0,0,0,0.02)] 
+                  dark:hover:shadow-[0_4px_12px_rgb(0,0,0,0.06),0_2px_6px_rgb(0,0,0,0.04)]
+                  transition-all duration-300 ease-out 
+                  overflow-hidden border border-gray-200/50 dark:border-gray-700/50 
+                  hover:border-gray-300/50 dark:hover:border-gray-600/50
+                  hover:translate-y-[-1px]"
               >
                 <div
-                  className="px-6 py-5 cursor-pointer hover:bg-gray-50/50 dark:hover:bg-gray-700/50 transition-colors duration-150"
+                  className="px-6 py-5 cursor-pointer hover:bg-gray-50/50 dark:hover:bg-gray-700/30 transition-colors duration-200"
                   onClick={() => toggleQuestion(question._id?.toString() || '')}
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex-1">
-                      <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-3 mb-2">
-                        <h3 className="text-lg font-medium text-gray-900 dark:text-white group-hover:text-[#818cf8] transition-colors mb-2 sm:mb-0">
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4 mb-3">
+                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white group-hover:text-[rgb(31,41,55)] transition-colors mb-2 sm:mb-0">
                           {question.title}
                         </h3>
                         <div className="flex items-center gap-2">
-                          <span className={`px-3 py-1 text-xs font-semibold rounded-full border shadow-sm ${
+                          <span className={`inline-flex items-center px-2.5 py-1 text-xs font-medium rounded-md border ${
                             categoryColors[question.category] || categoryColors.other
                           }`}>
                             {questionCategories.find(
@@ -396,7 +449,7 @@ export default function QuestionList() {
                             )?.label || question.category}
                           </span>
                           <span
-                            className={`px-3 py-1 text-xs font-semibold rounded-full border shadow-sm ${
+                            className={`inline-flex items-center px-2.5 py-1 text-xs font-medium rounded-md border ${
                               difficultyColors[question.difficulty.toLowerCase()]
                             }`}
                           >
@@ -406,12 +459,12 @@ export default function QuestionList() {
                           </span>
                         </div>
                       </div>
-                      <div className="text-sm text-gray-600 dark:text-gray-300">
+                      <div className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">
                         {question.content || '暂无描述'}
                       </div>
                     </div>
                     <button
-                      className="text-gray-400 dark:text-gray-500 group-hover:text-[#818cf8] transition-colors duration-150 ml-4 flex-shrink-0"
+                      className="text-gray-400 dark:text-gray-500 group-hover:text-[rgb(31,41,55)] transition-colors duration-150 ml-4 flex-shrink-0 p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full"
                       aria-expanded={isExpanded}
                     >
                       <svg
@@ -440,19 +493,19 @@ export default function QuestionList() {
                   }`}
                 >
                   {isExpanded && (
-                    <div className="px-6 py-5 bg-gray-50 dark:bg-gray-700/50 border-t border-gray-100 dark:border-gray-600">
+                    <div className="px-6 py-5 bg-gray-50/50 dark:bg-gray-700/20 border-t border-gray-100/70 dark:border-gray-600/30 backdrop-blur-sm">
                       <div className="prose max-w-none">
                         <div className="flex items-center justify-between mb-4">
                           <h4 className="text-base font-medium text-gray-800 dark:text-gray-200 flex items-center m-0">
                             答案
                           </h4>
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-1.5">
                             <button
                               onClick={() =>
                                 handleDelete(question._id?.toString() || '', question.title)
                               }
                               disabled={deletingId === question._id?.toString()}
-                              className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                              className="flex items-center gap-1.5 px-2.5 py-1.5 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed rounded-lg hover:bg-gray-100/70 dark:hover:bg-gray-700/50"
                               title="删除题目"
                             >
                               <TrashIcon className="w-4 h-4" />
@@ -464,7 +517,7 @@ export default function QuestionList() {
                             </button>
                             <Link
                               href={`/questions/edit/${question._id?.toString()}`}
-                              className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
+                              className="flex items-center gap-1.5 px-2.5 py-1.5 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors rounded-lg hover:bg-gray-100/70 dark:hover:bg-gray-700/50"
                               title="编辑题目"
                             >
                               <PencilSquareIcon className="w-4 h-4" />
@@ -477,7 +530,7 @@ export default function QuestionList() {
                                   question._id?.toString() || ''
                                 )
                               }
-                              className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
+                              className="flex items-center gap-1.5 px-2.5 py-1.5 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors rounded-lg hover:bg-gray-100/70 dark:hover:bg-gray-700/50"
                             >
                               {copiedId === question._id?.toString() ? (
                                 <>
@@ -493,7 +546,7 @@ export default function QuestionList() {
                             </button>
                           </div>
                         </div>
-                        <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-600">
+                        <div className="bg-white/80 dark:bg-gray-800/30 rounded-xl border border-gray-200/30 dark:border-gray-600/30 backdrop-blur-sm">
                           <div className="prose-pre:mt-0 prose-pre:mb-0 prose-p:mt-0 prose-p:mb-4 prose-p:last:mb-0 p-5">
                             <div className="prose prose-gray dark:prose-invert max-w-none">
                               <ReactMarkdown
@@ -560,9 +613,9 @@ export default function QuestionList() {
           })}
 
           {questions.length === 0 && (
-            <div className="text-center py-16 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200/50 dark:border-gray-700/50">
+            <div className="text-center py-16 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-sm border border-gray-200/50 dark:border-gray-700/50">
               <svg
-                className="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500"
+                className="mx-auto h-12 w-12 text-gray-400/80 dark:text-gray-500/80"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -575,13 +628,13 @@ export default function QuestionList() {
                   d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z"
                 />
               </svg>
-              <p className="mt-2 text-gray-500 dark:text-gray-400">
+              <p className="mt-4 text-gray-500/90 dark:text-gray-400/90">
                 还没有添加任何题目，现在就去创建一个吧！
               </p>
               <div className="mt-6">
                 <Link
                   href="/questions/create"
-                  className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-[#818cf8] hover:bg-[#635bff] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#818cf8] transition-all duration-200 ease-out transform hover:-translate-y-0.5"
+                  className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-xl text-white bg-[rgb(31,41,55)] hover:bg-[rgb(55,65,81)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[rgb(31,41,55)] transition-all duration-200 ease-out transform hover:-translate-y-0.5"
                 >
                   <svg
                     className="w-5 h-5 mr-2"

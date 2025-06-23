@@ -9,6 +9,7 @@ import {
   ClipboardDocumentCheckIcon,
   TrashIcon,
   PencilSquareIcon,
+  ChevronDownIcon,
 } from '@heroicons/react/24/outline'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
@@ -148,6 +149,7 @@ export default function QuestionList() {
   )
   const [copiedId, setCopiedId] = useState<string | null>(null)
   const [deletingId, setDeletingId] = useState<string | null>(null)
+  const [isFilterExpanded, setIsFilterExpanded] = useState(false)
 
   // 使用useCallback包装handleCopy函数
   const handleCopy = useCallback(async (text: string, id: string) => {
@@ -289,120 +291,133 @@ export default function QuestionList() {
           hover:shadow-[0_8px_35px_rgb(0,0,0,0.06),0_4px_15px_rgb(0,0,0,0.03),inset_0_0_0_1px_rgb(255,255,255,0.06)] 
           dark:hover:shadow-[0_8px_35px_rgb(0,0,0,0.12),0_4px_15px_rgb(0,0,0,0.06),inset_0_0_0_1px_rgb(255,255,255,0.06)]
           transition-all duration-300">
-          <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
-            <div className="flex flex-col sm:flex-row flex-1 gap-4">
-              {/* 分类选择 */}
-              <div className="w-full sm:w-48">
-                <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1.5 ml-1">
-                  分类
-                </label>
-                <Dropdown
-                  value={selectedCategory?.value || ''}
-                  options={questionCategories}
-                  onChange={value => {
-                    const category = value
-                      ? questionCategories.find(cat => cat.value === value) ||
-                        null
-                      : null
-                    setSelectedCategory(category)
-                  }}
-                  getLabel={option => option.label}
-                  getValue={option => option.value}
-                  placeholder="选择分类"
-                  renderOption={(option, isSelected) => (
-                    <>
+          {/* 移动端折叠按钮 */}
+          <button
+            className="w-full flex items-center justify-between sm:hidden mb-4 text-sm text-gray-600 dark:text-gray-300"
+            onClick={() => setIsFilterExpanded(!isFilterExpanded)}
+          >
+            <span>筛选条件</span>
+            <ChevronDownIcon 
+              className={`w-5 h-5 transition-transform duration-200 ${isFilterExpanded ? 'transform rotate-180' : ''}`}
+            />
+          </button>
+
+          <div className={`${isFilterExpanded ? 'block' : 'hidden'} sm:block`}>
+            <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
+              <div className="flex flex-col sm:flex-row flex-1 gap-4">
+                {/* 分类选择 */}
+                <div className="w-full sm:w-48">
+                  <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1.5 ml-1">
+                    分类
+                  </label>
+                  <Dropdown
+                    value={selectedCategory?.value || ''}
+                    options={questionCategories}
+                    onChange={value => {
+                      const category = value
+                        ? questionCategories.find(cat => cat.value === value) ||
+                          null
+                        : null
+                      setSelectedCategory(category)
+                    }}
+                    getLabel={option => option.label}
+                    getValue={option => option.value}
+                    placeholder="选择分类"
+                    renderOption={(option, isSelected) => (
+                      <>
+                        <span
+                          className={`block truncate ${
+                            isSelected
+                              ? 'font-medium text-[rgb(31,41,55)]'
+                              : 'font-normal'
+                          }`}
+                        >
+                          {option.label}
+                        </span>
+                      </>
+                    )}
+                  />
+                </div>
+
+                {/* 难度选择 */}
+                <div className="w-full sm:w-36">
+                  <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1.5 ml-1">
+                    难度
+                  </label>
+                  <Dropdown
+                    value={selectedDifficulty?.value || ''}
+                    options={difficulties}
+                    onChange={value => {
+                      const difficulty = value
+                        ? difficulties.find(diff => diff.value === value) || null
+                        : null
+                      setSelectedDifficulty(difficulty)
+                    }}
+                    getLabel={option => option.label}
+                    getValue={option => option.value}
+                    placeholder="选择难度"
+                    renderOption={(option, isSelected) => (
                       <span
-                        className={`block truncate ${
-                          isSelected
-                            ? 'font-medium text-[rgb(31,41,55)]'
-                            : 'font-normal'
+                        className={`flex items-center ${
+                          isSelected ? 'font-medium' : 'font-normal'
                         }`}
                       >
+                        <span
+                          className="h-2 w-2 rounded-full mr-2"
+                          style={{ backgroundColor: option.color }}
+                        />
                         {option.label}
                       </span>
-                    </>
-                  )}
-                />
+                    )}
+                  />
+                </div>
               </div>
 
-              {/* 难度选择 */}
-              <div className="w-full sm:w-36">
+              {/* 搜索框 */}
+              <div className="w-full sm:w-72">
                 <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1.5 ml-1">
-                  难度
+                  搜索
                 </label>
-                <Dropdown
-                  value={selectedDifficulty?.value || ''}
-                  options={difficulties}
-                  onChange={value => {
-                    const difficulty = value
-                      ? difficulties.find(diff => diff.value === value) || null
-                      : null
-                    setSelectedDifficulty(difficulty)
-                  }}
-                  getLabel={option => option.label}
-                  getValue={option => option.value}
-                  placeholder="选择难度"
-                  renderOption={(option, isSelected) => (
-                    <span
-                      className={`flex items-center ${
-                        isSelected ? 'font-medium' : 'font-normal'
-                      }`}
-                    >
-                      <span
-                        className="h-2 w-2 rounded-full mr-2"
-                        style={{ backgroundColor: option.color }}
-                      />
-                      {option.label}
-                    </span>
-                  )}
-                />
-              </div>
-            </div>
-
-            {/* 搜索框 */}
-            <div className="w-full sm:w-72">
-              <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1.5 ml-1">
-                搜索
-              </label>
-              <div className="relative group">
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={e => setSearchQuery(e.target.value)}
-                  onKeyDown={e => {
-                    if (e.key === 'Enter') {
-                      setActualSearchTerm(searchQuery)
-                    }
-                  }}
-                  placeholder="输入题目名称回车触发搜索"
-                  className="w-full rounded-xl border border-gray-200 bg-white/50 dark:bg-gray-900/50 px-4 py-2.5 text-sm
-                    transition-all duration-300 ease-out placeholder:text-gray-400
-                    hover:border-[rgb(31,41,55)] hover:bg-white dark:hover:bg-gray-900
-                    focus:border-transparent focus:bg-white dark:focus:bg-gray-900 focus:outline-none focus:ring-0
-                    focus:shadow-[0_0_0_1px_rgb(55,65,81),0_0_0_2px_rgb(31,41,55)] focus:-translate-y-[1px]
-                    dark:border-gray-700 dark:text-white dark:placeholder:text-gray-500
-                    dark:hover:border-[rgb(31,41,55)]"
-                />
-                <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
-                  {searchQuery && (
+                <div className="relative group">
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={e => setSearchQuery(e.target.value)}
+                    onKeyDown={e => {
+                      if (e.key === 'Enter') {
+                        setActualSearchTerm(searchQuery)
+                      }
+                    }}
+                    placeholder="输入题目名称回车触发搜索"
+                    className="w-full rounded-xl border border-gray-200 bg-white/50 dark:bg-gray-900/50 px-4 py-2.5 text-sm
+                      transition-all duration-300 ease-out placeholder:text-gray-400
+                      hover:border-[rgb(31,41,55)] hover:bg-white dark:hover:bg-gray-900
+                      focus:border-transparent focus:bg-white dark:focus:bg-gray-900 focus:outline-none focus:ring-0
+                      focus:shadow-[0_0_0_1px_rgb(55,65,81),0_0_0_2px_rgb(31,41,55)] focus:-translate-y-[1px]
+                      dark:border-gray-700 dark:text-white dark:placeholder:text-gray-500
+                      dark:hover:border-[rgb(31,41,55)]"
+                  />
+                  <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
+                    {searchQuery && (
+                      <button
+                        onClick={() => {
+                          setSearchQuery('')
+                          setActualSearchTerm('')
+                        }}
+                        className="p-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors"
+                      >
+                        <svg className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      </button>
+                    )}
                     <button
-                      onClick={() => {
-                        setSearchQuery('')
-                        setActualSearchTerm('')
-                      }}
+                      onClick={() => setActualSearchTerm(searchQuery)}
                       className="p-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors"
                     >
-                      <svg className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                      </svg>
+                      <MagnifyingGlassIcon className="h-4 w-4 text-gray-400 dark:text-gray-500" />
                     </button>
-                  )}
-                  <button
-                    onClick={() => setActualSearchTerm(searchQuery)}
-                    className="p-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors"
-                  >
-                    <MagnifyingGlassIcon className="h-4 w-4 text-gray-400 dark:text-gray-500" />
-                  </button>
+                  </div>
                 </div>
               </div>
             </div>

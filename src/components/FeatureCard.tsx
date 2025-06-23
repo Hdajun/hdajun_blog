@@ -56,10 +56,10 @@ export function FeatureCard({
           {icon}
         </div>
         <div className="flex-1 text-left">
-          <h2 className="mb-2 text-lg text-gray-600 transition-colors duration-200 ease-out dark:text-gray-400 group-hover:text-gray-700 dark:group-hover:text-gray-300">
+          <h2 className="mb-2 text-lg text-gray-500 transition-colors duration-200 ease-out dark:text-gray-400 group-hover:text-gray-700 dark:group-hover:text-gray-300">
             {title}
           </h2>
-          <p className="mb-3 text-sm text-gray-600 dark:text-gray-400">
+          <p className="mb-3 text-sm text-gray-500 dark:text-gray-400">
             {description}
           </p>
           {tags && tags.length > 0 && (
@@ -67,7 +67,7 @@ export function FeatureCard({
               {tags.map((tag, index) => (
                 <span
                   key={index}
-                  className="rounded-full bg-gray-100 px-2.5 py-0.5 text-xs text-gray-600 dark:bg-gray-700 dark:text-gray-400"
+                  className="rounded-full bg-gray-100 px-2.5 py-0.5 text-xs text-gray-500 dark:bg-gray-700 dark:text-gray-400"
                 >
                   {tag}
                 </span>
@@ -76,11 +76,11 @@ export function FeatureCard({
           )}
         </div>
       </div>
-      <div className="mt-4 flex items-center justify-between text-gray-600 dark:text-gray-400">
-        <span className="text-sm">
+      <div className="mt-4 flex items-center justify-between text-gray-500 dark:text-gray-400">
+        <span className="text-sm font-medium text-gray-700 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-gray-100 transition-colors duration-200">
           {actionText}
         </span>
-        <ArrowRightOutlined className="text-sm opacity-0 transition-all duration-200 ease-out group-hover:translate-x-1 group-hover:opacity-100" />
+        <ArrowRightOutlined className="text-sm opacity-0 transition-all text-gray-700 dark:text-gray-300 duration-200 ease-out group-hover:translate-x-1 group-hover:opacity-100" />
       </div>
     </motion.a>
   )

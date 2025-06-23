@@ -48,7 +48,7 @@ export default function Home() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="mb-14 text-center"
+          className="mb-7 text-center"
         >
           <h1 className="text-2xl tracking-tight text-gray-900 dark:text-white sm:text-3xl md:text-4xl lg:text-4xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 dark:from-gray-100 dark:to-gray-400 bg-clip-text text-transparent mb-6">
             <TypewriterText text="Hi, 我是大俊 / DaJun / 前端开发者 👋" />
@@ -57,7 +57,7 @@ export default function Home() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="mt-4 max-w-[42rem] text-sm leading-relaxed text-gray-600 dark:text-gray-400 sm:text-base"
+            className="mt-4 max-w-[42rem] text-sm leading-relaxed text-gray-500 dark:text-gray-400 sm:text-base"
           >
             很高兴遇见你！这里是我的技术乐园，专注于探索 Web 前沿技术和分享实战经验。
             从前端工程化到性能优化，从框架实践到 AI 应用，记录着我在技术之路上的点点滴滴。
@@ -70,7 +70,7 @@ export default function Home() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.4 }}
-          className="mb-8 w-full max-w-4xl mx-auto px-4"
+          className="mb-12 w-full max-w-4xl mx-auto px-4"
         >
           <div className="flex flex-wrap justify-center gap-2 whitespace-nowrap">
             {[

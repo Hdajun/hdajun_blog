@@ -44,6 +44,9 @@ import markdownit from 'markdown-it'
 import dynamic from 'next/dynamic'
 import { v4 as uuidv4 } from 'uuid'
 import { getCustomData } from './customData'
+import { Demo3Icon } from '@/components/icons/Demo3Icon'
+import { Demo1Icon } from '@/components/icons/Demo1Icon'
+import { Demo2Icon } from '@/components/icons/Demo2Icon'
 
 const md = markdownit({ html: true, breaks: true })
 // 覆盖默认的段落渲染规则
@@ -74,17 +77,17 @@ const SENDER_PROMPTS: SenderPrompt[] = [
   {
     key: '1',
     description: '自我介绍',
-    icon: <UserOutlined />,
+    icon: <Demo1Icon className="text-xl" width={14} />,
   },
   {
     key: '2',
     description: '项目经历',
-    icon: <AppstoreAddOutlined />,
+    icon: <Demo3Icon className="text-xl" width={14} />
   },
   {
     key: '3',
     description: '个人成长',
-    icon: <HeartOutlined />,
+    icon: <Demo2Icon className="text-xl" width={14} />,
   },
 ]
 
@@ -254,9 +257,9 @@ const useStyle = createStyles(({ token, css }) => {
     loadingMessage: css`
       background-image: linear-gradient(
         90deg,
-        rgb(31,41,55) 0%,
-        rgb(55,65,81) 50%,
-        rgb(31,41,55) 100%
+        rgb(31, 41, 55) 0%,
+        rgb(55, 65, 81) 50%,
+        rgb(31, 41, 55) 100%
       );
       background-size: 100% 2px;
       background-repeat: no-repeat;
@@ -279,6 +282,10 @@ const useStyle = createStyles(({ token, css }) => {
       &:focus-within {
         border-color: rgb(31, 41, 55);
         transform: translateY(-1px);
+
+        &::after {
+          border-width: 1px !important;
+        }
       }
 
       @media (max-width: 768px) {
@@ -295,6 +302,10 @@ const useStyle = createStyles(({ token, css }) => {
       max-width: 900px;
       margin: 0 auto;
       color: ${token.colorText};
+
+      .ant-prompts-item {
+        align-items: center;
+      }
     `,
   }
 })
@@ -352,7 +363,9 @@ const RecommendList = ({ items }: { items: typeof HOT_TOPICS }) => {
             style={{ textDecoration: 'none' }}
           >
             <span className="mr-3 text-[14px]">{item.icon}</span>
-            <span className="flex-1 text-[14px] font-normal text-[#000000E0] dark:text-gray-400">{item.label}</span>
+            <span className="flex-1 text-[14px] font-normal text-[#000000E0] dark:text-gray-400">
+              {item.label}
+            </span>
             <ArrowRightOutlined
               className="ml-2 text-gray-800 transition-transform duration-300 group-hover:translate-x-1"
               style={{ fontSize: 14, color: 'rgb(31,41,55)' }}
@@ -632,7 +645,9 @@ const Independent: React.FC = () => {
             variant="borderless"
             title={
               <span style={{ color: theme === 'dark' ? darkTextColor : '' }}>
-                {window.innerWidth > 768 ? "Hi, I'm Your AI Assistant" : 'Hi 👋'}
+                {window.innerWidth > 768
+                  ? "Hi, I'm Your AI Assistant"
+                  : 'Hi 👋'}
               </span>
             }
             description={
@@ -651,10 +666,12 @@ const Independent: React.FC = () => {
             <div style={{ flex: 1 }}>
               <Spin spinning={bookLoading}>
                 <Prompts
-                  items={[{
-                    ...DESIGN_GUIDE,
-                    label: '掘金热门文章'
-                  }]}
+                  items={[
+                    {
+                      ...DESIGN_GUIDE,
+                      label: '掘金热门文章',
+                    },
+                  ]}
                   styles={{
                     list: { height: '100%' },
                     item: {

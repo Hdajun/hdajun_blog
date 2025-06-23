@@ -52,3 +52,19 @@
 .custom-message .ant-message-success .anticon svg {
   @apply transition-all duration-300;
 }
+
+/* 防止移动端输入框、选择框和文本框自动放大 */
+input[type="text"],
+input[type="number"],
+input[type="email"],
+input[type="tel"],
+input[type="password"],
+input[type="search"],
+input[type="url"],
+select,
+textarea {
+  font-size: 16px !important;
+  transform: scale(1) !important;
+  transform-origin: left top;
+  -webkit-text-size-adjust: 100%;
+}

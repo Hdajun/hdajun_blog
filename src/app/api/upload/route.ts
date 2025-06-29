@@ -1,16 +1,15 @@
 import { NextResponse } from 'next/server';
 import { v2 as cloudinary } from 'cloudinary';
 
-export const dynamic = 'force-dynamic' // 如果需要禁用静态生成
-export const runtime = 'nodejs' // 或 'edge' 如果你需要使用 Edge Runtime
+// 使用新的 Route Segment Config
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
 
 cloudinary.config({
   cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
-
-
 
 export async function POST(request: Request) {
   try {
@@ -54,10 +53,3 @@ export async function POST(request: Request) {
     );
   }
 }
-
-// 限制文件大小为 10MB
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};

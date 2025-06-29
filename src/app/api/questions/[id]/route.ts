@@ -14,7 +14,7 @@ export async function GET(
     if (!id) {
       return NextResponse.json({
         success: false,
-        msg: 'Question ID is required',
+        message: 'Question ID is required',
         data: null
       }, { status: 400 })
     }
@@ -29,21 +29,21 @@ export async function GET(
     if (!question) {
       return NextResponse.json({
         success: false,
-        msg: 'Question not found',
+        message: 'Question not found',
         data: null
       }, { status: 404 })
     }
 
     return NextResponse.json({
       success: true,
-      msg: 'success',
+      message: 'success',
       data: question
     })
   } catch (error) {
     console.error('Failed to fetch question:', error)
     return NextResponse.json({
       success: false,
-      msg: 'Failed to fetch question',
+      message: 'Failed to fetch question',
       data: null
     }, { status: 500 })
   }

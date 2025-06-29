@@ -1,0 +1,152 @@
+.image-resizer {
+  position: relative;
+  display: inline-block;
+  max-width: 100%;
+  user-select: none;
+}
+
+.image-container {
+  position: relative;
+  display: inline-block;
+}
+
+.image-resizer img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+/* 上传状态 */
+.image-resizer.uploading img {
+  opacity: 0.9;
+}
+
+.upload-indicator {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  background: rgba(0, 0, 0, 0.75);
+  color: white;
+  padding: 6px 12px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  z-index: 50;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.upload-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* hover效果 */
+.image-resizer:not(.uploading):hover::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border: 1px solid rgb(23, 23, 23);
+  pointer-events: none;
+}
+
+/* 调整大小时的效果 */
+.image-resizer.resizing img {
+  cursor: ew-resize;
+}
+
+/* 调整大小的控制点 */
+.resize-handle {
+  position: absolute;
+  width: 8px;
+  height: 100%;
+  background: transparent;
+  cursor: ew-resize;
+  opacity: 0;
+  transition: all 0.2s ease;
+}
+
+.resize-handle::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: rgb(23, 23, 23);
+  left: 50%;
+  transform: translateX(-50%);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+/* hover时显示控制点 */
+.image-resizer:not(.uploading):hover .resize-handle::after {
+  opacity: 1;
+}
+
+.resize-handle:hover::after {
+  width: 2px;
+  background: rgb(38, 38, 38);
+}
+
+/* 控制点位置 */
+.resize-handle.left {
+  left: -4px;
+  top: 0;
+}
+
+.resize-handle.right {
+  right: -4px;
+  top: 0;
+}
+
+/* 加载中的样式 */
+.image-resizer.loading img {
+  filter: blur(1px) brightness(0.95);
+}
+
+/* 加载指示器样式 */
+.loading-indicator {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  background-color: rgba(0, 0, 0, 0.75);
+  color: white;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  z-index: 10;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.loading-indicator__spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

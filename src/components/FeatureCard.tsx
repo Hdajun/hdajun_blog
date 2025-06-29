@@ -6,7 +6,7 @@ export interface FeatureCardProps {
   href: string
   icon: ReactNode
   title: string
-  description: string
+  description?: string
   actionText: string
   tags?: string[]
   themeColor: 'blue' | 'green' | 'purple'
@@ -56,12 +56,15 @@ export function FeatureCard({
           {icon}
         </div>
         <div className="flex-1 text-left">
+          {/* 就一行溢出隐藏 */}
           <h2 className="mb-2 text-lg text-gray-500 transition-colors duration-200 ease-out dark:text-gray-400 group-hover:text-gray-700 dark:group-hover:text-gray-300">
             {title}
           </h2>
-          <p className="mb-3 text-sm text-gray-500 dark:text-gray-400">
-            {description}
-          </p>
+          {description && (
+            <p className="mb-3 text-sm text-gray-500 dark:text-gray-400">
+              {description}
+            </p>
+          )}
           {tags && tags.length > 0 && (
             <div className="mb-3 flex flex-wrap gap-2">
               {tags.map((tag, index) => (

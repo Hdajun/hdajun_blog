@@ -54,7 +54,7 @@
 }
 
 /* 防止移动端输入框、选择框和文本框自动放大 */
-input[type="text"],
+input[type="text"]:not(.title-input),
 input[type="number"],
 input[type="email"],
 input[type="tel"],
@@ -67,4 +67,21 @@ textarea {
   transform: scale(1) !important;
   transform-origin: left top;
   -webkit-text-size-adjust: 100%;
+}
+
+.uploading {
+  position: relative;
+  opacity: 0.7;
+}
+
+.uploading::after {
+  content: '上传中...';
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 4px 8px;
+  border-top-left-radius: 4px;
+  font-size: 12px;
 }

@@ -38,7 +38,7 @@ const categoryColors: Record<string, string> = {
 
 interface ApiResponse {
   success: boolean
-  msg: string
+  message: string
   data: Question[]
 }
 

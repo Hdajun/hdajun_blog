@@ -56,7 +56,7 @@ export async function apiClient<T>(
     }
 
     headers.set('Authorization', `Bearer ${token}`)
-  }
+  } 
 
   try {
     const response = await fetch(`/api${endpoint}`, {
@@ -111,7 +111,15 @@ export const api = {
       method: 'PUT',
       body: JSON.stringify(data),
     }),
-
+  
+  patch: <T>(endpoint: string, data?: any, options?: RequestOptions) =>
+    apiClient<T>(endpoint, {
+      requireAuth: true,
+      ...options,
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    }),
+  
   delete: <T>(endpoint: string, options?: RequestOptions) =>
     apiClient<T>(endpoint, { requireAuth: true, ...options, method: 'DELETE' }),
 }

@@ -41,14 +41,14 @@ export async function GET(request: NextRequest) {
     
     return NextResponse.json({
       success: true,
-      msg: 'success',
+      message: 'success',
       data: questions
     })
   } catch (error) {
     console.error('Failed to fetch questions:', error)
     return NextResponse.json({
       success: false,
-      msg: 'Failed to fetch questions',
+      message: 'Failed to fetch questions',
       data: null
     }, { status: 500 })
   }
@@ -81,7 +81,7 @@ export async function POST(request: NextRequest) {
     
     return NextResponse.json({
       success: true,
-      msg: 'success',
+      message: 'success',
       data: {
         _id: result.insertedId,
         ...questionWithTimestamps,
@@ -91,7 +91,7 @@ export async function POST(request: NextRequest) {
     console.error('Failed to create question:', error)
     return NextResponse.json({
       success: false,
-      msg: 'Failed to create question',
+      message: 'Failed to create question',
       data: null
     }, { status: 500 })
   }
@@ -109,7 +109,7 @@ export async function PUT(request: NextRequest) {
     if (!_id) {
       return NextResponse.json({
         success: false,
-        msg: 'Question ID is required',
+        message: 'Question ID is required',
         data: null
       }, { status: 400 })
     }
@@ -127,21 +127,21 @@ export async function PUT(request: NextRequest) {
     if (result.matchedCount === 0) {
       return NextResponse.json({
         success: false,
-        msg: 'Question not found',
+        message: 'Question not found',
         data: null
       }, { status: 404 })
     }
 
     return NextResponse.json({
       success: true,
-      msg: 'success',
+      message: 'success',
       data: null
     })
   } catch (error) {
     console.error('Failed to update question:', error)
     return NextResponse.json({
       success: false,
-      msg: 'Failed to update question',
+      message: 'Failed to update question',
       data: null
     }, { status: 500 })
   }
@@ -158,7 +158,7 @@ export async function DELETE(request: NextRequest) {
     if (!id) {
       return NextResponse.json({
         success: false,
-        msg: 'Question ID is required',
+        message: 'Question ID is required',
         data: null
       }, { status: 400 })
     }
@@ -170,21 +170,21 @@ export async function DELETE(request: NextRequest) {
     if (result.deletedCount === 0) {
       return NextResponse.json({
         success: false,
-        msg: 'Question not found',
+        message: 'Question not found',
         data: null
       }, { status: 404 })
     }
 
     return NextResponse.json({
       success: true,
-      msg: 'success',
+      message: 'success',
       data: null
     })
   } catch (error) {
     console.error('Failed to delete question:', error)
     return NextResponse.json({
       success: false,
-      msg: 'Failed to delete question',
+      message: 'Failed to delete question',
       data: null
     }, { status: 500 })
   }

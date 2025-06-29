@@ -69,6 +69,12 @@ function Navbar() {
                 >
                   题库
                 </Link>
+                <Link
+                  href="/notes"
+                  className="text-sm font-medium text-gray-600 transition-all duration-300 hover:text-black dark:text-gray-300 dark:hover:text-white"
+                >
+                  小记
+                </Link>
               </nav>
             </div>
 
@@ -132,6 +138,13 @@ function Navbar() {
                 onClick={() => setIsMenuOpen(false)}
               >
                 题库
+              </Link>
+              <Link
+                href="/notes"
+                className="text-sm font-medium text-gray-600 transition-all duration-300 hover:text-black dark:text-gray-300 dark:hover:text-white"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                小记
               </Link>
               {isAuthenticated ? (
                 <button

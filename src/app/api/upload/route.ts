@@ -7,6 +7,9 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
+export const dynamic = 'force-dynamic' // 如果需要禁用静态生成
+export const runtime = 'nodejs' // 或 'edge' 如果你需要使用 Edge Runtime
+
 export async function POST(request: Request) {
   try {
     const formData = await request.formData();

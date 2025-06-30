@@ -123,7 +123,7 @@ const ICONS = [
 
 const HOT_TOPICS = {
   key: '1',
-  label: '推荐博客',
+  label: '推荐小记',
   children: [
     {
       key: '1-1',

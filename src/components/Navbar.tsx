@@ -58,12 +58,6 @@ function Navbar() {
                   CHAT
                 </Link>
                 <Link
-                  href="/blog"
-                  className="text-sm font-medium text-gray-600 transition-all duration-300 hover:text-black dark:text-gray-300 dark:hover:text-white"
-                >
-                  博客
-                </Link>
-                <Link
                   href="/questions"
                   className="text-sm font-medium text-gray-600 transition-all duration-300 hover:text-black dark:text-gray-300 dark:hover:text-white"
                 >
@@ -124,13 +118,6 @@ function Navbar() {
                 onClick={() => setIsMenuOpen(false)}
               >
                 CHAT
-              </Link>
-              <Link
-                href="/blog"
-                className="text-sm font-medium text-gray-600 transition-all duration-300 hover:text-black dark:text-gray-300 dark:hover:text-white"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                博客
               </Link>
               <Link
                 href="/questions"

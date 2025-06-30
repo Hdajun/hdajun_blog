@@ -37,7 +37,7 @@ export default function RootLayout({
                 <div className="h-16" aria-hidden="true" />
                 <NavbarWrapper />
                 <main className="flex-1 overflow-auto no-scrollbar">
-                  <div className="mx-auto max-w-6xl px-6 pt-20 pb-8">{children}</div>
+                  <div className="mx-auto max-w-6xl px-6 pt-10 pb-8">{children}</div>
                 </main>
               </div>
             </AuthProvider>

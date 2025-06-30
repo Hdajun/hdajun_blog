@@ -41,7 +41,7 @@ const TypewriterText = ({ text, className = '' }: { text: string; className?: st
 
 export default function Home() {
   return (
-    <div className="relative min-h-[calc(100vh-16rem)] overflow-hidden">
+    <div className="relative min-h-[calc(100vh-16rem)] overflow-hidden pt-10">
       <div className="relative flex min-h-[calc(100vh-16rem)] flex-col items-center justify-center text-center pb-12">
         {/* 标题部分 */}
         <motion.div
@@ -135,11 +135,11 @@ export default function Home() {
           />
 
           <FeatureCard
-            href="/blog"
+            href="/notes"
             icon={<BookOutlined className="text-xl" />}
-            title="阅读博客"
-            description="浏览最新的技术文章，分享我的开发经验和学习心得。"
-            actionText="查看文章"
+            title="阅读小记"
+            description="浏览我的技术小记，分享我的开发经验和学习心得。"
+            actionText="查看小记"
             tags={['随缘更新', '技术博文', '实战案例']}
             themeColor="purple"
             delay={0.2}

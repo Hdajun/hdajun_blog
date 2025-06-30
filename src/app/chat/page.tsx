@@ -82,7 +82,7 @@ const SENDER_PROMPTS: SenderPrompt[] = [
   {
     key: '2',
     description: '项目经历',
-    icon: <Demo3Icon className="text-xl" width={14} />
+    icon: <Demo3Icon className="text-xl" width={14} />,
   },
   {
     key: '3',
@@ -644,7 +644,7 @@ const Independent: React.FC = () => {
           <Welcome
             variant="borderless"
             title={
-              <span style={{ color: theme === 'dark' ? darkTextColor : '' }}>
+              <span style={{ color: theme === 'dark' ? darkTextColor : '', fontWeight: 400 }}>
                 {window.innerWidth > 768
                   ? "Hi, I'm Your AI Assistant"
                   : 'Hi 👋'}

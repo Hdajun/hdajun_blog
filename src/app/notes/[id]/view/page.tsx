@@ -50,7 +50,7 @@ export default function NoteViewPage({ params }: { params: { id: string } }) {
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900">
-      <div className="max-w-4xl mx-auto p-8">
+      <div className="max-w-4xl mx-auto p-8 pt-16">
         <div className="mb-6">
           <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
             {note.title}

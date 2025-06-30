@@ -206,7 +206,7 @@ export default function NotesPage() {
                 我的小记
               </h1>
               <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                记录，创作，分享你的想法
+                记录，创作，分享我的想法
               </p>
             </div>
             {isAuthenticated && (
@@ -242,7 +242,7 @@ export default function NotesPage() {
         </div>
       </div>
 
-      <div className="mx-auto px-4 py-6">
+      <div className="mx-auto px-4 py-6 pt-8">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {getCurrentNotes()?.map(note => (
             <FeatureCard

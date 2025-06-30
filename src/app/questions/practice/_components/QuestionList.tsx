@@ -326,19 +326,63 @@ export default function QuestionList() {
     setExpandedQuestionId(prevId => prevId === questionId ? null : questionId)
   }, [])
 
-  const inputStyles = `w-full rounded-xl border border-gray-200 bg-transparent px-4 py-3 text-sm
-    transition-all duration-300 ease-out placeholder:text-gray-400
-    hover:border-[rgb(31,41,55)] hover:bg-gray-100/50
-    focus:border-transparent focus:bg-white focus:outline-none focus:ring-0
-    focus:shadow-[0_0_0_1px_rgb(55,65,81),0_0_0_2px_rgb(31,41,55)] focus:-translate-y-[1px]
-    dark:border-gray-700 dark:bg-transparent dark:text-white dark:placeholder:text-gray-400
-    dark:hover:border-[rgb(31,41,55)] dark:hover:bg-gray-700/50
-    dark:focus:bg-gray-800`
-
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[rgb(31,41,55)]"></div>
+      <div className="min-h-screen pb-8">
+        {/* 筛选器骨架屏 */}
+        <div className="sticky top-0 z-50 pb-4 pt-2">
+          <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-2xl p-5 
+            shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-200/30 dark:border-gray-700/30">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
+              <div className="flex flex-col sm:flex-row flex-1 gap-4">
+                {/* 分类选择骨架 */}
+                <div className="w-full sm:w-48">
+                  <div className="h-4 w-12 bg-gray-200 dark:bg-gray-700 rounded mb-1.5"></div>
+                  <div className="h-9 w-full bg-gray-200 dark:bg-gray-700 rounded-xl"></div>
+                </div>
+                {/* 难度选择骨架 */}
+                <div className="w-full sm:w-36">
+                  <div className="h-4 w-12 bg-gray-200 dark:bg-gray-700 rounded mb-1.5"></div>
+                  <div className="h-9 w-full bg-gray-200 dark:bg-gray-700 rounded-xl"></div>
+                </div>
+              </div>
+              {/* 搜索框骨架 */}
+              <div className="w-full sm:w-72">
+                <div className="h-4 w-12 bg-gray-200 dark:bg-gray-700 rounded mb-1.5"></div>
+                <div className="h-9 w-full bg-gray-200 dark:bg-gray-700 rounded-xl"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* 题目列表骨架屏 */}
+        <div className="max-w-[1200px] mx-auto mt-4">
+          <div className="space-y-6">
+            {[1, 2].map(i => (
+              <div
+                key={i}
+                className="bg-white/90 dark:bg-gray-800/90 rounded-2xl p-6
+                  shadow-[0_2px_8px_rgb(0,0,0,0.02)] border border-gray-200/50 dark:border-gray-700/50"
+              >
+                <div className="animate-pulse">
+                  {/* 标题和标签 */}
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4 mb-3">
+                    <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded-lg w-48 mb-2 sm:mb-0"></div>
+                    <div className="flex gap-2">
+                      <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded-md w-16"></div>
+                      <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded-md w-16"></div>
+                    </div>
+                  </div>
+                  {/* 描述 */}
+                  <div className="space-y-2">
+                    <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-full"></div>
+                    <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-2/3"></div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     )
   }
@@ -535,7 +579,7 @@ export default function QuestionList() {
                         </span>
                       </div>
                     </div>
-                    <div className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">
+                    <div className="text-sm text-gray-600 dark:text-gray-400">
                       {question.content || '暂无描述'}
                     </div>
                   </div>

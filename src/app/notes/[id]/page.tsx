@@ -6,6 +6,11 @@ import { useEditor, EditorContent } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight'
 import { common, createLowlight } from 'lowlight'
+import css from 'highlight.js/lib/languages/css'
+import js from 'highlight.js/lib/languages/javascript'
+import ts from 'highlight.js/lib/languages/typescript'
+import html from 'highlight.js/lib/languages/xml'
+import 'highlight.js/styles/github-dark.css'
 import Placeholder from '@tiptap/extension-placeholder'
 import Image from '@tiptap/extension-image'
 import { Markdown } from 'tiptap-markdown'
@@ -23,6 +28,12 @@ import { api } from '@/lib/api-client'
 import { Note } from '@/types/note'
 
 const lowlight = createLowlight(common)
+lowlight.register('html', html)
+lowlight.register('css', css)
+lowlight.register('js', js)
+lowlight.register('javascript', js)
+lowlight.register('typescript', ts)
+lowlight.register('ts', ts)
 
 // 保存状态
 type SaveStatus = 'default' | 'saved' | 'saving' | 'error' | 'waitingSaved'
@@ -57,6 +68,9 @@ export default function NotePage({ params }: { params: { id: string } }) {
       CodeBlockLowlight.configure({
         lowlight,
         defaultLanguage: 'plaintext',
+        HTMLAttributes: {
+          class: 'relative group not-prose bg-gray-900 rounded-md my-4',
+        },
       }),
       Placeholder.configure({
         placeholder: '开始写作...',
@@ -86,7 +100,7 @@ export default function NotePage({ params }: { params: { id: string } }) {
         bulletListMarker: '-',
         transformPastedText: true,
         transformCopiedText: false,
-        breaks: true,
+        breaks: false
       }),
       TextAlign.configure({
         types: ['heading', 'paragraph'],
@@ -112,7 +126,7 @@ export default function NotePage({ params }: { params: { id: string } }) {
     ],
     editorProps: {
       attributes: {
-        class: 'prose dark:prose-invert focus:outline-none max-w-none',
+        class: 'prose dark:prose-invert focus:outline-none max-w-none [&_pre]:!bg-gray-900 [&_pre]:!p-4 [&_pre]:!rounded-md [&_pre]:!m-0',
       },
       handleKeyDown: (view, event) => {
         // 代码块删除逻辑保持不变
@@ -151,7 +165,8 @@ export default function NotePage({ params }: { params: { id: string } }) {
     },
     immediatelyRender: false,
     onUpdate: ({ editor }) => {
-      const content = editor.getHTML()
+      // 获取 Markdown 格式的内容而不是 HTML
+      const content = editor.storage.markdown.getMarkdown()
       contentRef.current = content
       setSaveStatus('waitingSaved')
     },
@@ -218,7 +233,7 @@ export default function NotePage({ params }: { params: { id: string } }) {
     return (
       <div className="min-h-screen bg-white dark:bg-gray-900 p-8">
         <div className="max-w-4xl mx-auto">
-          <div className="animate-pulse">
+          <div className="animate-pulse" >
             <div className="h-8 bg-gray-200 dark:bg-gray-800 rounded w-1/2 mb-8"></div>
             <div className="space-y-4">
               <div className="h-4 bg-gray-200 dark:bg-gray-800 rounded w-3/4"></div>
@@ -233,7 +248,7 @@ export default function NotePage({ params }: { params: { id: string } }) {
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900">
-      <div className="max-w-4xl mx-auto p-8">
+      <div className="max-w-4xl mx-auto p-8 pt-16">
         <div className="mb-10">
           <input
             ref={titleInputRef}

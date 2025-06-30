@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/mongodb';
 import { ObjectId } from 'mongodb';
+import { TemplateNoteId } from '@/constants';
 
 export async function GET(
   request: Request,
@@ -36,7 +37,7 @@ export async function GET(
     const isAuthenticated = !!authHeader;
 
     // 检查访问权限
-    if (!isAuthenticated && note.visibility !== 'public') {
+    if (!isAuthenticated && note.visibility !== 'public' && params.id !== TemplateNoteId) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }

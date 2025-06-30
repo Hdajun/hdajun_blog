@@ -26,6 +26,8 @@ import { FontSize } from '@/components/Editor/extensions/fontSize'
 import { BackgroundColor } from '@/components/Editor/extensions/backgroundColor'
 import { api } from '@/lib/api-client'
 import { Note } from '@/types/note'
+import { TemplateNoteId } from '@/constants'
+import { useAuth } from '@/contexts/AuthContext'
 
 const lowlight = createLowlight(common)
 lowlight.register('html', html)
@@ -52,6 +54,7 @@ export default function NotePage({ params }: { params: { id: string } }) {
   const [saveStatus, setSaveStatus] = useState<SaveStatus>('default')
   const contentRef = useRef<string>('')
   const titleInputRef = useRef<HTMLInputElement>(null)
+  const {isAuthenticated} = useAuth()
 
   const editor = useEditor({
     extensions: [
@@ -267,7 +270,7 @@ export default function NotePage({ params }: { params: { id: string } }) {
         <div className="relative">
           <Toolbar
             editor={editor}
-            onSave={saveToServer}
+            onSave={ note._id === TemplateNoteId && !isAuthenticated  ? undefined : saveToServer}
             saveStatus={saveStatus}
             isPublic={note.visibility === 'public'}
             onAuthChange={async (isPublic) => {

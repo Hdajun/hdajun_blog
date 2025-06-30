@@ -5,6 +5,44 @@ import { useRouter } from 'next/navigation'
 import { Note } from '@/types/note'
 import { format } from 'date-fns'
 import { api } from '@/lib/api-client'
+import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
+import { Highlight, themes } from 'prism-react-renderer'
+
+// 添加代码块渲染器
+const CodeBlock = ({
+  children,
+  className,
+}: {
+  children: string
+  className?: string
+}) => {
+  // 从className中提取语言
+  const language = className ? className.replace('language-', '') : ''
+
+  return (
+    <Highlight
+      theme={themes.nightOwl}
+      code={children.trim()}
+      language={language || 'typescript'}
+    >
+      {({ className, style, tokens, getLineProps, getTokenProps }) => (
+        <pre
+          className={`${className} rounded-lg p-4 overflow-auto`}
+          style={style}
+        >
+          {tokens.map((line, i) => (
+            <div key={i} {...getLineProps({ line })}>
+              {line.map((token, key) => (
+                <span key={key} {...getTokenProps({ token })} />
+              ))}
+            </div>
+          ))}
+        </pre>
+      )}
+    </Highlight>
+  )
+}
 
 export default function NoteViewPage({ params }: { params: { id: string } }) {
   const router = useRouter()
@@ -50,7 +88,7 @@ export default function NoteViewPage({ params }: { params: { id: string } }) {
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900">
-      <div className="max-w-4xl mx-auto p-8 pt-16">
+      <div className="max-w-4xl mx-auto p-8">
         <div className="mb-6">
           <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
             {note.title}
@@ -59,10 +97,40 @@ export default function NoteViewPage({ params }: { params: { id: string } }) {
             最后更新于 {format(new Date(note.updatedAt), 'yyyy-MM-dd HH:mm:ss')}
           </div>
         </div>
-        <div 
-          className="prose dark:prose-invert max-w-none"
-          dangerouslySetInnerHTML={{ __html: note.content }}
-        />
+        <div className="prose dark:prose-invert max-w-none">
+          <ReactMarkdown
+            remarkPlugins={[remarkGfm]}
+            components={{
+              code({
+                inline,
+                className,
+                children,
+                ...props
+              }: any) {
+                if (inline) {
+                  return (
+                    <code
+                      className="px-1.5 py-0.5 rounded-md bg-gray-100 dark:bg-gray-700 text-sm font-medium text-gray-900 dark:text-gray-100"
+                      {...props}
+                    >
+                      {children}
+                    </code>
+                  )
+                }
+
+                return (
+                  <div className="relative group">
+                    <CodeBlock className={className}>
+                      {String(children)}
+                    </CodeBlock>
+                  </div>
+                )
+              },
+            }}
+          >
+            {note.content}
+          </ReactMarkdown>
+        </div>
       </div>
     </div>
   )

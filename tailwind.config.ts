@@ -7,6 +7,11 @@ const config: Config = {
     './src/components/**/*.{js,ts,jsx,tsx,mdx}',
     './src/app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
+  safelist: [
+    {
+      pattern: /^(bg|text|group-hover:text|dark:text|dark:bg|dark:group-hover:text)-(blue|green|red|yellow|purple|pink|indigo|gray)-([1-9]00)(\/20)?$/,
+    },
+  ],
   darkMode: 'class',
   theme: {
     extend: {

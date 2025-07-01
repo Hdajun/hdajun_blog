@@ -45,12 +45,20 @@ function Navbar() {
                 <span className="bg-gradient-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent transition-all duration-300 group-hover:from-violet-400 group-hover:to-indigo-400">
                   H_dajun
                 </span>
-                <span className="ml-1 text-gray-700 dark:text-gray-200">_0x01</span>
+                <span className="ml-1 text-gray-700 dark:text-gray-200">
+                  _0x01
+                </span>
                 <span className="absolute -bottom-1 left-0 h-0.5 w-0 bg-gradient-to-r from-indigo-400 to-violet-400 transition-all duration-300 group-hover:w-full"></span>
               </Link>
 
               {/* 主导航 - 桌面端 */}
               <nav className="ml-12 hidden space-x-8 md:flex">
+                <Link
+                  href="/questions"
+                  className="text-sm font-medium text-gray-600 transition-all duration-300 hover:text-black dark:text-gray-300 dark:hover:text-white"
+                >
+                  题库
+                </Link>
                 <Link
                   href="/chat"
                   className="text-sm font-medium text-gray-600 transition-all duration-300 hover:text-black dark:text-gray-300 dark:hover:text-white"
@@ -62,12 +70,6 @@ function Navbar() {
                   className="text-sm font-medium text-gray-600 transition-all duration-300 hover:text-black dark:text-gray-300 dark:hover:text-white"
                 >
                   小记
-                </Link>
-                 <Link
-                  href="/questions"
-                  className="text-sm font-medium text-gray-600 transition-all duration-300 hover:text-black dark:text-gray-300 dark:hover:text-white"
-                >
-                  题库
                 </Link>
               </nav>
             </div>
@@ -113,6 +115,13 @@ function Navbar() {
           >
             <nav className="flex flex-col space-y-4 py-4">
               <Link
+                href="/questions"
+                className="text-sm font-medium text-gray-600 transition-all duration-300 hover:text-black dark:text-gray-300 dark:hover:text-white"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                题库
+              </Link>
+              <Link
                 href="/chat"
                 className="text-sm font-medium text-gray-600 transition-all duration-300 hover:text-black dark:text-gray-300 dark:hover:text-white"
                 onClick={() => setIsMenuOpen(false)}
@@ -125,13 +134,6 @@ function Navbar() {
                 onClick={() => setIsMenuOpen(false)}
               >
                 小记
-              </Link>
-              <Link
-                href="/questions"
-                className="text-sm font-medium text-gray-600 transition-all duration-300 hover:text-black dark:text-gray-300 dark:hover:text-white"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                题库
               </Link>
               {isAuthenticated ? (
                 <button

@@ -9,24 +9,28 @@ export interface FeatureCardProps {
   description?: string
   actionText: string
   tags?: string[]
-  themeColor: 'blue' | 'green' | 'purple'
+  themeColor: string
   delay?: number
   className?: string
+  ribbon?: {
+    text: string
+    color: string
+  }
 }
 
-const themeColors = {
-  blue: {
-    icon: 'text-blue-600 dark:text-blue-400',
-    hover: 'group-hover:text-blue-600 dark:group-hover:text-blue-400',
-  },
-  green: {
-    icon: 'text-green-600 dark:text-green-400',
-    hover: 'group-hover:text-green-600 dark:group-hover:text-green-400',
-  },
-  purple: {
-    icon: 'text-purple-600 dark:text-purple-400',
-    hover: 'group-hover:text-purple-600 dark:group-hover:text-purple-400',
-  },
+const getThemeColors = (color: string) => {
+  return {
+    icon: `text-${color}-600 dark:text-${color}-400`,
+    hover: `group-hover:text-${color}-600 dark:group-hover:text-${color}-400`,
+  }
+}
+
+const getRibbonColors = (color: string) => {
+  return {
+    bg: `bg-${color}-500/90 dark:bg-${color}-400/90`,
+    text: `text-${color}-50 dark:text-${color}-950`,
+    shadow: `shadow-${color}-500/20 dark:shadow-${color}-400/20`,
+  }
 }
 
 export function FeatureCard({
@@ -36,11 +40,16 @@ export function FeatureCard({
   description,
   actionText,
   tags,
-  themeColor,
+  themeColor = 'blue',
   delay = 0,
   className = '',
+  ribbon,
 }: FeatureCardProps) {
-  const colors = themeColors[themeColor]
+  const colors = getThemeColors(themeColor)
+  const ribbonStyle = ribbon ? getRibbonColors(ribbon.color) : null
+
+  console.log(ribbonStyle);
+  
 
   return (
     <motion.a
@@ -49,10 +58,21 @@ export function FeatureCard({
       animate={{ opacity: 1, y: 0 }}
       whileHover={{ y: -4, scale: 1.02 }}
       transition={{ duration: 0.2, delay }}
-      className={`group relative w-[340px] rounded-2xl bg-white p-6 shadow-[0_4px_12px_rgba(0,0,0,0.08)] backdrop-blur-sm transition-all duration-300 ease-out hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] dark:bg-gray-800 ${className}`}
+      className={`group relative w-[340px] rounded-2xl bg-white p-6 shadow-[0_4px_12px_rgba(0,0,0,0.08)] backdrop-blur-sm transition-all duration-300 ease-out hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] dark:bg-gray-800 overflow-hidden ${className}`}
     >
+      {ribbon && (
+        <div className="absolute -right-[30px] top-[20px] z-10 rotate-45 transform">
+          <div
+            className={`py-1 w-[120px] text-center text-xs font-medium ${ribbonStyle?.bg} ${ribbonStyle?.text} shadow-lg ${ribbonStyle?.shadow} backdrop-blur-sm`}
+          >
+            {ribbon.text}
+          </div>
+        </div>
+      )}
       <div className="flex items-start gap-4">
-        <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gray-100 ${colors.icon} transition-transform duration-200 ease-out group-hover:scale-110 dark:bg-gray-700`}>
+        <div
+          className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gray-100 ${colors.icon} transition-transform duration-200 ease-out group-hover:scale-110 dark:bg-gray-700`}
+        >
           {icon}
         </div>
         <div className="flex-1 text-left">

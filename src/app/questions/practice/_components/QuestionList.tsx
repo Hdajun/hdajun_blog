@@ -15,7 +15,7 @@ import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { Highlight, themes } from 'prism-react-renderer'
 import { Dropdown } from '@/app/questions/create/CreateQuestionClient'
-import { Modal } from 'antd'
+import { Modal } from '@/components/Modal'
 import Link from 'next/link'
 import { api } from '@/lib/api-client'
 import { message } from 'antd'
@@ -160,6 +160,9 @@ export default function QuestionList() {
   const [copiedId, setCopiedId] = useState<string | null>(null)
   const [deletingId, setDeletingId] = useState<string | null>(null)
   const [isFilterExpanded, setIsFilterExpanded] = useState(false)
+  // 删除相关状态
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
+  const [deleteQuestionInfo, setDeleteQuestionInfo] = useState<{ id: string; title: string } | null>(null)
   // 无限滚动相关状态
   const [page, setPage] = useState(1)
   const [hasMore, setHasMore] = useState(true)
@@ -276,51 +279,44 @@ export default function QuestionList() {
   // 删除题目函数
   const handleDelete = useCallback(
     async (questionId: string, questionTitle: string) => {
-      Modal.confirm({
-        title: '您确定要删除这道题目吗？',
-        content: (
-          <div>
-            <p className="mt-2">
-              题目：<span className="font-medium">{questionTitle}</span>
-            </p>
-            <p className="mt-3">此操作不可撤销，请谨慎操作</p>
-          </div>
-        ),
-        okText: '确认删除',
-        cancelText: '取消',
-        okType: 'danger',
-        onOk: async () => {
-          try {
-            setDeletingId(questionId)
-            const { success, message: responseMessage } = await api.delete(`/questions?id=${questionId}`)
-
-            if (success) {
-              // 从本地状态中移除已删除的题目
-              setQuestions(prev =>
-                prev.filter(q => q._id?.toString() !== questionId)
-              )
-              // 如果题目处于展开状态，也要从展开状态中移除
-              setExpandedQuestionId(null)
-              message.success({
-                content: '题目已成功删除',
-                className: 'custom-message',
-                style: {
-                  marginTop: '4vh',
-                }
-              })
-            } else {
-              throw new Error(responseMessage || '删除失败')
-            }
-          } catch (error) {
-            console.error('删除题目失败:', error)
-          } finally {
-            setDeletingId(null)
-          }
-        },
-      })
+      setDeleteQuestionInfo({ id: questionId, title: questionTitle })
+      setIsDeleteModalOpen(true)
     },
     []
   )
+
+  const handleConfirmDelete = async () => {
+    if (!deleteQuestionInfo) return { success: false }
+    
+    try {
+      setDeletingId(deleteQuestionInfo.id)
+      const { success, message: responseMessage } = await api.delete(`/questions?id=${deleteQuestionInfo.id}`)
+
+      if (success) {
+        // 从本地状态中移除已删除的题目
+        setQuestions(prev =>
+          prev.filter(q => q._id?.toString() !== deleteQuestionInfo.id)
+        )
+        // 如果题目处于展开状态，也要从展开状态中移除
+        setExpandedQuestionId(null)
+        message.success({
+          content: '简简单单的一个题目还需要记录，直接送走',
+          className: 'custom-message',
+          style: {
+            marginTop: '4vh',
+          }
+        })
+        return { success: true }
+      } else {
+        throw new Error(responseMessage || '删除失败')
+      }
+    } catch (error) {
+      console.error('删除题目失败:', error)
+      return { success: false }
+    } finally {
+      setDeletingId(null)
+    }
+  }
 
   const toggleQuestion = useCallback((questionId: string) => {
     setExpandedQuestionId(prevId => prevId === questionId ? null : questionId)
@@ -502,7 +498,7 @@ export default function QuestionList() {
                       transition-all duration-300 ease-out placeholder:text-gray-400
                       hover:border-[rgb(31,41,55)] hover:bg-white dark:hover:bg-gray-900
                       focus:border-transparent focus:bg-white dark:focus:bg-gray-900 focus:outline-none focus:ring-0
-                      focus:shadow-[0_0_0_1px_rgb(55,65,81),0_0_0_2px_rgb(31,41,55)] focus:-translate-y-[1px]
+                      focus:shadow-[0_0_0_1px_rgb(55,65,81),0_0_0_1px_rgb(31,41,55)] focus:-translate-y-[1px]
                       dark:border-gray-700 dark:text-white dark:placeholder:text-gray-500
                       dark:hover:border-[rgb(31,41,55)]"
                   />
@@ -768,7 +764,7 @@ export default function QuestionList() {
               <div className="mt-6">
                 <Link
                   href="/questions/create"
-                  className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-xl text-white bg-[rgb(31,41,55)] hover:bg-[rgb(55,65,81)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[rgb(31,41,55)] transition-all duration-200 ease-out transform hover:-translate-y-0.5"
+                  className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-xl text-white bg-[rgb(31,41,55)] hover:bg-[rgb(55,65,81)] focus:outline-none focus:ring-1 focus:ring-offset-1 focus:ring-[rgb(31,41,55)] transition-all duration-200 ease-out transform hover:-translate-y-0.5"
                 >
                   <svg
                     className="w-5 h-5 mr-2"
@@ -790,6 +786,30 @@ export default function QuestionList() {
           )}
         </div>
       </div>
+
+      {/* 删除确认 Modal */}
+      <Modal
+        open={isDeleteModalOpen}
+        onClose={() => {
+          setIsDeleteModalOpen(false)
+          setDeleteQuestionInfo(null)
+        }}
+        title="真的要删掉这道题吗？"
+        description={
+          <div className="space-y-2">
+            <p>
+              这道 <span className="font-medium text-gray-800 dark:text-gray-200">{deleteQuestionInfo?.title}</span> 题
+            </p>
+            <p className="text-gray-500 dark:text-gray-400">
+              删掉之后它可能会偷偷躲起来，再也找不到啦！🙈
+            </p>
+          </div>
+        }
+        cancelText="再想想"
+        confirmText={deletingId === deleteQuestionInfo?.id ? "删除中..." : "确定删除"}
+        type="danger"
+        onConfirm={handleConfirmDelete}
+      />
     </div>
   )
 }

@@ -62,7 +62,9 @@ export default function NoteViewPage({ params }: { params: { id: string } }) {
   }
 
   useEffect(() => {
-    fetchNote()
+    if (!!params.id) {
+      fetchNote()
+    }
   }, [params.id])
 
   if (isLoading) {

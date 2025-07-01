@@ -193,3 +193,20 @@ export const ICONS = [
     )
   }
 ];
+
+// 来一个获取随机颜色的函数 colors来个几十种，要求颜色是暖色调，不用太亮
+export const getRandomColor = () => {
+  const colors = [
+    'blue',
+    'emerald',
+    'indigo',
+    'amber',
+    'orange',
+    'purple',
+    'red',
+    'rose',
+    'teal',
+    'green',
+  ]
+  return colors[Math.floor(Math.random() * colors.length)]
+}

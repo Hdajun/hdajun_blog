@@ -85,3 +85,7 @@ textarea {
   border-top-left-radius: 4px;
   font-size: 12px;
 }
+
+::-webkit-scrollbar {
+  display: none !important;
+}

@@ -1,78 +1,68 @@
-'use client'
+"use client";
 
-import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
-import { format } from 'date-fns'
-import { Note } from '@/types/note'
-import { useAuth } from '@/contexts/AuthContext'
-import { api } from '@/lib/api-client'
-import { FeatureCard } from '@/components/FeatureCard'
-import { ICONS } from './icons'
-import { TemplateNoteId } from '@/constants'
-
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { format } from "date-fns";
+import { Note } from "@/types/note";
+import { useAuth } from "@/contexts/AuthContext";
+import { api } from "@/lib/api-client";
+import { FeatureCard } from "@/components/FeatureCard";
+import { getRandomColor, ICONS } from "./icons";
+import { TemplateNoteId } from "@/constants";
+import { debounce } from "lodash";
 
 export default function NotesPage() {
-  const router = useRouter()
-  const [notes, setNotes] = useState<Note[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [searchQuery, setSearchQuery] = useState('')
-  const { isAuthenticated } = useAuth()
+  const router = useRouter();
+  const [notes, setNotes] = useState<Note[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
+  const { isAuthenticated } = useAuth();
 
   useEffect(() => {
     const fetchNotes = async () => {
       try {
-        const response = await api.get<Note[]>(`/notes`)
-        setNotes(response.data || [])
+        const response = await api.get<Note[]>(`/notes`);
+        setNotes(response.data || []);
       } catch (error) {
-        console.error('Failed to fetch notes:', error)
+        console.error("Failed to fetch notes:", error);
       } finally {
-        setIsLoading(false)
+        setIsLoading(false);
       }
-    }
-    fetchNotes()
-  }, [isAuthenticated])
+    };
+    fetchNotes();
+  }, [isAuthenticated]);
 
-  const handleCreateNote = async () => {
+  const handleCreateNote = debounce(async () => {
     try {
-      const response = await api.post<Note>('/notes', {
-        title: '',
-        content: '',
-        visibility: 'private',
-      })
+      const response = await api.post<Note>("/notes", {
+        title: "",
+        content: "",
+        visibility: "private",
+      });
 
       if (response.data?._id) {
-        router.push(`/notes/${response.data._id}`)
+        router.push(`/notes/${response.data._id}`);
       }
     } catch (error) {
-      console.error('Failed to create note:', error)
+      console.error("Failed to create note:", error);
     }
-  }
+  }, 300);
 
   const getCurrentNotes = () => {
     const filtered = isAuthenticated
       ? notes
-      : notes.filter(item => item.visibility === 'public')
-    if (!searchQuery) return filtered
-    return filtered.filter(note =>
+      : notes.filter((item) => item.visibility === "public");
+    if (!searchQuery) return filtered;
+    return filtered.filter((note) =>
       note.title.toLowerCase().includes(searchQuery.toLowerCase())
-    )
-  }
+    );
+  };
 
   // 获取随机图标
-  const getRandomIcon = () => {
-    const randomIndex = Math.floor(Math.random() * ICONS.length)
-    return ICONS[randomIndex].icon
-  }
-
-  const getRandomThemeColor = () => {
-    const colors: Array<'blue' | 'green' | 'purple'> = [
-      'blue',
-      'green',
-      'purple',
-    ]
-    const randomIndex = Math.floor(Math.random() * colors.length)
-    return colors[randomIndex]
-  }
+  const getRandomIcon = (index?: number) => {
+    const randomIndex = Math.floor(Math.random() * ICONS.length);
+    return ICONS[index || randomIndex].icon;
+  };
 
   if (isLoading) {
     return (
@@ -87,7 +77,7 @@ export default function NotesPage() {
         </div>
         <div className="max-w-5xl mx-auto px-4 py-6">
           <div className="animate-pulse space-y-6">
-            {[1, 2, 3].map(i => (
+            {[1, 2, 3].map((i) => (
               <div
                 key={i}
                 className="bg-gray-50 dark:bg-gray-800/30 rounded-xl p-6"
@@ -99,7 +89,7 @@ export default function NotesPage() {
           </div>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -150,26 +140,42 @@ export default function NotesPage() {
 
       <div className="mx-auto px-4 py-6 pt-8">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {getCurrentNotes()?.map(note => (
-            <FeatureCard
-              key={note._id?.toString()}
-              href={
-                (isAuthenticated || note._id === TemplateNoteId)
-                  ? `/notes/${note._id}`
-                  : `/notes/${note._id}/view`
-              }
-              title={note.title || '无标题小记'}
-              icon={getRandomIcon()}
-              actionText="点击查看"
-              themeColor={getRandomThemeColor()}
-              tags={[
-                note.visibility === 'public' ? '公开' : '私密',
-                format(new Date(note.updatedAt), 'yyyy-MM-dd HH:mm:ss'),
-              ]}
-              // 因为小记标题可能有一行可能有多行，如果一排有多行的有单行的，就会导出actionText的不统一在一条直线，所以定制一下内部的布局方式使用flex 上下 然后between
-              className="flex flex-col justify-between"
-            />
-          ))}
+          {getCurrentNotes()?.map((note) => {
+            const themeColor =
+              note._id === TemplateNoteId ? "blue" : getRandomColor();
+            return (
+              <FeatureCard
+                key={note._id?.toString()}
+                href={
+                  isAuthenticated || note._id === TemplateNoteId
+                    ? `/notes/${note._id}`
+                    : `/notes/${note._id}/view`
+                }
+                ribbon={
+                  note.isTop
+                    ? {
+                        text: "置顶",
+                        color: themeColor,
+                      }
+                    : undefined
+                }
+                title={note.title || "无标题小记"}
+                icon={
+                  note._id === TemplateNoteId
+                    ? getRandomIcon(7)
+                    : getRandomIcon()
+                }
+                actionText="点击查看"
+                themeColor={themeColor}
+                tags={[
+                  note.visibility === "public" ? "公开" : "私密",
+                  format(new Date(note.updatedAt), "yyyy-MM-dd HH:mm:ss"),
+                ]}
+                // 因为小记标题可能有一行可能有多行，如果一排有多行的有单行的，就会导出actionText的不统一在一条直线，所以定制一下内部的布局方式使用flex 上下 然后between
+                className="flex flex-col justify-between"
+              />
+            );
+          })}
 
           {getCurrentNotes()?.length === 0 && (
             <div className="col-span-full text-center py-12 bg-gray-50/50 dark:bg-gray-800/30 rounded-lg border border-gray-100/50 dark:border-gray-700/30">
@@ -195,5 +201,5 @@ export default function NotesPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

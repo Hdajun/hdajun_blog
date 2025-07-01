@@ -28,6 +28,7 @@ import { api } from '@/lib/api-client'
 import { Note } from '@/types/note'
 import { TemplateNoteId } from '@/constants'
 import { useAuth } from '@/contexts/AuthContext'
+import { message } from 'antd'
 
 const lowlight = createLowlight(common)
 lowlight.register('html', html)
@@ -54,7 +55,7 @@ export default function NotePage({ params }: { params: { id: string } }) {
   const [saveStatus, setSaveStatus] = useState<SaveStatus>('default')
   const contentRef = useRef<string>('')
   const titleInputRef = useRef<HTMLInputElement>(null)
-  const {isAuthenticated} = useAuth()
+  const { isAuthenticated } = useAuth()
 
   const editor = useEditor({
     extensions: [
@@ -103,7 +104,7 @@ export default function NotePage({ params }: { params: { id: string } }) {
         bulletListMarker: '-',
         transformPastedText: true,
         transformCopiedText: false,
-        breaks: false
+        breaks: false,
       }),
       TextAlign.configure({
         types: ['heading', 'paragraph'],
@@ -129,7 +130,8 @@ export default function NotePage({ params }: { params: { id: string } }) {
     ],
     editorProps: {
       attributes: {
-        class: 'prose dark:prose-invert focus:outline-none max-w-none [&_pre]:!bg-gray-900 [&_pre]:!p-4 [&_pre]:!rounded-md [&_pre]:!m-0',
+        class:
+          'prose dark:prose-invert focus:outline-none max-w-none [&_pre]:!bg-gray-900 [&_pre]:!p-4 [&_pre]:!rounded-md [&_pre]:!m-0',
       },
       handleKeyDown: (view, event) => {
         // 代码块删除逻辑保持不变
@@ -177,17 +179,14 @@ export default function NotePage({ params }: { params: { id: string } }) {
 
   // 保存到服务器
   const saveToServer = async () => {
-    console.log('saveToServer', contentRef.current)
     if (!note) return
 
     try {
       setSaveStatus('saving')
-      console.log('saveToServer', note)
       const response = await api.patch<Note>(`/notes/${params.id}`, {
         content: contentRef.current,
         title: note.title,
       })
-      console.log('saveToServer', response)
       setNote((response.data || {}) as Note)
       setSaveStatus('saved')
     } catch (error) {
@@ -199,7 +198,7 @@ export default function NotePage({ params }: { params: { id: string } }) {
   const fetchNote = async () => {
     try {
       const response = await api.get<Note>(`/notes/${params.id}`, {
-        requireAuth: true,
+        requireAuth: params.id !== TemplateNoteId,
       })
       const data = response.data
       if (data) {
@@ -215,13 +214,25 @@ export default function NotePage({ params }: { params: { id: string } }) {
   }
 
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      const newTitle = e.target.value
-      setNote({ ...note, title: newTitle })
-      setSaveStatus('waitingSaved')
+    const newTitle = e.target.value
+    setNote({ ...note, title: newTitle })
+    setSaveStatus('waitingSaved')
+  }
+
+  const handleDelete = async () => {
+    // 调用删除 API
+    const response = await api.delete(`/notes/${params.id}`)
+    if (response.success) {
+      message.success('删除成功，正在跳转至列表页...')
+      router.push('/notes') // 跳转到列表页
+    }
+    return response
   }
 
   useEffect(() => {
-    fetchNote()
+    if (!!params.id) {
+      fetchNote()
+    }
   }, [params.id])
 
   // 添加编辑器内容初始化逻辑
@@ -236,7 +247,7 @@ export default function NotePage({ params }: { params: { id: string } }) {
     return (
       <div className="min-h-screen bg-white dark:bg-gray-900 p-8">
         <div className="max-w-4xl mx-auto">
-          <div className="animate-pulse" >
+          <div className="animate-pulse">
             <div className="h-8 bg-gray-200 dark:bg-gray-800 rounded w-1/2 mb-8"></div>
             <div className="space-y-4">
               <div className="h-4 bg-gray-200 dark:bg-gray-800 rounded w-3/4"></div>
@@ -250,8 +261,8 @@ export default function NotePage({ params }: { params: { id: string } }) {
   }
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-900">
-      <div className="max-w-4xl mx-auto p-8 pt-16">
+    <div className="min-h-screen bg-white dark:bg-gray-900 rounded-lg">
+      <div className="max-w-4xl mx-auto p-8 mt-14">
         <div className="mb-10">
           <input
             ref={titleInputRef}
@@ -270,20 +281,31 @@ export default function NotePage({ params }: { params: { id: string } }) {
         <div className="relative">
           <Toolbar
             editor={editor}
-            onSave={ note._id === TemplateNoteId && !isAuthenticated  ? undefined : saveToServer}
+            onSave={
+              note._id === TemplateNoteId && !isAuthenticated
+                ? undefined
+                : saveToServer
+            }
             saveStatus={saveStatus}
             isPublic={note.visibility === 'public'}
-            onAuthChange={async (isPublic) => {
+            isTop={!!note.isTop}
+            onNoteChange={async (isPublic, isTop) => {
               // 调用保存接口更新对应权限字段
               const response = await api.patch<Note>(`/notes/${params.id}`, {
                 title: note.title,
                 content: note.content,
-                visibility: isPublic ? 'public' : 'private',
+                visibility: isPublic
+                  ? isPublic
+                    ? 'public'
+                    : 'private'
+                  : undefined,
+                isTop: isTop || undefined,
               })
               if (response.success) {
                 setNote((response.data || {}) as Note)
               }
             }}
+            onDelete={handleDelete}
           />
           <EditorContent editor={editor} className="min-h-[500px]" />
         </div>

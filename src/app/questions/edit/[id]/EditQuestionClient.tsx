@@ -74,7 +74,7 @@ function Dropdown<T>({
             transition-all duration-300 ease-out
             hover:border-[rgb(31,41,55)] hover:bg-gray-100/50
             focus:border-transparent focus:bg-white focus:outline-none focus:ring-0
-            focus:shadow-[0_0_0_1px_rgb(55,65,81),0_0_0_2px_rgb(31,41,55)] focus:-translate-y-[1px]
+            focus:shadow-[0_0_0_1px_rgb(55,65,81),0_0_0_1px_rgb(31,41,55)] focus:-translate-y-[1px]
             dark:border-gray-700 dark:bg-transparent dark:text-white
             dark:hover:border-[rgb(31,41,55)] dark:hover:bg-gray-700/50
             dark:focus:bg-gray-800 ${className}`}
@@ -284,7 +284,7 @@ export default function EditQuestionClient({ questionId }: EditQuestionClientPro
     transition-all duration-300 ease-out placeholder:text-gray-400
     hover:border-[rgb(31,41,55)] hover:bg-gray-100/50
     focus:border-transparent focus:bg-white focus:outline-none focus:ring-0
-    focus:shadow-[0_0_0_1px_rgb(55,65,81),0_0_0_2px_rgb(31,41,55)] focus:-translate-y-[1px]
+    focus:shadow-[0_0_0_1px_rgb(55,65,81),0_0_0_1px_rgb(31,41,55)] focus:-translate-y-[1px]
     dark:border-gray-700 dark:bg-transparent dark:text-white dark:placeholder:text-gray-400
     dark:hover:border-[rgb(31,41,55)] dark:hover:bg-gray-700/50
     dark:focus:bg-gray-800`

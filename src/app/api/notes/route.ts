@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/mongodb';
-import { ObjectId } from 'mongodb';
 import { NoteVisibility } from '@/types/note';
 
 export async function GET(request: Request) {
@@ -10,7 +9,7 @@ export async function GET(request: Request) {
     const notes = await db
       .collection('notes')
       .find({})
-      .sort({ updatedAt: -1 })
+      .sort({isTop: -1, updatedAt: -1 })
       .toArray();
 
     return NextResponse.json({

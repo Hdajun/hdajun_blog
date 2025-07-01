@@ -5,6 +5,8 @@ import { ThemeProvider } from '@/components/ThemeProvider'
 import { AntdRegistry } from '@ant-design/nextjs-registry'
 import { NavbarWrapper } from '@/components/Navbar'
 import { AuthProvider } from '@/contexts/AuthContext'
+import { ConfigProvider } from 'antd'
+import theme from '@/theme/themeConfig'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -26,6 +28,7 @@ export default function RootLayout({
       </head>
       <body className={inter.className} suppressHydrationWarning>
         <AntdRegistry>
+          <ConfigProvider theme={theme}>
           <ThemeProvider
             attribute="class"
             defaultTheme="system"
@@ -42,6 +45,7 @@ export default function RootLayout({
               </div>
             </AuthProvider>
           </ThemeProvider>
+          </ConfigProvider>
         </AntdRegistry>
       </body>
     </html>

@@ -11,6 +11,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+          
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1
         with:
@@ -18,5 +23,5 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            cd /var/www/blog
+            cd /var/www/next-blog
             ./scripts/deploy.sh

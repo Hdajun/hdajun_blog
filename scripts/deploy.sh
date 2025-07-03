@@ -1,46 +1,55 @@
 #!/bin/bash
 set -e
 
-echo "🚀 开始部署: $(date)"
+# ===== 配置区 =====
+PROJECT_DIR="/var/www/blog"
+ENV_FILE="/etc/secrets/blog.env"
+LOG_FILE="/var/log/blog-deploy.log"
+BUILD_TIMEOUT=900  # 15分钟构建超时
+# =================
 
-cd /var/www/hda
+# 记录开始时间
+START_TIME=$(date +%s)
+echo "=== 开始部署: $(date '+%Y-%m-%d %H:%M:%S') ===" | tee -a $LOG_FILE
 
-# 确保使用正确的Node版本
+# 确保使用Node 20
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+nvm use 20
 
-# 安装并使用指定版本的 Node.js
-nvm use 20.19.3
-
-# 验证 Node.js 版本
-node_version=$(node -v)
-echo "当前 Node.js 版本: $node_version"
-
-# 清理旧的构建缓存和模块
-echo "清理旧的构建文件..."
-rm -rf .next
-rm -rf node_modules
+# 进入项目目录
+cd $PROJECT_DIR
 
 # 链接环境变量
-echo "配置环境变量..."
-ln -sf /etc/secrets/blog.env .env.production
+ln -sf $ENV_FILE .env.production
 
 # 更新代码
-echo "更新代码..."
+echo ">> 拉取最新代码" | tee -a $LOG_FILE
 git fetch --all
 git reset --hard origin/main
 
-# 使用 --legacy-peer-deps 安装依赖，避免版本冲突
-echo "安装依赖..."
-npm install --legacy-peer-deps
+# 安装依赖（使用ci命令加速）
+echo ">> 安装依赖" | tee -a $LOG_FILE
+npm ci --production
 
-# 构建项目
-echo "开始构建..."
-npm run build
+# 构建项目（增加超时保护）
+echo ">> 构建项目" | tee -a $LOG_FILE
+timeout $BUILD_TIMEOUT npm run build || {
+  BUILD_EXIT_CODE=$?
+  if [ $BUILD_EXIT_CODE -eq 124 ]; then
+    echo "❌ 构建超时（超过 $BUILD_TIMEOUT 秒）" | tee -a $LOG_FILE
+  else
+    echo "❌ 构建失败，退出码: $BUILD_EXIT_CODE" | tee -a $LOG_FILE
+  fi
+  exit $BUILD_EXIT_CODE
+}
 
 # 重启应用
-echo "重启应用..."
+echo ">> 重启服务" | tee -a $LOG_FILE
 pm2 restart next-blog
 
-echo "✅ 部署成功! 版本: $(git rev-parse --short HEAD)"
-echo "完成时间: $(date)"
+# 计算并显示耗时
+END_TIME=$(date +%s)
+DURATION=$((END_TIME - START_TIME))
+echo "✅ 部署成功! 耗时: ${DURATION}秒" | tee -a $LOG_FILE
+echo "🔄 当前版本: $(git rev-parse --short HEAD)" | tee -a $LOG_FILE

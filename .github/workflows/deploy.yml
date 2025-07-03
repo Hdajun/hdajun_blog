@@ -22,8 +22,9 @@ jobs:
           host: ${{ secrets.SERVER_IP }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          command_timeout: "30m"    # 设置命令超时时间为30分钟
+          timeout: "30m"    # 设置命令超时时间为30分钟
           script_stop: true         # 任何命令失败时停止执行
           script: |
             cd /var/www/blog
             ./scripts/deploy.sh
+

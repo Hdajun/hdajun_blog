@@ -23,5 +23,5 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            cd /var/www/next-blog
+            cd /var/www/blog
             ./scripts/deploy.sh

@@ -3,7 +3,7 @@ set -e
 
 echo "🚀 开始部署: $(date)"
 
-cd /var/www/blog
+cd /var/www/hda
 
 # 确保使用正确的Node版本
 export NVM_DIR="$HOME/.nvm"

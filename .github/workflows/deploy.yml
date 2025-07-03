@@ -26,7 +26,6 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           command_timeout: "20m"
-          script_stop: true
           script: |
             chmod +x /var/www/blog/scripts/deploy.sh
             /var/www/blog/scripts/deploy.sh

@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion'
 import { ReactNode } from 'react'
 import { ArrowRightOutlined } from '@ant-design/icons'
+import { colorStyles } from '@/app/notes/icons'
 
 export interface FeatureCardProps {
   href: string
@@ -16,20 +17,28 @@ export interface FeatureCardProps {
     text: string
     color: string
   }
+  [key: string]: any
 }
 
-const getThemeColors = (color: string) => {
+// 类型定义
+type ColorKey = keyof typeof colorStyles
+
+// 获取 Ribbon 样式
+const getRibbonColors = (color: ColorKey) => {
+  const styles = colorStyles[color]
   return {
-    icon: `text-${color}-600 dark:text-${color}-400`,
-    hover: `group-hover:text-${color}-600 dark:group-hover:text-${color}-400`,
+    bg: styles.bg,
+    text: styles.text,
+    shadow: styles.shadow,
   }
 }
 
-const getRibbonColors = (color: string) => {
+// 获取 Theme 样式
+const getThemeColors = (color: ColorKey) => {
+  const styles = colorStyles[color]
   return {
-    bg: `bg-${color}-500/90 dark:bg-${color}-400/90`,
-    text: `text-${color}-50 dark:text-${color}-950`,
-    shadow: `shadow-${color}-500/20 dark:shadow-${color}-400/20`,
+    icon: styles.icon,
+    hover: styles.hover,
   }
 }
 
@@ -45,11 +54,8 @@ export function FeatureCard({
   className = '',
   ribbon,
 }: FeatureCardProps) {
-  const colors = getThemeColors(themeColor)
-  const ribbonStyle = ribbon ? getRibbonColors(ribbon.color) : null
-
-  console.log(ribbonStyle);
-  
+  const colors = getThemeColors(themeColor as any)
+  const ribbonStyle = ribbon ? getRibbonColors(ribbon.color as any) : null
 
   return (
     <motion.a
@@ -85,16 +91,18 @@ export function FeatureCard({
               {description}
             </p>
           )}
-          {tags && tags.length > 0 && (
+          {!!tags?.filter(item => !!item)?.length && (
             <div className="mb-3 flex flex-wrap gap-2">
-              {tags.map((tag, index) => (
-                <span
-                  key={index}
-                  className="rounded-full bg-gray-100 px-2.5 py-0.5 text-xs text-gray-500 dark:bg-gray-700 dark:text-gray-400"
-                >
-                  {tag}
-                </span>
-              ))}
+              {tags
+                ?.filter(item => !!item)
+                ?.map((tag, index) => (
+                  <span
+                    key={index}
+                    className="rounded-full bg-gray-100 px-2.5 py-0.5 text-xs text-gray-500 dark:bg-gray-700 dark:text-gray-400"
+                  >
+                    {tag}
+                  </span>
+                ))}
             </div>
           )}
         </div>

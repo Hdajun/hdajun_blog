@@ -24,27 +24,32 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+        />
       </head>
       <body className={inter.className} suppressHydrationWarning>
         <AntdRegistry>
           <ConfigProvider theme={theme}>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
-            <AuthProvider>
-              <div className="flex h-screen flex-col bg-white text-black dark:bg-gray-950 dark:text-white">
-                <div className="h-16" aria-hidden="true" />
-                <NavbarWrapper />
-                <main className="flex-1 overflow-auto no-scrollbar">
-                  <div className="mx-auto max-w-6xl px-6 pt-10 pb-8">{children}</div>
-                </main>
-              </div>
-            </AuthProvider>
-          </ThemeProvider>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="system"
+              enableSystem
+              disableTransitionOnChange
+            >
+              <AuthProvider>
+                <div className="flex h-screen flex-col bg-white text-black dark:bg-gray-950 dark:text-white">
+                  <div className="h-16" aria-hidden="true" />
+                  <NavbarWrapper />
+                  <main className="flex-1 overflow-auto no-scrollbar">
+                    <div className="mx-auto max-w-6xl px-6 pt-10 pb-8">
+                      {children}
+                    </div>
+                  </main>
+                </div>
+              </AuthProvider>
+            </ThemeProvider>
           </ConfigProvider>
         </AntdRegistry>
       </body>

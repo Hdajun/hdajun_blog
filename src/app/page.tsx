@@ -2,15 +2,17 @@
 
 import { motion } from 'framer-motion'
 import { useState, useEffect } from 'react'
-import {
-  ArrowRightOutlined,
-  BookOutlined,
-  MessageOutlined,
-} from '@ant-design/icons'
 import { FeatureCard } from '@/components/FeatureCard'
+import { navigationItems } from '@/components/Navbar'
 
 // 打字机效果组件
-const TypewriterText = ({ text, className = '' }: { text: string; className?: string }) => {
+const TypewriterText = ({
+  text,
+  className = '',
+}: {
+  text: string
+  className?: string
+}) => {
   const [displayText, setDisplayText] = useState('')
   const [currentIndex, setCurrentIndex] = useState(0)
 
@@ -59,9 +61,10 @@ export default function Home() {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="mt-4 max-w-[42rem] text-sm leading-relaxed text-gray-500 dark:text-gray-400 sm:text-base"
           >
-            很高兴遇见你！这里是我的技术乐园，专注于探索 Web 前沿技术和分享实战经验。
-            从前端工程化到性能优化，从框架实践到 AI 应用，记录着我在技术之路上的点点滴滴。
-            如果你也热爱技术创新，欢迎一起交流，让我们在这里碰撞思维的火花1
+            很高兴遇见你！这里是我的技术乐园，专注于探索 Web
+            前沿技术和分享实战经验。 从前端工程化到性能优化，从框架实践到 AI
+            应用，记录着我在技术之路上的点点滴滴。
+            如果你也热爱技术创新，欢迎一起交流，让我们在这里碰撞思维的火花。
           </motion.p>
         </motion.div>
 
@@ -93,7 +96,7 @@ export default function Home() {
                 transition={{
                   duration: 0.2,
                   delay: index * 0.05,
-                  ease: 'easeOut'
+                  ease: 'easeOut',
                 }}
                 className="
                   inline-flex items-center rounded-full px-3 py-1 text-sm
@@ -113,37 +116,9 @@ export default function Home() {
 
         {/* 功能卡片 */}
         <div className="mx-auto mt-8 grid w-full max-w-6xl gap-8 px-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 justify-items-center">
-          <FeatureCard
-            href="/questions"
-            icon={<BookOutlined className="text-xl" />}
-            title="前端题库"
-            description="精心整理的前端面试题库，助你轻松应对技术面试，提升专业能力。"
-            actionText="开始刷题"
-            tags={['面试题', 'React', 'Vue']}
-            themeColor="blue"
-          />
-
-          <FeatureCard
-            href="/chat"
-            icon={<MessageOutlined className="text-xl" />}
-            title="和我聊聊"
-            description="任何技术问题都可以和我交流，让我们一起探讨编程的乐趣。"
-            actionText="开始对话"
-            tags={['DeepSeek', 'AI', '实时对话']}
-            themeColor="green"
-            delay={0.1}
-          />
-
-          <FeatureCard
-            href="/notes"
-            icon={<BookOutlined className="text-xl" />}
-            title="阅读小记"
-            description="浏览我的技术小记，分享我的开发经验和学习心得。"
-            actionText="查看小记"
-            tags={['随缘更新', '技术博文', '实战案例']}
-            themeColor="purple"
-            delay={0.2}
-          />
+          {navigationItems.map(item => (
+            <FeatureCard key={item.href} {...item} />
+          ))}
         </div>
       </div>
     </div>

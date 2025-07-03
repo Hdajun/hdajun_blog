@@ -1,5 +1,61 @@
-// 定义一组图标数组用于随机展示
+export const TemplateIcon = [
+  {
+    // 跳动的心
+    icon: (
+      <svg
+        className="h-6 w-6 heartbeat"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={1.5}
+          d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+        />
+      </svg>
+    ),
+  },
+]
+
 export const ICONS = [
+  {
+    // 星星
+    icon: (
+      <svg
+        className="h-6 w-6"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={1.5}
+          d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"
+        />
+      </svg>
+    ),
+  },
+  {
+    // 温暖的太阳
+    icon: (
+      <svg
+        className="h-6 w-6"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={1.5}
+          d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
+        />
+      </svg>
+    ),
+  },
   {
     icon: (
       <svg
@@ -86,9 +142,10 @@ export const ICONS = [
     ),
   },
   {
+    // 新增：热气球设计 - 更有趣的替代
     icon: (
       <svg
-        className="w-6 h-6"
+        className="h-6 w-6"
         fill="none"
         viewBox="0 0 24 24"
         stroke="currentColor"
@@ -97,102 +154,184 @@ export const ICONS = [
           strokeLinecap="round"
           strokeLinejoin="round"
           strokeWidth={1.5}
-          d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"
+          d="M12 3C8 3 5 6 5 10C5 14 8 17 12 17C16 17 19 14 19 10C19 6 16 3 12 3Z"
+        />
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={1.5}
+          d="M10 17L9 21H15L14 17"
+        />
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={1.5}
+          d="M8 8C8 8 10 10 12 10C14 10 16 8 16 8"
         />
       </svg>
     ),
   },
   {
-    name: "flower",
+    // 新的气球设计 - 更可爱的形状
     icon: (
-      <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} 
-          d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+      <svg
+        className="h-6 w-6"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={1.5}
+          d="M12 3C9 3 6.5 5 6.5 8.5C6.5 12 9.5 15 12 15C14.5 15 17.5 12 17.5 8.5C17.5 5 15 3 12 3Z"
+        />
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={1.5}
+          d="M12 15L11 19M12 15L13 19M11 19L12 21M13 19L12 21"
+        />
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={1.5}
+          d="M10.5 7.5C10.5 7.5 11 6 12 6C13 6 13.5 7.5 13.5 7.5"
+        />
       </svg>
-    )
+    ),
   },
   {
-    name: "heart",
+    // 音乐符号
     icon: (
-      <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} 
-          d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+      <svg
+        className="h-6 w-6"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={1.5}
+          d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"
+        />
       </svg>
-    )
+    ),
   },
   {
-    name: "book-open",
+    // 礼物盒
     icon: (
-      <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} 
-          d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+      <svg
+        className="h-6 w-6"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={1.5}
+          d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"
+        />
       </svg>
-    )
+    ),
   },
   {
-    name: "rose",
+    // 小房子
     icon: (
-      <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} 
-          d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v1m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+      <svg
+        className="h-6 w-6"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={1.5}
+          d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+        />
       </svg>
-    )
+    ),
   },
-  {
-    name: "bookmark-alt",
-    icon: (
-      <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} 
-          d="M16 4v12l-4-2-4 2V4M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-      </svg>
-    )
+]
+
+// 定义所有可用的颜色和对应的样式类名
+export const colorStyles = {
+  blue: {
+    // Ribbon 样式
+    bg: 'bg-blue-500/90 dark:bg-blue-400/90',
+    text: 'text-blue-50 dark:text-blue-950',
+    shadow: 'shadow-blue-500/20 dark:shadow-blue-400/20',
+    // Theme 样式
+    icon: 'text-blue-600 dark:text-blue-400',
+    hover: 'group-hover:text-blue-600 dark:group-hover:text-blue-400',
   },
-  {
-    name: "leaf",
-    icon: (
-      <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} 
-          d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12l4 2V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4H7z" />
-      </svg>
-    )
+  emerald: {
+    bg: 'bg-emerald-500/90 dark:bg-emerald-400/90',
+    text: 'text-emerald-50 dark:text-emerald-950',
+    shadow: 'shadow-emerald-500/20 dark:shadow-emerald-400/20',
+    icon: 'text-emerald-600 dark:text-emerald-400',
+    hover: 'group-hover:text-emerald-600 dark:group-hover:text-emerald-400',
   },
-  {
-    name: "academic-cap",
-    icon: (
-      <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} 
-          d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222" />
-      </svg>
-    )
+  indigo: {
+    bg: 'bg-indigo-500/90 dark:bg-indigo-400/90',
+    text: 'text-indigo-50 dark:text-indigo-950',
+    shadow: 'shadow-indigo-500/20 dark:shadow-indigo-400/20',
+    icon: 'text-indigo-600 dark:text-indigo-400',
+    hover: 'group-hover:text-indigo-600 dark:group-hover:text-indigo-400',
   },
-  {
-    name: "heart-broken",
-    icon: (
-      <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} 
-          d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35zM12 10v6m0 0l-3-3m3 3l3-3" />
-      </svg>
-    )
+  amber: {
+    bg: 'bg-amber-500/90 dark:bg-amber-400/90',
+    text: 'text-amber-50 dark:text-amber-950',
+    shadow: 'shadow-amber-500/20 dark:shadow-amber-400/20',
+    icon: 'text-amber-600 dark:text-amber-400',
+    hover: 'group-hover:text-amber-600 dark:group-hover:text-amber-400',
   },
-  {
-    name: "library",
-    icon: (
-      <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} 
-          d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z" />
-      </svg>
-    )
+  orange: {
+    bg: 'bg-orange-500/90 dark:bg-orange-400/90',
+    text: 'text-orange-50 dark:text-orange-950',
+    shadow: 'shadow-orange-500/20 dark:shadow-orange-400/20',
+    icon: 'text-orange-600 dark:text-orange-400',
+    hover: 'group-hover:text-orange-600 dark:group-hover:text-orange-400',
   },
-  {
-    name: "sparkles",
-    icon: (
-      <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} 
-          d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
-      </svg>
-    )
-  }
-];
+  purple: {
+    bg: 'bg-purple-500/90 dark:bg-purple-400/90',
+    text: 'text-purple-50 dark:text-purple-950',
+    shadow: 'shadow-purple-500/20 dark:shadow-purple-400/20',
+    icon: 'text-purple-600 dark:text-purple-400',
+    hover: 'group-hover:text-purple-600 dark:group-hover:text-purple-400',
+  },
+  red: {
+    bg: 'bg-red-500/90 dark:bg-red-400/90',
+    text: 'text-red-50 dark:text-red-950',
+    shadow: 'shadow-red-500/20 dark:shadow-red-400/20',
+    icon: 'text-red-600 dark:text-red-400',
+    hover: 'group-hover:text-red-600 dark:group-hover:text-red-400',
+  },
+  rose: {
+    bg: 'bg-rose-500/90 dark:bg-rose-400/90',
+    text: 'text-rose-50 dark:text-rose-950',
+    shadow: 'shadow-rose-500/20 dark:shadow-rose-400/20',
+    icon: 'text-rose-600 dark:text-rose-400',
+    hover: 'group-hover:text-rose-600 dark:group-hover:text-rose-400',
+  },
+  teal: {
+    bg: 'bg-teal-500/90 dark:bg-teal-400/90',
+    text: 'text-teal-50 dark:text-teal-950',
+    shadow: 'shadow-teal-500/20 dark:shadow-teal-400/20',
+    icon: 'text-teal-600 dark:text-teal-400',
+    hover: 'group-hover:text-teal-600 dark:group-hover:text-teal-400',
+  },
+  green: {
+    bg: 'bg-green-500/90 dark:bg-green-400/90',
+    text: 'text-green-50 dark:text-green-950',
+    shadow: 'shadow-green-500/20 dark:shadow-green-400/20',
+    icon: 'text-green-600 dark:text-green-400',
+    hover: 'group-hover:text-green-600 dark:group-hover:text-green-400',
+  },
+} as const
 
 // 来一个获取随机颜色的函数 colors来个几十种，要求颜色是暖色调，不用太亮
 export const getRandomColor = () => {

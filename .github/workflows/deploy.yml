@@ -14,7 +14,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
-          node-version: '20'
+          node-version: '20.19.3'
           
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1
@@ -22,7 +22,8 @@ jobs:
           host: ${{ secrets.SERVER_IP }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          comand_timeout: '20m'
+          command_timeout: "30m"    # 设置命令超时时间为30分钟
+          script_stop: true         # 任何命令失败时停止执行
           script: |
             cd /var/www/blog
             ./scripts/deploy.sh

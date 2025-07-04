@@ -11,11 +11,18 @@ import { STORAGE_KEYS } from '@/constants/storage'
 import { message } from 'antd'
 import { api } from '@/lib/api-client'
 
+interface UserInfo {
+  username?: string
+  role?: string
+  [key: string]: any
+}
+
 interface AuthContextType {
   isAuthenticated: boolean
   token: string | null
   login: (token: string) => void
   logout: () => void
+  userInfo?: UserInfo
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -23,16 +30,24 @@ const AuthContext = createContext<AuthContextType>({
   token: null,
   login: () => {},
   logout: () => {},
+  userInfo: {},
 })
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [token, setToken] = useState<string | null>(null)
   const [isAuthenticated, setIsAuthenticated] = useState(false)
-
+  const [userInfo, setUserInfo] = useState<UserInfo>({})
   // 验证 token 的函数
   const verifyToken = async (token: string) => {
     try {
-      const { success } = await api.post('/auth/verify', { token }, { requireAuth: false })
+      const { success, data } = await api.post(
+        '/auth/verify',
+        { token },
+        { requireAuth: false }
+      )
+      if (success) {
+        setUserInfo((data || {}) as UserInfo)
+      }
       return success
     } catch (error) {
       console.error('Token verification failed:', error)
@@ -72,14 +87,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setIsAuthenticated(false)
     localStorage.removeItem(STORAGE_KEYS.AUTH_TOKEN)
     setToken(null)
-    message.success({
-      content: '已退出登录',
-      className: 'custom-message',
-      duration: 2,
-      style: {
-        marginTop: '4vh',
-      },
-    })
+    message.success(`拜拜啦，${userInfo.username}`)
   }
 
   return (
@@ -89,6 +97,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         token,
         login,
         logout,
+        userInfo,
       }}
     >
       {children}

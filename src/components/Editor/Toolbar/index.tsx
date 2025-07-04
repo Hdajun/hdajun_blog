@@ -94,11 +94,7 @@ const ColorButton = ({
         <div className="flex flex-col items-center">
           <Button
             type="text"
-            icon={
-              <Icon
-                style={{ color: color === '#ffffff' ? 'inherit' : color }}
-              />
-            }
+            icon={<Icon style={{ color: color === '#ffffff' ? '' : color }} />}
           />
         </div>
         <ColorPicker value={color} onChange={onChange}>
@@ -115,6 +111,15 @@ const ColorButton = ({
   </div>
 )
 
+const InputCss = `mt-1 block w-full rounded-xl border border-gray-200 bg-white/50 px-4 py-3 text-sm
+                        transition-all duration-300 ease-out placeholder:text-gray-400
+                        hover:border-gray-800 hover:bg-white
+                        focus:border-transparent focus:bg-white focus:outline-none focus:ring-0
+                        focus:shadow-[0_0_0_1px_rgb(31,41,55),0_0_0_1px_rgb(55,65,81)] focus:-translate-y-[1px]
+                        dark:border-gray-700 dark:bg-gray-800/50 dark:text-white
+                        dark:hover:border-gray-800 dark:hover:bg-gray-800
+                        dark:focus:bg-gray-800`
+
 export const Toolbar: React.FC<ToolbarProps> = ({
   editor,
   onSave,
@@ -124,7 +129,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
   onDelete,
   isTop = false,
 }) => {
-  const [textColor, setTextColor] = useState<string>('#000000')
+  const [textColor, setTextColor] = useState<string>('')
   const [bgColor, setBgColor] = useState<string>('#ffffff')
   const [isLinkModalOpen, setIsLinkModalOpen] = useState(false)
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
@@ -191,6 +196,51 @@ export const Toolbar: React.FC<ToolbarProps> = ({
   const handleLinkModalCancel = () => {
     linkForm.resetFields()
     setIsLinkModalOpen(false)
+  }
+
+  const handleLinkModalOk = async () => {
+    try {
+      const values = await linkForm.validateFields()
+      const { url, text } = values
+      const formattedUrl = formatUrl(url)
+
+      if (editor.isActive('link')) {
+        // 如果是编辑现有链接，只更新链接地址
+        editor
+          .chain()
+          .focus()
+          .extendMarkRange('link')
+          .setLink({ href: formattedUrl })
+          .run()
+      } else {
+        // 如果是新建链接
+        const { from, to } = editor.state.selection
+        const selectedText = editor.state.doc.textBetween(from, to, '')
+
+        if (selectedText) {
+          // 如果有选中文本，直接设置链接
+          editor.chain().focus().setLink({ href: formattedUrl }).run()
+        } else {
+          // 如果没有选中文本，创建一个带有链接的文本节点
+          editor
+            .chain()
+            .focus()
+            .insertContent([
+              {
+                type: 'text',
+                marks: [{ type: 'link', attrs: { href: formattedUrl } }],
+                text: text,
+              },
+            ])
+            .run()
+        }
+      }
+
+      handleLinkModalCancel()
+      return { success: true }
+    } catch (error) {
+      return { success: false }
+    }
   }
 
   const getSaveIcon = () => {
@@ -588,136 +638,60 @@ export const Toolbar: React.FC<ToolbarProps> = ({
         )}
       </div>
 
-      <AnimatePresence>
-        {isLinkModalOpen && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center">
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={handleLinkModalCancel}
-              className="absolute inset-0 bg-black/50 backdrop-blur-sm"
-            />
-
-            <motion.div
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              className="relative w-full max-w-md mx-4 overflow-hidden rounded-2xl bg-white/80 p-8 shadow-[0_8px_32px_rgba(0,0,0,0.12)] backdrop-blur-md dark:bg-gray-800/80"
-              onClick={e => e.stopPropagation()}
-            >
-              {/* Close button */}
-              <button
-                onClick={e => {
-                  e.stopPropagation()
-                  handleLinkModalCancel()
-                }}
-                className="absolute right-6 top-6 z-10 rounded-xl p-2 text-gray-400 transition-colors duration-200 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-700 dark:hover:text-gray-300"
+      <Modal
+        open={isLinkModalOpen}
+        onClose={handleLinkModalCancel}
+        title="插入链接"
+        width="max-w-md"
+        cancelText="取消"
+        confirmText="确定"
+        onConfirm={handleLinkModalOk}
+        description={
+          <Form form={linkForm} layout="vertical" className="space-y-5 w-full">
+            <div>
+              <label
+                htmlFor="text"
+                className="mb-1.5 block text-sm font-medium text-gray-600 dark:text-gray-300"
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={1.5}
-                  stroke="currentColor"
-                  className="w-5 h-5"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
-              </button>
+                链接文本
+              </label>
+              <Form.Item
+                name="text"
+                rules={[{ required: true, message: '请输入链接文本' }]}
+                className="mb-0"
+              >
+                <input
+                  id="text"
+                  type="text"
+                  placeholder="请输入链接显示的文本"
+                  className={InputCss}
+                />
+              </Form.Item>
+            </div>
 
-              <div className="relative">
-                <h2 className="mb-4 text-2xl font-bold text-gray-700 dark:text-gray-200">
-                  插入链接
-                </h2>
-                <Form form={linkForm} layout="vertical" className="space-y-5">
-                  <div>
-                    <label
-                      htmlFor="text"
-                      className="mb-1.5 block text-sm font-medium text-gray-600 dark:text-gray-300"
-                    >
-                      链接文本
-                    </label>
-                    <Form.Item
-                      name="text"
-                      rules={[{ required: true, message: '请输入链接文本' }]}
-                      className="mb-0"
-                    >
-                      <Input
-                        id="text"
-                        placeholder="请输入链接显示的文本"
-                        className="mt-1 block w-full rounded-xl border border-gray-200 bg-white/50 px-4 py-3 text-sm
-                          transition-all duration-300 ease-out placeholder:text-gray-400
-                          hover:border-gray-800 hover:bg-white
-                          focus:border-transparent focus:bg-white focus:outline-none focus:ring-0
-                          focus:shadow-[0_0_0_1px_rgb(31,41,55),0_0_0_2px_rgb(55,65,81)] focus:-translate-y-[1px]
-                          dark:border-gray-700 dark:bg-gray-800/50 dark:text-white
-                          dark:hover:border-gray-800 dark:hover:bg-gray-800
-                          dark:focus:bg-gray-800"
-                      />
-                    </Form.Item>
-                  </div>
-
-                  <div>
-                    <label
-                      htmlFor="url"
-                      className="mb-1.5 block text-sm font-medium text-gray-600 dark:text-gray-300"
-                    >
-                      链接地址
-                    </label>
-                    <Form.Item
-                      name="url"
-                      rules={[{ required: true, message: '请输入链接地址' }]}
-                      className="mb-0"
-                    >
-                      <Input
-                        id="url"
-                        placeholder="请输入链接URL（如: https://example.com）"
-                        className="mt-1 block w-full rounded-xl border border-gray-200 bg-white/50 px-4 py-3 text-sm
-                          transition-all duration-300 ease-out placeholder:text-gray-400
-                          hover:border-gray-800 hover:bg-white
-                          focus:border-transparent focus:bg-white focus:outline-none focus:ring-0
-                          focus:shadow-[0_0_0_1px_rgb(31,41,55),0_0_0_2px_rgb(55,65,81)] focus:-translate-y-[1px]
-                          dark:border-gray-700 dark:bg-gray-800/50 dark:text-white
-                          dark:hover:border-gray-800 dark:hover:bg-gray-800
-                          dark:focus:bg-gray-800"
-                      />
-                    </Form.Item>
-                    <p className="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
-                      如果不输入 http:// 或 https:// 将自动添加 https://
-                    </p>
-                  </div>
-
-                  <div className="flex gap-3 mt-8">
-                    <button
-                      onClick={handleLinkModalCancel}
-                      className="flex-1 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 
-                        rounded-xl transition-all duration-200 
-                        hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 
-                        dark:hover:bg-gray-600"
-                    >
-                      取消
-                    </button>
-                    <button
-                      onClick={() => linkForm.submit()}
-                      className="flex-1 px-4 py-2 text-sm font-medium text-white 
-                        bg-gray-800 rounded-xl transition-all duration-200 
-                        hover:bg-gray-700 dark:bg-gray-100 dark:text-gray-900 
-                        dark:hover:bg-white transform hover:-translate-y-[1px]"
-                    >
-                      确定
-                    </button>
-                  </div>
-                </Form>
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
+            <div>
+              <label
+                htmlFor="url"
+                className="mb-1.5 block text-sm font-medium text-gray-600 dark:text-gray-300"
+              >
+                链接地址
+              </label>
+              <Form.Item
+                name="url"
+                rules={[{ required: true, message: '请输入链接地址' }]}
+                className="mb-0"
+              >
+                <input
+                  id="url"
+                  type="text"
+                  placeholder="请输入链接URL（如: https://example.com）"
+                  className={InputCss}
+                />
+              </Form.Item>
+            </div>
+          </Form>
+        }
+      />
 
       <Modal
         open={isDeleteModalOpen}

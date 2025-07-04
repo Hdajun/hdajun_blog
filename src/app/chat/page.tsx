@@ -1,12 +1,9 @@
 'use client'
 
 import {
-  AppstoreAddOutlined,
   CloudUploadOutlined,
   CopyOutlined,
-  HeartOutlined,
   OpenAIOutlined,
-  UserOutlined,
   ReloadOutlined,
   SmileOutlined,
   BulbOutlined,
@@ -41,6 +38,8 @@ import { useTheme } from 'next-themes'
 import { createStyles } from 'antd-style'
 import React, { useRef, useState, useEffect } from 'react'
 import markdownit from 'markdown-it'
+import hljs from 'highlight.js'
+import 'highlight.js/styles/atom-one-dark.css'
 import dynamic from 'next/dynamic'
 import { v4 as uuidv4 } from 'uuid'
 import { getCustomData } from './customData'
@@ -48,8 +47,20 @@ import { Demo3Icon } from '@/components/icons/Demo3Icon'
 import { Demo1Icon } from '@/components/icons/Demo1Icon'
 import { Demo2Icon } from '@/components/icons/Demo2Icon'
 
-const md = markdownit({ html: true, breaks: true })
-// 覆盖默认的段落渲染规则
+const md = markdownit({
+  html: true,
+  breaks: true,
+  linkify: true,
+  typographer: true,
+  highlight: function (str, lang) {
+    if (lang && hljs.getLanguage(lang)) {
+      try {
+        return hljs.highlight(str, { language: lang }).value
+      } catch (__) {}
+    }
+    return '' // use external default escaping
+  },
+})
 md.renderer.rules.paragraph_open = () => '<div>'
 md.renderer.rules.paragraph_close = () => '</div>'
 
@@ -127,14 +138,14 @@ const HOT_TOPICS = {
   children: [
     {
       key: '1-1',
-      url: '/blog/build-blog-from-zero-to-one',
-      label: '从零搭建个人博客',
+      url: '/notes/6862aa72fbb33dd888affe85',
+      label: '你好，陌生人👋🏿',
       icon: ICONS[0],
     },
     {
       key: '1-2',
-      url: '/blog/chat-component-and-juejin-crawler',
-      label: '如何构建一个AI对话窗口',
+      url: '/notes/68663485880511013b1cd1d2/view',
+      label: 'Next.js 项目部署指南',
       icon: ICONS[1],
     },
   ],
@@ -307,6 +318,125 @@ const useStyle = createStyles(({ token, css }) => {
         align-items: center;
       }
     `,
+    markdown: css`
+      font-size: 14px;
+      line-height: 1.6;
+
+      p {
+        margin: 1em 0;
+      }
+
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6 {
+        margin-top: 1.5em;
+        margin-bottom: 1em;
+        font-weight: 600;
+      }
+
+      ul,
+      ol {
+        padding-left: 1.5em;
+        margin: 1em 0;
+        list-style-position: outside;
+      }
+
+      ul {
+        list-style-type: disc;
+      }
+
+      ul ul {
+        list-style-type: circle;
+      }
+
+      ul ul ul {
+        list-style-type: square;
+      }
+
+      ol {
+        list-style-type: decimal;
+      }
+
+      li {
+        margin: 0.5em 0;
+        padding-left: 0.5em;
+      }
+
+      /* 确保暗色模式下列表标记清晰可见 */
+      li::marker {
+        color: ${token.colorTextSecondary};
+      }
+
+      code {
+        padding: 0.2em 0.4em;
+        font-size: 0.9em;
+        background: var(--bg-code);
+        border-radius: 3px;
+        font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo,
+          Courier, monospace;
+        color: var(--text-code);
+      }
+
+      pre {
+        margin: 1em 0;
+        padding: 1em;
+        overflow-x: auto;
+        border-radius: 6px;
+        background: var(--bg-code);
+        border: 1px solid var(--border-code);
+      }
+
+      pre code {
+        padding: 0;
+        font-size: 0.9em;
+        background: none;
+        border-radius: 0;
+        color: var(--text-code);
+      }
+
+      pre code.hljs {
+        padding: 0;
+        background: transparent;
+      }
+
+      .hljs {
+        background: transparent;
+        color: var(--text-code);
+      }
+
+      blockquote {
+        margin: 1em 0;
+        padding: 0 1em;
+        color: ${token.colorTextSecondary};
+        border-left: 4px solid ${token.colorBorder};
+      }
+
+      img {
+        max-width: 100%;
+        height: auto;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 1em 0;
+      }
+
+      th,
+      td {
+        padding: 0.5em;
+        border: 1px solid ${token.colorBorder};
+      }
+
+      hr {
+        margin: 2em 0;
+        border: none;
+        border-top: 1px solid ${token.colorBorder};
+      }
+    `,
   }
 })
 
@@ -349,8 +479,8 @@ const useDarkStyle = createStyles(({ css }) => {
 const RecommendList = ({ items }: { items: typeof HOT_TOPICS }) => {
   return (
     <div className="rounded-2xl border border-gray-100 bg-white py-3 px-4 shadow-sm dark:border-gray-800 dark:bg-gray-900">
-      <div className="mb-4 text-base text-[#000000E0] dark:text-gray-400">
-        推荐博客
+      <div className="mb-4 text-base text-gray-700 dark:text-gray-400">
+        {items.label}
       </div>
       <div className="flex flex-col gap-3">
         {items.children.map(item => (
@@ -363,12 +493,12 @@ const RecommendList = ({ items }: { items: typeof HOT_TOPICS }) => {
             style={{ textDecoration: 'none' }}
           >
             <span className="mr-3 text-[14px]">{item.icon}</span>
-            <span className="flex-1 text-[14px] font-normal text-[#000000E0] dark:text-gray-400">
+            <span className="flex-1 text-[14px] font-normal text-gray-600 dark:text-gray-400">
               {item.label}
             </span>
             <ArrowRightOutlined
-              className="ml-2 text-gray-800 transition-transform duration-300 group-hover:translate-x-1"
-              style={{ fontSize: 14, color: 'rgb(31,41,55)' }}
+              className="ml-2 text-gray-600 transition-transform duration-300 group-hover:translate-x-1 dark:text-gray-400"
+              style={{ fontSize: 14 }}
             />
           </a>
         ))}
@@ -475,10 +605,19 @@ const Independent: React.FC = () => {
 
   const DESIGN_GUIDE = {
     key: '2',
-    label: '掘金前端热门',
+    label: (
+      <span className="text-gray-700 dark:text-gray-400">掘金前端热门</span>
+    ),
     children: juejinArticles.map((article, index) => ({
       key: `2-${index + 1}`,
-      label: <span style={{ fontWeight: 400 }}>{article.title}</span>,
+      label: (
+        <span
+          className="text-gray-600 dark:text-gray-400"
+          style={{ fontWeight: 400 }}
+        >
+          {article.title}
+        </span>
+      ),
       url: article.url,
       icon: (
         <span style={{ color: COLORS[index], fontWeight: 700 }}>
@@ -560,12 +699,11 @@ const Independent: React.FC = () => {
 
   const renderMarkdown: BubbleProps['messageRender'] = content => {
     return (
-      <Typography>
-        <div
-          style={{ color: theme === 'dark' ? '#fff' : '' }}
-          dangerouslySetInnerHTML={{ __html: md.render(content) }}
-        />
-      </Typography>
+      <div
+        className={styles.markdown}
+        style={{ color: theme === 'dark' ? '#fff' : '' }}
+        dangerouslySetInnerHTML={{ __html: md.render(content) }}
+      />
     )
   }
 
@@ -580,7 +718,7 @@ const Independent: React.FC = () => {
               content: i.status === 'loading' ? styles.loadingMessage : '',
             },
             typing: i.status === 'loading' ? true : false,
-            variant: 'outlined',
+            variant: 'filled',
             avatar:
               i?.message?.role === 'assistant'
                 ? {
@@ -606,6 +744,14 @@ const Independent: React.FC = () => {
               placement: 'start',
               footer: message => (
                 <div style={{ display: 'flex', gap: 4 }}>
+                  <Tooltip title="复制">
+                    <Button
+                      type="text"
+                      size="small"
+                      icon={<CopyOutlined />}
+                      onClick={() => handleCopy(message)}
+                    />
+                  </Tooltip>
                   {!loading && (
                     <Tooltip title="重新生成">
                       <Button
@@ -616,14 +762,6 @@ const Independent: React.FC = () => {
                       />
                     </Tooltip>
                   )}
-                  <Tooltip title="复制">
-                    <Button
-                      type="text"
-                      size="small"
-                      icon={<CopyOutlined />}
-                      onClick={() => handleCopy(message)}
-                    />
-                  </Tooltip>
                 </div>
               ),
               loadingRender: () => <Spin size="small" />,
@@ -644,16 +782,21 @@ const Independent: React.FC = () => {
           <Welcome
             variant="borderless"
             title={
-              <span style={{ color: theme === 'dark' ? darkTextColor : '', fontWeight: 400 }}>
+              <span
+                className="text-gray-800 dark:text-gray-400"
+                style={{
+                  fontWeight: 400,
+                }}
+              >
                 {window.innerWidth > 768
                   ? "Hi, I'm Your AI Assistant"
                   : 'Hi 👋'}
               </span>
             }
             description={
-              <span style={{ color: theme === 'dark' ? darkTextColor : '' }}>
+              <span className="text-gray-600 dark:text-gray-400">
                 {window.innerWidth > 768
-                  ? '我是你的 AI 助手，可以帮你解答任何前端技术问题，也可以在这了解我老大的个人经历。让我们开始愉快的交谈吧！'
+                  ? 'Hey，我是你的 AI 搭档！技术宅？不存在的！来跟我聊聊天吧，保证让你又长知识又开心～ ✨'
                   : '让我们开始愉快的交谈吧！'}
               </span>
             }
@@ -666,14 +809,9 @@ const Independent: React.FC = () => {
             <div style={{ flex: 1 }}>
               <Spin spinning={bookLoading}>
                 <Prompts
-                  items={[
-                    {
-                      ...DESIGN_GUIDE,
-                      label: '掘金热门文章',
-                    },
-                  ]}
+                  items={[DESIGN_GUIDE]}
                   styles={{
-                    list: { height: '100%' },
+                    list: { height: '100%', minHeight: 200 },
                     item: {
                       flex: 1,
                       backgroundColor: theme === 'dark' ? '#111827' : '',
@@ -782,6 +920,13 @@ const Independent: React.FC = () => {
         className={`${styles.layout} ${
           theme === 'dark' ? darkStyles.layout : ''
         }`}
+        style={
+          {
+            '--bg-code': theme === 'dark' ? '#1e1e2e' : '#1e293b',
+            '--text-code': theme === 'dark' ? '#cdd6f4' : '#e2e8f0',
+            '--border-code': theme === 'dark' ? '#313244' : '#334155',
+          } as React.CSSProperties
+        }
       >
         <div className={styles.chat}>
           {chatList}

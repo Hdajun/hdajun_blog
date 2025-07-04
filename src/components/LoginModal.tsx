@@ -7,6 +7,16 @@ import type { LoginCredentials, AuthResponse } from '@/types/auth'
 import { message } from 'antd'
 import { api } from '@/lib/api-client'
 
+
+export const InputCss = `mt-1 block w-full rounded-xl border border-gray-200 bg-white/50 px-4 py-3 text-sm
+                        transition-all duration-300 ease-out placeholder:text-gray-400
+                        hover:border-gray-800 hover:bg-white
+                        focus:border-transparent focus:bg-white focus:outline-none focus:ring-0
+                        focus:shadow-[0_0_0_1px_rgb(31,41,55),0_0_0_1px_rgb(55,65,81)] focus:-translate-y-[1px]
+                        dark:border-gray-700 dark:bg-gray-800/50 dark:text-white
+                        dark:hover:border-gray-800 dark:hover:bg-gray-800
+                        dark:focus:bg-gray-800`
+
 interface LoginResponse {
   token: string
 }
@@ -17,13 +27,18 @@ interface LoginModalProps {
   onLoginSuccess: (token: string) => void
 }
 
-export function LoginModal({ isOpen, onClose, onLoginSuccess }: LoginModalProps) {
+export function LoginModal({
+  isOpen,
+  onClose,
+  onLoginSuccess,
+}: LoginModalProps) {
   const initialCredentials: LoginCredentials = {
     username: '',
-    password: ''
+    password: '',
   }
-  
-  const [credentials, setCredentials] = useState<LoginCredentials>(initialCredentials)
+
+  const [credentials, setCredentials] =
+    useState<LoginCredentials>(initialCredentials)
   const [isLoading, setIsLoading] = useState(false)
 
   // 重置表单状态
@@ -42,9 +57,14 @@ export function LoginModal({ isOpen, onClose, onLoginSuccess }: LoginModalProps)
     setIsLoading(true)
 
     try {
-      const { success, data, message: responseMessage } = await api.post<AuthResponse>('/auth/login', credentials, { requireAuth: false })
-      console.log(success,data, responseMessage);
-      
+      const {
+        success,
+        data,
+        message: responseMessage,
+      } = await api.post<AuthResponse>('/auth/login', credentials, {
+        requireAuth: false,
+      })
+
       if (success && data?.token) {
         onLoginSuccess(data.token)
         resetForm()
@@ -58,7 +78,7 @@ export function LoginModal({ isOpen, onClose, onLoginSuccess }: LoginModalProps)
             marginTop: '4vh',
           },
         })
-      } 
+      }
     } catch (error) {
       console.error('Login error:', error)
     } finally {
@@ -70,7 +90,7 @@ export function LoginModal({ isOpen, onClose, onLoginSuccess }: LoginModalProps)
     const { name, value } = e.target
     setCredentials(prev => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }))
   }
 
@@ -93,11 +113,11 @@ export function LoginModal({ isOpen, onClose, onLoginSuccess }: LoginModalProps)
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.95, opacity: 0 }}
             className="relative w-full max-w-md mx-4 overflow-hidden rounded-2xl bg-white/80 p-8 shadow-[0_8px_32px_rgba(0,0,0,0.12)] backdrop-blur-md dark:bg-gray-800/80"
-            onClick={(e) => e.stopPropagation()}
+            onClick={e => e.stopPropagation()}
           >
             {/* Close button */}
             <button
-              onClick={(e) => {
+              onClick={e => {
                 e.stopPropagation()
                 handleClose()
               }}
@@ -129,14 +149,7 @@ export function LoginModal({ isOpen, onClose, onLoginSuccess }: LoginModalProps)
                       name="username"
                       value={credentials.username}
                       onChange={handleChange}
-                      className="mt-1 block w-full rounded-xl border border-gray-200 bg-white/50 px-4 py-3 text-sm
-                        transition-all duration-300 ease-out placeholder:text-gray-400
-                        hover:border-gray-800 hover:bg-white
-                        focus:border-transparent focus:bg-white focus:outline-none focus:ring-0
-                        focus:shadow-[0_0_0_1px_rgb(31,41,55),0_0_0_2px_rgb(55,65,81)] focus:-translate-y-[1px]
-                        dark:border-gray-700 dark:bg-gray-800/50 dark:text-white
-                        dark:hover:border-gray-800 dark:hover:bg-gray-800
-                        dark:focus:bg-gray-800"
+                      className={InputCss}
                       required
                     />
                   </div>
@@ -154,18 +167,11 @@ export function LoginModal({ isOpen, onClose, onLoginSuccess }: LoginModalProps)
                       name="password"
                       value={credentials.password}
                       onChange={handleChange}
-                      className="mt-1 block w-full rounded-xl border border-gray-200 bg-white/50 px-4 py-3 text-sm
-                        transition-all duration-300 ease-out placeholder:text-gray-400
-                        hover:border-gray-800 hover:bg-white
-                        focus:border-transparent focus:bg-white focus:outline-none focus:ring-0
-                        focus:shadow-[0_0_0_1px_rgb(31,41,55),0_0_0_2px_rgb(55,65,81)] focus:-translate-y-[1px]
-                        dark:border-gray-700 dark:bg-gray-800/50 dark:text-white
-                        dark:hover:border-gray-800 dark:hover:bg-gray-800
-                        dark:focus:bg-gray-800"
+                      className={InputCss}
                       required
                     />
                   </div>
-               
+
                   <button
                     type="submit"
                     disabled={isLoading}
@@ -180,13 +186,30 @@ export function LoginModal({ isOpen, onClose, onLoginSuccess }: LoginModalProps)
                   >
                     {isLoading ? (
                       <span className="flex items-center justify-center">
-                        <svg className="mr-2 h-4 w-4 animate-spin" viewBox="0 0 24 24">
-                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                        <svg
+                          className="mr-2 h-4 w-4 animate-spin"
+                          viewBox="0 0 24 24"
+                        >
+                          <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth="4"
+                            fill="none"
+                          />
+                          <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                          />
                         </svg>
                         验证中...
                       </span>
-                    ) : '登 录'}
+                    ) : (
+                      '登 录'
+                    )}
                   </button>
                 </div>
               </form>

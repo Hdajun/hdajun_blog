@@ -16,7 +16,7 @@ export const navigationItems = [
     title: '阅读小记',
     description: '浏览我的技术小记，分享我的开发经验和学习心得。',
     actionText: '查看小记',
-    tags: ['随缘更新', '技术博文', '实战案例'],
+    tags: ['Markdown', '随缘更新', '技术'],
     themeColor: 'purple',
   },
   {
@@ -51,11 +51,11 @@ const navLinkStyles = `
   py-2
   text-sm
   font-medium
-  text-gray-600
+  text-gray-700
   transition-all
   duration-300
   hover:bg-gray-100
-  hover:text-black
+  hover:text-800
   dark:text-gray-300
   dark:hover:bg-gray-800
   dark:hover:text-white
@@ -88,7 +88,7 @@ function Navbar() {
             : 'bg-white dark:bg-gray-900'
         }`}
       >
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto px-4 sm:px-6 lg:px-14">
           <div className="flex h-16 items-center justify-between">
             {/* Logo */}
             <div className="flex items-center">

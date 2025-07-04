@@ -1,45 +1,46 @@
-'use client'
+"use client";
 
-import Link from 'next/link'
-import { useState, useEffect } from 'react'
-import { BookOutlined, FormOutlined, MessageOutlined } from '@ant-design/icons'
-import { ThemeToggle } from './ThemeToggle'
-import { Bars3Icon as MenuIcon } from '@heroicons/react/24/outline'
-import { LoginModal } from './LoginModal'
-import { useAuth } from '@/contexts/AuthContext'
+import Link from "next/link";
+import { useState, useEffect } from "react";
+import { BookOutlined, FormOutlined, MessageOutlined } from "@ant-design/icons";
+import { ThemeToggle } from "./ThemeToggle";
+import { Bars3Icon as MenuIcon } from "@heroicons/react/24/outline";
+import { LoginModal } from "./LoginModal";
+import { useAuth } from "@/contexts/AuthContext";
+import Live2DWidget from "./Live2DWidget";
 
 export const navigationItems = [
   {
-    href: '/notes',
-    label: '小记',
+    href: "/notes",
+    label: "小记",
     icon: <FormOutlined className="text-xl" />,
-    title: '阅读小记',
-    description: '浏览我的技术小记，分享我的开发经验和学习心得。',
-    actionText: '查看小记',
-    tags: ['Markdown', '随缘更新', '技术'],
-    themeColor: 'purple',
+    title: "阅读小记",
+    description: "浏览我的技术小记，分享我的开发经验和学习心得。",
+    actionText: "查看小记",
+    tags: ["Markdown", "随缘更新", "技术"],
+    themeColor: "purple",
   },
   {
-    href: '/chat',
-    label: 'CHAT',
+    href: "/chat",
+    label: "CHAT",
     icon: <MessageOutlined className="text-xl" />,
-    title: '和我聊聊',
-    description: '任何技术问题都可以和我交流，让我们一起探讨编程的乐趣。',
-    actionText: '开始对话',
-    tags: ['DeepSeek', 'AI', '实时对话'],
-    themeColor: 'green',
+    title: "和我聊聊",
+    description: "任何技术问题都可以和我交流，让我们一起探讨编程的乐趣。",
+    actionText: "开始对话",
+    tags: ["DeepSeek", "AI", "实时对话"],
+    themeColor: "green",
   },
   {
-    href: '/questions',
-    label: '题库',
+    href: "/questions",
+    label: "题库",
     icon: <BookOutlined className="text-xl" />,
-    title: '前端题库',
-    description: '精心整理的前端面试题库，助你轻松应对技术面试，提升专业能力。',
-    actionText: '开始刷题',
-    tags: ['面试题', 'React', 'Vue'],
-    themeColor: 'blue',
+    title: "前端题库",
+    description: "精心整理的前端面试题库，助你轻松应对技术面试，提升专业能力。",
+    actionText: "开始刷题",
+    tags: ["面试题", "React", "Vue"],
+    themeColor: "blue",
   },
-]
+];
 
 // 提取导航链接的样式为可复用的类名
 const navLinkStyles = `
@@ -59,33 +60,33 @@ const navLinkStyles = `
   dark:text-gray-300
   dark:hover:bg-gray-800
   dark:hover:text-white
-`
+`;
 
 function Navbar() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const [isScrolled, setIsScrolled] = useState(false)
-  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false)
-  const { isAuthenticated, login, logout } = useAuth()
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const { isAuthenticated, login, logout } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 10)
-    }
-    window.addEventListener('scroll', handleScroll)
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [])
+      setIsScrolled(window.scrollY > 10);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const handleLoginSuccess = (token: string) => {
-    login(token)
-  }
+    login(token);
+  };
 
   return (
     <>
       <header
         className={`fixed left-0 right-0 top-0 z-[60] transition-all duration-300 ${
           isScrolled
-            ? 'bg-white/90 backdrop-blur shadow-sm dark:bg-gray-900/90'
-            : 'bg-white dark:bg-gray-900'
+            ? "bg-white/90 backdrop-blur shadow-sm dark:bg-gray-900/90"
+            : "bg-white dark:bg-gray-900"
         }`}
       >
         <div className="mx-auto px-4 sm:px-6 lg:px-14">
@@ -107,7 +108,7 @@ function Navbar() {
 
               {/* 主导航 - 桌面端 */}
               <nav className="ml-12 hidden space-x-2 md:flex">
-                {navigationItems.map(item => (
+                {navigationItems.map((item) => (
                   <Link
                     key={item.href}
                     href={item.href}
@@ -155,11 +156,11 @@ function Navbar() {
           {/* 移动端菜单 */}
           <div
             className={`md:hidden ${
-              isMenuOpen ? 'block' : 'hidden'
+              isMenuOpen ? "block" : "hidden"
             } border-t border-gray-200 dark:border-gray-700`}
           >
             <nav className="flex flex-col space-y-4 py-4">
-              {navigationItems.map(item => (
+              {navigationItems.map((item) => (
                 <Link
                   key={item.href}
                   href={item.href}
@@ -171,8 +172,8 @@ function Navbar() {
               {isAuthenticated ? (
                 <button
                   onClick={() => {
-                    logout()
-                    setIsMenuOpen(false)
+                    logout();
+                    setIsMenuOpen(false);
                   }}
                   className="text-left text-sm font-medium text-gray-800 transition-all duration-300 hover:text-gray-600 dark:text-gray-200 dark:hover:text-gray-400"
                 >
@@ -181,8 +182,8 @@ function Navbar() {
               ) : (
                 <button
                   onClick={() => {
-                    setIsLoginModalOpen(true)
-                    setIsMenuOpen(false)
+                    setIsLoginModalOpen(true);
+                    setIsMenuOpen(false);
                   }}
                   className="text-left text-sm font-medium text-gray-800 transition-all duration-300 hover:text-gray-600 dark:text-gray-200 dark:hover:text-gray-400"
                 >
@@ -200,19 +201,25 @@ function Navbar() {
         onLoginSuccess={handleLoginSuccess}
       />
     </>
-  )
+  );
 }
 
 export function NavbarWrapper() {
-  const [mounted, setMounted] = useState(false)
+  const [mounted, setMounted] = useState(false);
+  const { isAuthenticated } = useAuth();
 
   useEffect(() => {
-    setMounted(true)
-  }, [])
+    setMounted(true);
+  }, []);
 
   if (!mounted) {
-    return null
+    return null;
   }
 
-  return <Navbar />
+  return (
+    <>
+      <Navbar />
+      {isAuthenticated && <Live2DWidget />}
+    </>
+  );
 }

@@ -63,15 +63,11 @@ export default function NotePage({ params }: { params: { id: string } }) {
         heading: {
           levels: [1, 2, 3, 4, 5, 6],
         },
-        codeBlock: {
-          HTMLAttributes: {
-            class: 'relative group',
-          },
-        },
+        codeBlock: false, // 禁用默认的 codeBlock，使用 CodeBlockLowlight 代替
       }),
       CodeBlockLowlight.configure({
         lowlight,
-        defaultLanguage: 'plaintext',
+        defaultLanguage: 'javascript',
         HTMLAttributes: {
           class: 'relative group not-prose bg-gray-900 rounded-md my-4',
         },
@@ -294,18 +290,19 @@ export default function NotePage({ params }: { params: { id: string } }) {
               const response = await api.patch<Note>(`/notes/${params.id}`, {
                 title: note.title,
                 content: note.content,
-                visibility: isPublic
+                visibility: isPublic !== undefined
                   ? isPublic
                     ? 'public'
                     : 'private'
                   : undefined,
-                isTop: isTop || undefined,
+                isTop: isTop !== undefined ? isTop : undefined,
               })
               if (response.success) {
                 setNote((response.data || {}) as Note)
               }
             }}
             onDelete={handleDelete}
+            noteId={params.id}
           />
           <EditorContent editor={editor} className="min-h-[500px]" />
         </div>

@@ -9,6 +9,7 @@ import {
   Form,
   Popover,
   Switch,
+  message,
 } from 'antd'
 import type { MenuProps } from 'antd'
 import type { Color } from 'antd/es/color-picker'
@@ -43,6 +44,7 @@ interface ToolbarProps {
   onNoteChange: (isPublic?: boolean, isTop?: boolean) => void
   onDelete?: () => Promise<any>
   isTop?: boolean
+  noteId: string
 }
 
 const headingOptions: MenuProps['items'] = [
@@ -128,6 +130,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
   onNoteChange,
   onDelete,
   isTop = false,
+  noteId,
 }) => {
   const [textColor, setTextColor] = useState<string>('')
   const [bgColor, setBgColor] = useState<string>('#ffffff')
@@ -246,13 +249,13 @@ export const Toolbar: React.FC<ToolbarProps> = ({
   const getSaveIcon = () => {
     switch (true) {
       case saveStatus === 'saving':
-        return <LoadingOutlined className="text-blue-500" />
+        return <LoadingOutlined style={{ color: '#3b82f6' }} />
       case saveStatus === 'saved':
-        return <CheckCircleOutlined className="text-green-500" />
+        return <CheckCircleOutlined style={{ color: '#10b981' }} />
       case saveStatus === 'waitingSaved':
-        return <EditOutlined className="text-yellow-500" />
+        return <EditOutlined style={{ color: '#f59e0b' }} />
       case saveStatus === 'error':
-        return <WarningOutlined className="text-red-500" />
+        return <WarningOutlined style={{ color: '#ef4444' }} />
       default:
         return <SaveOutlined />
     }
@@ -564,7 +567,15 @@ export const Toolbar: React.FC<ToolbarProps> = ({
                         </div>
                       </div>
                     </div>
-                    <button className="rounded-lg p-2 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-300">
+                    <button
+                      onClick={() => {
+                        // 复制链接
+                        let target = `https://www.hdajun.me/notes/${noteId}/view`
+                        navigator.clipboard.writeText(target)
+                        message.success('链接已复制到剪贴板')
+                      }}
+                      className="rounded-lg p-2 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-300"
+                    >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"

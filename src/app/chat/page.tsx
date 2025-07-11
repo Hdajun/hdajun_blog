@@ -264,6 +264,12 @@ const useStyle = createStyles(({ token, css }) => {
       @media (max-width: 768px) {
         padding: 0;
       }
+
+      .ant-avatar {
+        background-color: unset !important;
+        width: 36.5px !important;
+        height: auto !important;
+      }
     `,
     loadingMessage: css`
       background-image: linear-gradient(
@@ -724,7 +730,7 @@ const Independent: React.FC = () => {
                 ? {
                     icon: (
                       <Image
-                        src="/icon.svg"
+                        src="/ai.svg"
                         alt="SVG Image"
                         width={20}
                         height={20}

@@ -13,7 +13,7 @@ const inter = Inter({ subsets: ['latin'] })
 export const metadata: Metadata = {
   title: 'H_dajun 的个人空间',
   description: '一个使用 Next.js 构建的个人网站',
-  icons: [{ rel: 'icon', url: '/logo.svg', type: 'image/svg+xml' }],
+  icons: [{ rel: 'icon', url: '/newLogo.svg', type: 'image/svg+xml' }],
 }
 
 export default function RootLayout({

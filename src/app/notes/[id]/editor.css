@@ -29,3 +29,95 @@
   background-color: rgb(31 41 55);
   color: rgb(209 213 219);
 }
+
+/* 表格样式 */
+.ProseMirror table {
+  border-collapse: collapse;
+  table-layout: auto;
+  width: 100%;
+  margin: 1em 0;
+  overflow: hidden;
+}
+
+.ProseMirror th,
+.ProseMirror td {
+  border: 1px solid rgb(209 213 219);
+  padding: 0.5em 0.75em;
+  vertical-align: top;
+  text-align: left;
+  position: relative;
+}
+
+.ProseMirror th {
+  background-color: rgb(243 244 246);
+  font-weight: 600;
+}
+
+.dark .ProseMirror th,
+.dark .ProseMirror td {
+  border-color: rgb(55 65 81);
+}
+
+.dark .ProseMirror th {
+  background-color: rgb(31 41 55);
+}
+
+.ProseMirror .selectedCell {
+  background-color: rgb(219 234 254);
+}
+
+.dark .ProseMirror .selectedCell {
+  background-color: rgb(30 58 138 / 0.3);
+}
+
+/* 任务列表样式 */
+.ProseMirror ul[data-type="taskList"] {
+  list-style: none;
+  padding-left: 0;
+}
+
+.ProseMirror ul[data-type="taskList"] li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5em;
+  margin: 0.25em 0;
+}
+
+.ProseMirror ul[data-type="taskList"] li label {
+  flex-shrink: 0;
+  margin-top: 0.25em;
+}
+
+.ProseMirror ul[data-type="taskList"] li label input[type="checkbox"] {
+  width: 1em;
+  height: 1em;
+  accent-color: rgb(59 130 246);
+  cursor: pointer;
+}
+
+.ProseMirror ul[data-type="taskList"] li div {
+  flex: 1;
+}
+
+/* 高亮样式 */
+.ProseMirror mark {
+  background-color: rgb(254 249 195);
+  border-radius: 0.125em;
+  padding: 0.05em 0.15em;
+}
+
+.dark .ProseMirror mark {
+  background-color: rgb(133 77 14 / 0.4);
+  color: rgb(253 230 138);
+}
+
+/* 水平分割线 */
+.ProseMirror hr {
+  border: none;
+  border-top: 2px solid rgb(229 231 235);
+  margin: 1.5em 0;
+}
+
+.dark .ProseMirror hr {
+  border-top-color: rgb(55 65 81);
+}

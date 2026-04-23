@@ -10,6 +10,14 @@ import css from 'highlight.js/lib/languages/css'
 import js from 'highlight.js/lib/languages/javascript'
 import ts from 'highlight.js/lib/languages/typescript'
 import html from 'highlight.js/lib/languages/xml'
+import json from 'highlight.js/lib/languages/json'
+import python from 'highlight.js/lib/languages/python'
+import bash from 'highlight.js/lib/languages/bash'
+import java from 'highlight.js/lib/languages/java'
+import go from 'highlight.js/lib/languages/go'
+import sql from 'highlight.js/lib/languages/sql'
+import yaml from 'highlight.js/lib/languages/yaml'
+import markdown from 'highlight.js/lib/languages/markdown'
 import 'highlight.js/styles/github-dark.css'
 import Placeholder from '@tiptap/extension-placeholder'
 import Image from '@tiptap/extension-image'
@@ -22,6 +30,13 @@ import Underline from '@tiptap/extension-underline'
 import TextStyle from '@tiptap/extension-text-style'
 import { Color } from '@tiptap/extension-color'
 import { Link } from '@tiptap/extension-link'
+import Table from '@tiptap/extension-table'
+import TableRow from '@tiptap/extension-table-row'
+import TableCell from '@tiptap/extension-table-cell'
+import TableHeader from '@tiptap/extension-table-header'
+import TaskList from '@tiptap/extension-task-list'
+import TaskItem from '@tiptap/extension-task-item'
+import Highlight from '@tiptap/extension-highlight'
 import { FontSize } from '@/components/Editor/extensions/fontSize'
 import { BackgroundColor } from '@/components/Editor/extensions/backgroundColor'
 import { api } from '@/lib/api-client'
@@ -32,11 +47,27 @@ import { message } from 'antd'
 
 const lowlight = createLowlight(common)
 lowlight.register('html', html)
+lowlight.register('xml', html)
 lowlight.register('css', css)
 lowlight.register('js', js)
 lowlight.register('javascript', js)
+lowlight.register('jsx', js)
 lowlight.register('typescript', ts)
 lowlight.register('ts', ts)
+lowlight.register('tsx', ts)
+lowlight.register('json', json)
+lowlight.register('python', python)
+lowlight.register('py', python)
+lowlight.register('bash', bash)
+lowlight.register('sh', bash)
+lowlight.register('shell', bash)
+lowlight.register('java', java)
+lowlight.register('go', go)
+lowlight.register('sql', sql)
+lowlight.register('yaml', yaml)
+lowlight.register('yml', yaml)
+lowlight.register('markdown', markdown)
+lowlight.register('md', markdown)
 
 // 保存状态
 type SaveStatus = 'default' | 'saved' | 'saving' | 'error' | 'waitingSaved'
@@ -100,7 +131,27 @@ export default function NotePage({ params }: { params: { id: string } }) {
         bulletListMarker: '-',
         transformPastedText: true,
         transformCopiedText: false,
-        breaks: false,
+        breaks: true,
+      }),
+      Table.configure({
+        resizable: true,
+        HTMLAttributes: {
+          class: 'not-prose border-collapse table-auto w-full',
+        },
+      }),
+      TableRow,
+      TableCell,
+      TableHeader,
+      TaskList.configure({
+        HTMLAttributes: {
+          class: 'not-prose',
+        },
+      }),
+      TaskItem.configure({
+        nested: true,
+      }),
+      Highlight.configure({
+        multicolor: true,
       }),
       TextAlign.configure({
         types: ['heading', 'paragraph'],
@@ -128,6 +179,15 @@ export default function NotePage({ params }: { params: { id: string } }) {
       attributes: {
         class:
           'prose dark:prose-invert focus:outline-none max-w-none [&_pre]:!bg-gray-900 [&_pre]:!p-4 [&_pre]:!rounded-md [&_pre]:!m-0',
+      },
+      handlePaste: (view, event) => {
+        const text = event.clipboardData?.getData('text/plain')
+        if (!text || !editor) return false
+        const mdPattern = /^#{1,6}\s|^\s*[-*+]\s|^\s*\d+\.\s|^```|^\|.+\||\*\*.*\*\*|^>\s/m
+        if (!mdPattern.test(text)) return false
+        event.preventDefault()
+        editor.commands.insertContent(text)
+        return true
       },
       handleKeyDown: (view, event) => {
         // 代码块删除逻辑保持不变

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { BookOutlined, FormOutlined, MessageOutlined } from "@ant-design/icons";
+import { BookOutlined, FormOutlined, MessageOutlined, TrophyOutlined } from "@ant-design/icons";
 import { ThemeToggle } from "./ThemeToggle";
 import { Bars3Icon as MenuIcon } from "@heroicons/react/24/outline";
 import { LoginModal } from "./LoginModal";
@@ -39,6 +39,16 @@ export const navigationItems = [
     actionText: "开始刷题",
     tags: ["面试题", "React", "Vue"],
     themeColor: "blue",
+  },
+  {
+    href: "/showcase",
+    label: "成果",
+    icon: <TrophyOutlined className="text-xl" />,
+    title: "成果展示",
+    description: "我的项目成果、证书认证与技术实践的集中展示。",
+    actionText: "查看成果",
+    tags: ["项目", "证书", "实战"],
+    themeColor: "amber",
   },
 ];
 

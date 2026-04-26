@@ -1,21 +1,49 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { format } from 'date-fns'
+import { Pagination } from 'antd'
 import { Note } from '@/types/note'
 import { useAuth } from '@/contexts/AuthContext'
 import { api } from '@/lib/api-client'
 import { FeatureCard } from '@/components/FeatureCard'
-import { getRandomColor, ICONS, TemplateIcon } from './icons'
+import { colorStyles, ICONS, TemplateIcon } from './icons'
 import { TemplateNoteId } from '@/constants'
 import { debounce } from 'lodash'
+
+// 颜色列表
+const COLORS = Object.keys(colorStyles) as (keyof typeof colorStyles)[]
+
+// 基于字符串生成稳定的索引
+const getStableIndex = (str: string, max: number) => {
+  let hash = 0
+  for (let i = 0; i < str.length; i++) {
+    const char = str.charCodeAt(i)
+    hash = ((hash << 5) - hash) + char
+    hash = hash & hash // Convert to 32bit integer
+  }
+  return Math.abs(hash) % max
+}
+
+// 基于笔记 ID 获取稳定的颜色
+const getStableColor = (id: string): keyof typeof colorStyles => {
+  return COLORS[getStableIndex(id, COLORS.length)]
+}
+
+// 基于笔记 ID 获取稳定的图标
+const getStableIcon = (id: string) => {
+  return ICONS[getStableIndex(id, ICONS.length)].icon
+}
 
 export default function NotesPage() {
   const router = useRouter()
   const [notes, setNotes] = useState<Note[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
+  const [searchKeyword, setSearchKeyword] = useState('') // 实际用于搜索的关键字
+  const [currentPage, setCurrentPage] = useState(1)
+  const [pageSize, setPageSize] = useState(9)
   const { isAuthenticated } = useAuth()
 
   useEffect(() => {
@@ -48,20 +76,64 @@ export default function NotesPage() {
     }
   }, 300)
 
-  const getCurrentNotes = () => {
+  // 获取所有可用的标签（用于搜索提示）
+  const allTags = useMemo(() => {
+    const tagSet = new Set<string>()
+    notes.forEach(note => {
+      note.tags?.forEach(tag => tagSet.add(tag))
+    })
+    return Array.from(tagSet)
+  }, [notes])
+
+  // 过滤后的笔记列表
+  const filteredNotes = useMemo(() => {
     const filtered = isAuthenticated
       ? notes
       : notes.filter(item => item.visibility === 'public')
-    if (!searchQuery) return filtered
-    return filtered.filter(note =>
-      note.title.toLowerCase().includes(searchQuery.toLowerCase())
-    )
+    if (!searchKeyword.trim()) return filtered
+
+    const query = searchKeyword.toLowerCase().trim()
+    return filtered.filter(note => {
+      // 标题匹配
+      const titleMatch = note.title.toLowerCase().includes(query)
+      // 标签匹配
+      const tagMatch = note.tags?.some(tag =>
+        tag.toLowerCase().includes(query)
+      )
+      return titleMatch || tagMatch
+    })
+  }, [notes, isAuthenticated, searchKeyword])
+
+  // 回车触发搜索
+  const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      setSearchKeyword(searchQuery)
+      setCurrentPage(1) // 搜索时重置页码
+    }
   }
 
-  // 获取随机图标
-  const getRandomIcon = (index?: number) => {
-    const randomIndex = Math.floor(Math.random() * ICONS.length)
-    return ICONS[index ?? randomIndex].icon
+  // 清除搜索
+  const handleClearSearch = () => {
+    setSearchQuery('')
+    setSearchKeyword('')
+    setCurrentPage(1) // 清除搜索时重置页码
+  }
+
+  // 当前页的数据
+  const paginatedNotes = useMemo(() => {
+    const start = (currentPage - 1) * pageSize
+    const end = start + pageSize
+    return filteredNotes.slice(start, end)
+  }, [filteredNotes, currentPage, pageSize])
+
+  // 页码改变时滚动到顶部
+  const handlePageChange = (page: number, newPageSize: number) => {
+    setCurrentPage(page)
+    if (newPageSize !== pageSize) {
+      setPageSize(newPageSize)
+      setCurrentPage(1) // 改变每页条数时重置到第一页
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   if (isLoading) {
@@ -105,47 +177,127 @@ export default function NotesPage() {
                 记录，创作，分享我的想法
               </p>
             </div>
-            {isAuthenticated && (
-              <button
-                onClick={handleCreateNote}
-                className="inline-flex items-center h-9 px-4 
-                  text-sm text-gray-700 dark:text-gray-200
-                  border border-gray-200 dark:border-gray-700 rounded-lg 
-                  hover:border-gray-300 dark:hover:border-gray-600
-                  hover:-translate-y-[1px]
-                  active:translate-y-0
-                  transition-all duration-200 
-                  focus:outline-none focus:ring-2 focus:ring-gray-200 dark:focus:ring-gray-700"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-4 w-4 mr-1.5"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
+            <div className="flex items-center gap-3">
+              {/* 搜索框 */}
+              <div className="relative group">
+                <input
+                  type="text"
+                  placeholder="搜索标题或标签..."
+                  value={searchQuery}
+                  onChange={e => setSearchQuery(e.target.value)}
+                  onKeyDown={handleSearchKeyDown}
+                  className="h-9 w-56 sm:w-64 pl-4 pr-9 text-sm
+                    text-gray-700 dark:text-gray-200
+                    border border-gray-200 dark:border-gray-700 rounded-lg 
+                    bg-transparent
+                    placeholder:text-gray-400 dark:placeholder:text-gray-500
+                    hover:border-gray-300 dark:hover:border-gray-600
+                    hover:-translate-y-[1px]
+                    focus:outline-none 
+                    focus:border-gray-400 dark:focus:border-gray-500
+                    focus:-translate-y-[1px]
+                    focus:shadow-sm
+                    transition-all duration-300 ease-out"
+                />
+                {searchKeyword ? (
+                  <button
+                    onClick={handleClearSearch}
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2
+                      text-gray-400 hover:text-gray-600 dark:hover:text-gray-300
+                      transition-colors"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-4 w-4"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M6 18L18 6M6 6l12 12"
+                      />
+                    </svg>
+                  </button>
+                ) : (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-4 w-4 absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                    />
+                  </svg>
+                )}
+              </div>
+              {/* 新建按钮 */}
+              {isAuthenticated && (
+                <button
+                  onClick={handleCreateNote}
+                  className="inline-flex items-center h-9 px-4 
+                    text-sm text-gray-700 dark:text-gray-200
+                    border border-gray-200 dark:border-gray-700 rounded-lg 
+                    hover:border-gray-300 dark:hover:border-gray-600
+                    hover:-translate-y-[1px]
+                    active:translate-y-0
+                    transition-all duration-200 
+                    focus:outline-none focus:ring-2 focus:ring-gray-200 dark:focus:ring-gray-700"
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 4v16m8-8H4"
-                  />
-                </svg>
-                新建小记
-              </button>
-            )}
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-4 w-4 mr-1.5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 4v16m8-8H4"
+                    />
+                  </svg>
+                  新建小记
+                </button>
+              )}
+            </div>
           </div>
+          {/* 搜索结果提示 */}
+          {searchKeyword.trim() && (
+            <div className="pb-4 -mt-2">
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                搜索 "
+                <span className="text-gray-700 dark:text-gray-300 font-medium">
+                  {searchKeyword}
+                </span>
+                " 找到{' '}
+                <span className="text-gray-700 dark:text-gray-300 font-medium">
+                  {filteredNotes.length}
+                </span>{' '}
+                条结果
+              </p>
+            </div>
+          )}
         </div>
       </div>
 
       <div className="mx-auto px-4 py-6 pt-8">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {getCurrentNotes()?.map(note => {
+          {paginatedNotes?.map(note => {
+            const noteId = note._id?.toString() || ''
             const themeColor =
-              note._id === TemplateNoteId ? 'rose' : getRandomColor()
+              note._id === TemplateNoteId ? 'rose' : getStableColor(noteId)
             return (
               <FeatureCard
-                key={note._id?.toString()}
+                key={noteId}
                 href={
                   isAuthenticated || note._id === TemplateNoteId
                     ? `/notes/${note._id}`
@@ -163,13 +315,14 @@ export default function NotesPage() {
                 icon={
                   note._id === TemplateNoteId
                     ? TemplateIcon[0].icon
-                    : getRandomIcon()
+                    : getStableIcon(noteId)
                 }
                 actionText="点击查看"
                 themeColor={themeColor}
                 tags={[
                   note.visibility === 'public' ? '公开' : '私密',
                   note._id === TemplateNoteId ? '可编写' : '',
+                  ...(note.tags || []),
                   format(new Date(note.updatedAt), 'yyyy-MM-dd'),
                 ]}
                 // 因为小记标题可能有一行可能有多行，如果一排有多行的有单行的，就会导出actionText的不统一在一条直线，所以定制一下内部的布局方式使用flex 上下 然后between
@@ -178,7 +331,7 @@ export default function NotesPage() {
             )
           })}
 
-          {getCurrentNotes()?.length === 0 && (
+          {paginatedNotes?.length === 0 && (
             <div className="col-span-full text-center py-12 bg-gray-50/50 dark:bg-gray-800/30 rounded-lg border border-gray-100/50 dark:border-gray-700/30">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -200,6 +353,24 @@ export default function NotesPage() {
             </div>
           )}
         </div>
+
+        {/* 分页器 */}
+        {filteredNotes.length > 0 && (
+          <div className="flex justify-end mt-6">
+            <Pagination
+              current={currentPage}
+              pageSize={pageSize}
+              total={filteredNotes.length}
+              onChange={handlePageChange}
+              pageSizeOptions={['9', '18', '36', '100']}
+              showSizeChanger
+              showQuickJumper={false}
+              size="small"
+              simple
+              className="pagination-custom"
+            />
+          </div>
+        )}
       </div>
     </div>
   )

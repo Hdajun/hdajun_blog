@@ -10,6 +10,7 @@ import {
   Popover,
   Switch,
   message,
+  Tag,
 } from 'antd'
 import type { MenuProps } from 'antd'
 import type { Color } from 'antd/es/color-picker'
@@ -34,6 +35,9 @@ import {
   WarningOutlined,
   CheckCircleOutlined,
   EditOutlined,
+  TagOutlined,
+  PlusOutlined,
+  CloseOutlined,
 } from '@ant-design/icons'
 
 interface ToolbarProps {
@@ -41,9 +45,10 @@ interface ToolbarProps {
   onSave?: () => Promise<void>
   saveStatus: 'default' | 'saved' | 'saving' | 'error' | 'waitingSaved'
   isPublic: boolean
-  onNoteChange: (isPublic?: boolean, isTop?: boolean) => void
+  onNoteChange: (isPublic?: boolean, isTop?: boolean, tags?: string[]) => void
   onDelete?: () => Promise<any>
   isTop?: boolean
+  tags?: string[]
   noteId: string
 }
 
@@ -130,6 +135,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
   onNoteChange,
   onDelete,
   isTop = false,
+  tags = [],
   noteId,
 }) => {
   const [textColor, setTextColor] = useState<string>('')
@@ -138,6 +144,8 @@ export const Toolbar: React.FC<ToolbarProps> = ({
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
   const [linkForm] = Form.useForm()
   const [popOpen, setPopOpen] = useState(false)
+  const [tagInput, setTagInput] = useState('')
+  const [showTagInput, setShowTagInput] = useState(false)
 
   if (!editor) {
     return null
@@ -186,7 +194,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
       : editor.state.doc.textBetween(
           editor.state.selection.from,
           editor.state.selection.to,
-          ''
+          '',
         )
 
     linkForm.setFieldsValue({
@@ -286,16 +294,16 @@ export const Toolbar: React.FC<ToolbarProps> = ({
             {editor.isActive('heading', { level: 1 })
               ? '标题1'
               : editor.isActive('heading', { level: 2 })
-              ? '标题2'
-              : editor.isActive('heading', { level: 3 })
-              ? '标题3'
-              : editor.isActive('heading', { level: 4 })
-              ? '标题4'
-              : editor.isActive('heading', { level: 5 })
-              ? '标题5'
-              : editor.isActive('heading', { level: 6 })
-              ? '标题6'
-              : '正文'}
+                ? '标题2'
+                : editor.isActive('heading', { level: 3 })
+                  ? '标题3'
+                  : editor.isActive('heading', { level: 4 })
+                    ? '标题4'
+                    : editor.isActive('heading', { level: 5 })
+                      ? '标题5'
+                      : editor.isActive('heading', { level: 6 })
+                        ? '标题6'
+                        : '正文'}
           </Button>
         </Dropdown>
 
@@ -539,6 +547,109 @@ export const Toolbar: React.FC<ToolbarProps> = ({
                     </div>
                   </div>
 
+                  {/* 标签设置行 */}
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-gray-100 text-cyan-500 dark:bg-cyan-500/10">
+                        <TagOutlined className="h-5 w-5" />
+                      </div>
+                      <div className="flex-1">
+                        <div className="font-medium text-gray-600 dark:text-gray-200">
+                          小记标签
+                        </div>
+                        <div className="text-xs text-gray-400 dark:text-gray-400">
+                          添加标签方便分类和检索
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex flex-wrap items-center gap-2 pl-[52px]">
+                      {tags.map((tag, index) => (
+                        <span
+                          key={index}
+                          className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded-full
+                            bg-gradient-to-r from-cyan-50 to-blue-50 dark:from-cyan-900/20 dark:to-blue-900/20
+                            text-cyan-700 dark:text-cyan-300
+                            border border-cyan-200/60 dark:border-cyan-700/40
+                            transition-all duration-200 hover:shadow-sm hover:scale-[1.02]
+                            group"
+                        >
+                          <span className="max-w-[100px] truncate">{tag}</span>
+                          <button
+                            onClick={() => {
+                              const newTags = tags.filter((_, i) => i !== index)
+                              onNoteChange(undefined, undefined, newTags)
+                            }}
+                            className="ml-0.5 flex items-center justify-center w-4 h-4 rounded-full
+                              text-cyan-500/60 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20
+                              transition-all duration-150"
+                          >
+                            <CloseOutlined className="text-[10px]" />
+                          </button>
+                        </span>
+                      ))}
+                      {showTagInput ? (
+                        <input
+                          type="text"
+                          autoFocus
+                          value={tagInput}
+                          onChange={e => setTagInput(e.target.value)}
+                          onBlur={() => {
+                            if (
+                              tagInput.trim() &&
+                              !tags.includes(tagInput.trim())
+                            ) {
+                              onNoteChange(undefined, undefined, [
+                                ...tags,
+                                tagInput.trim(),
+                              ])
+                            }
+                            setTagInput('')
+                            setShowTagInput(false)
+                          }}
+                          onKeyDown={e => {
+                            if (e.key === 'Enter' && tagInput.trim()) {
+                              if (!tags.includes(tagInput.trim())) {
+                                onNoteChange(undefined, undefined, [
+                                  ...tags,
+                                  tagInput.trim(),
+                                ])
+                              }
+                              setTagInput('')
+                              setShowTagInput(false)
+                            } else if (e.key === 'Escape') {
+                              setTagInput('')
+                              setShowTagInput(false)
+                            }
+                          }}
+                          placeholder="输入标签名"
+                          className="min-w-[80px] max-w-[140px] px-3 py-1 text-xs
+                            border border-cyan-300/50 dark:border-cyan-600/50
+                            rounded-full bg-white/80 dark:bg-gray-800/80
+                            text-gray-700 dark:text-gray-200
+                            placeholder:text-gray-400 dark:placeholder:text-gray-500
+                            outline-none
+                            focus:border-cyan-400 dark:focus:border-cyan-500
+                            focus:ring-2 focus:ring-cyan-100 dark:focus:ring-cyan-900/30
+                            transition-all duration-200"
+                        />
+                      ) : (
+                        <button
+                          onClick={() => setShowTagInput(true)}
+                          className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded-full
+                            border border-dashed border-gray-300 dark:border-gray-600
+                            text-gray-500 dark:text-gray-400
+                            hover:border-cyan-400 dark:hover:border-cyan-500
+                            hover:text-cyan-600 dark:hover:text-cyan-400
+                            hover:bg-cyan-50/50 dark:hover:bg-cyan-900/10
+                            transition-all duration-200"
+                        >
+                          <PlusOutlined className="text-[10px]" />
+                          <span>添加标签</span>
+                        </button>
+                      )}
+                    </div>
+                  </div>
+
                   {/* 分享链接行 */}
                   <div className="flex items-center gap-6 justify-between">
                     <div className="flex items-center gap-3">
@@ -639,9 +750,13 @@ export const Toolbar: React.FC<ToolbarProps> = ({
               trigger="click"
               placement="bottom"
               arrow={false}
-              style={{
-                borderRadius: '12px',
+              align={{ offset: [-90, 0] }}
+              styles={{
+                body: {
+                  borderRadius: '12px',
+                },
               }}
+              zIndex={9999}
             >
               <Button type="text" icon={<SettingOutlined />} />
             </Popover>

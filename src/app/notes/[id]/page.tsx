@@ -79,6 +79,7 @@ export default function NotePage({ params }: { params: { id: string } }) {
     title: '',
     content: '',
     visibility: 'private',
+    tags: [],
     createdAt: '',
     updatedAt: '',
   })
@@ -345,7 +346,8 @@ export default function NotePage({ params }: { params: { id: string } }) {
             saveStatus={saveStatus}
             isPublic={note.visibility === 'public'}
             isTop={!!note.isTop}
-            onNoteChange={async (isPublic, isTop) => {
+            tags={note.tags || []}
+            onNoteChange={async (isPublic, isTop, tags) => {
               // 调用保存接口更新对应权限字段
               const response = await api.patch<Note>(`/notes/${params.id}`, {
                 title: note.title,
@@ -356,6 +358,7 @@ export default function NotePage({ params }: { params: { id: string } }) {
                     : 'private'
                   : undefined,
                 isTop: isTop !== undefined ? isTop : undefined,
+                tags: tags !== undefined ? tags : undefined,
               })
               if (response.success) {
                 setNote((response.data || {}) as Note)

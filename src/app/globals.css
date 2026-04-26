@@ -207,3 +207,177 @@ textarea {
 ::-webkit-scrollbar {
   display: none !important;
 }
+
+/* Pagination 分页器 - 简洁模式 */
+.pagination-custom.ant-pagination-simple {
+  @apply text-sm !important;
+  color: rgb(75 85 99) !important;
+}
+
+.dark .pagination-custom.ant-pagination-simple {
+  color: rgb(156 163 175) !important;
+}
+
+.pagination-custom .ant-pagination-simple-pager {
+  color: rgb(75 85 99) !important;
+}
+
+.dark .pagination-custom .ant-pagination-simple-pager {
+  color: rgb(156 163 175) !important;
+}
+
+.pagination-custom .ant-pagination-simple-pager input {
+  @apply w-12 h-7 px-2 mx-1 rounded-md text-center;
+  @apply transition-all duration-200;
+  border: none !important;
+  background: transparent !important;
+  color: rgb(55 65 81) !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+.dark .pagination-custom .ant-pagination-simple-pager input {
+  color: rgb(209 213 219) !important;
+}
+
+.pagination-custom .ant-pagination-simple-pager input:hover {
+  background: rgb(243 244 246) !important;
+}
+
+.dark .pagination-custom .ant-pagination-simple-pager input:hover {
+  background: rgb(31 41 55) !important;
+}
+
+.pagination-custom .ant-pagination-simple-pager input:focus {
+  background: rgb(243 244 246) !important;
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+.dark .pagination-custom .ant-pagination-simple-pager input:focus {
+  background: rgb(31 41 55) !important;
+}
+
+.pagination-custom .ant-pagination-prev,
+.pagination-custom .ant-pagination-next {
+  @apply min-w-[28px] h-7 rounded-md;
+  @apply transition-all duration-200;
+  border: none !important;
+  background: transparent !important;
+  color: rgb(75 85 99) !important;
+}
+
+.dark .pagination-custom .ant-pagination-prev,
+.dark .pagination-custom .ant-pagination-next {
+  color: rgb(156 163 175) !important;
+}
+
+.pagination-custom .ant-pagination-prev:hover,
+.pagination-custom .ant-pagination-next:hover {
+  background: rgb(243 244 246) !important;
+  color: rgb(17 24 39) !important;
+}
+
+.dark .pagination-custom .ant-pagination-prev:hover,
+.dark .pagination-custom .ant-pagination-next:hover {
+  background: rgb(31 41 55) !important;
+  color: rgb(255 255 255) !important;
+}
+
+.pagination-custom .ant-pagination-prev .ant-pagination-item-link,
+.pagination-custom .ant-pagination-next .ant-pagination-item-link {
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.pagination-custom .ant-pagination-prev:focus .ant-pagination-item-link,
+.pagination-custom .ant-pagination-next:focus .ant-pagination-item-link {
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+.pagination-custom .ant-pagination-disabled {
+  opacity: 0.3 !important;
+  cursor: not-allowed !important;
+}
+
+.pagination-custom .ant-pagination-options {
+  @apply ml-4;
+}
+
+.pagination-custom .ant-pagination-options .ant-select {
+  @apply h-7;
+}
+
+.pagination-custom .ant-pagination-options .ant-select-selector {
+  @apply h-7 rounded-md;
+  border: none !important;
+  background: transparent !important;
+  color: rgb(75 85 99) !important;
+  box-shadow: none !important;
+}
+
+.dark .pagination-custom .ant-pagination-options .ant-select-selector {
+  color: rgb(156 163 175) !important;
+}
+
+.pagination-custom .ant-pagination-options .ant-select-selector::after {
+  display: none !important;
+}
+
+.pagination-custom .ant-pagination-options .ant-select:hover .ant-select-selector {
+  background: rgb(243 244 246) !important;
+}
+
+.dark .pagination-custom .ant-pagination-options .ant-select:hover .ant-select-selector {
+  background: rgb(31 41 55) !important;
+}
+
+.pagination-custom .ant-pagination-options .ant-select-focused .ant-select-selector {
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+  background: rgb(243 244 246) !important;
+}
+
+.dark .pagination-custom .ant-pagination-options .ant-select-focused .ant-select-selector {
+  background: rgb(31 41 55) !important;
+}
+
+.pagination-custom .ant-pagination-options .ant-select-selection-item {
+  color: rgb(75 85 99) !important;
+}
+
+.dark .pagination-custom .ant-pagination-options .ant-select-selection-item {
+  color: rgb(156 163 175) !important;
+}
+
+.pagination-custom .ant-pagination-options .ant-select-arrow {
+  color: rgb(156 163 175) !important;
+}
+
+.dark .pagination-custom .ant-pagination-options .ant-select-arrow {
+  color: rgb(107 114 128) !important;
+}
+
+/* 下拉菜单暗色主题 */
+.dark .ant-select-dropdown {
+  background: rgb(31 41 55) !important;
+  border: 1px solid rgb(55 65 81) !important;
+}
+
+.dark .ant-select-item {
+  color: rgb(209 213 219) !important;
+}
+
+.dark .ant-select-item-option-active {
+  background: rgb(55 65 81) !important;
+}
+
+.dark .ant-select-item-option-selected {
+  background: rgb(55 65 81) !important;
+  color: rgb(255 255 255) !important;
+}

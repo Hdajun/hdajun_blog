@@ -8,6 +8,7 @@ export interface Note {
   content: string
   visibility: NoteVisibility
   isTop?: boolean
+  tags?: string[]
   createdAt: string
   updatedAt: string
 }

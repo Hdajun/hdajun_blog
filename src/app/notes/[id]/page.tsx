@@ -319,8 +319,8 @@ export default function NotePage({ params }: { params: { id: string } }) {
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900 rounded-lg">
-      <div className="max-w-4xl mx-auto p-8 mt-14">
-        <div className="mb-10">
+      <div className="max-w-4xl mx-auto px-8 pb-8 pt-[130px]">
+        <div className="mb-3">
           <input
             ref={titleInputRef}
             type="text"
@@ -367,7 +367,7 @@ export default function NotePage({ params }: { params: { id: string } }) {
             onDelete={handleDelete}
             noteId={params.id}
           />
-          <EditorContent editor={editor} className="min-h-[500px]" />
+          <EditorContent editor={editor} className="min-h-[500px] mt-4" />
         </div>
       </div>
     </div>

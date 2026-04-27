@@ -275,7 +275,7 @@ export default function CreateQuestionClient() {
   const errorStyles = 'mt-1.5 text-sm text-red-500 dark:text-red-400'
 
   return (
-    <div className="container mx-auto px-4">
+    <div className="container mx-auto px-4 pt-6">
       <div className="max-w-3xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

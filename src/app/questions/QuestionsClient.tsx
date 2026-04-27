@@ -5,22 +5,16 @@ import { FeatureCard } from '@/components/FeatureCard'
 
 export default function QuestionsClient() {
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-900">
-      <div className="bg-white/80 backdrop-blur-lg dark:bg-gray-900/80 border-b border-gray-100 dark:border-gray-800">
-        <div className="max-w-5xl mx-auto px-4">
-          <div className="flex justify-between items-center py-6">
-            <div>
-              <h1 className="text-2xl text-gray-900 dark:text-white">
-                前端题库
-              </h1>
-              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                收录前端开发中的重点知识和常见问题，帮助你巩固基础、拓展视野，构建完整的技术体系。
-              </p>
-            </div>
-          </div>
-        </div>
+    <div>
+      {/* 吸顶页头 */}
+      <div className="sticky top-0 z-10 -mx-4 md:-mx-8 px-4 md:px-8 bg-white/30 dark:bg-gray-950/30 backdrop-blur-md py-6 mb-8 relative after:absolute after:bottom-0 after:left-0 after:right-0 after:h-px after:bg-gradient-to-r after:from-transparent after:via-gray-300/70 after:to-transparent dark:after:via-white/[0.08]">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">前端题库</h1>
+        <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
+          收录前端开发中的重点知识和常见问题，帮助你巩固基础、拓展视野
+        </p>
       </div>
-      <div className="flex flex-col sm:flex-row justify-center gap-6 sm:gap-8 lg:gap-16 max-w-[1200px] mx-auto px-4 pt-8">
+
+      <div className="flex flex-wrap gap-4 pt-2">
         <FeatureCard
           href="/questions/practice"
           icon={<BookOpenIcon className="h-7 w-7" />}
@@ -28,9 +22,8 @@ export default function QuestionsClient() {
           description="通过随机抽题或按分类练习，巩固已学知识点，提升技术能力。"
           actionText="开始练习"
           themeColor="blue"
-          className="w-full sm:w-[460px]"
+          className="flex-1 min-w-[min(280px,100%)] max-w-full sm:max-w-[460px]"
         />
-
         <FeatureCard
           href="/questions/create"
           icon={<PencilSquareIcon className="h-7 w-7" />}
@@ -39,7 +32,7 @@ export default function QuestionsClient() {
           actionText="开始记录"
           themeColor="green"
           delay={0.1}
-          className="w-full sm:w-[460px]"
+          className="flex-1 min-w-[min(280px,100%)] max-w-full sm:max-w-[460px]"
         />
       </div>
     </div>

@@ -64,7 +64,7 @@ export function FeatureCard({
       animate={{ opacity: 1, y: 0 }}
       whileHover={{ y: -4, scale: 1.02 }}
       transition={{ duration: 0.2, delay }}
-      className={`group relative w-[340px] rounded-2xl bg-white p-6 shadow-[0_4px_12px_rgba(0,0,0,0.08)] backdrop-blur-sm transition-all duration-300 ease-out hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] dark:bg-gray-800 overflow-hidden ${className}`}
+      className={`group relative w-full rounded-2xl bg-white p-6 shadow-[0_4px_12px_rgba(0,0,0,0.08)] backdrop-blur-sm transition-all duration-300 ease-out hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] dark:bg-gray-800 overflow-hidden ${className}`}
     >
       {ribbon && (
         <div className="absolute -right-[30px] top-[20px] z-10 rotate-45 transform">

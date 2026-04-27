@@ -326,7 +326,7 @@ export default function QuestionList() {
     return (
       <div className="min-h-screen pb-8">
         {/* 筛选器骨架屏 */}
-        <div className="sticky top-0 z-50 pb-4 pt-2">
+        <div className="sticky top-0 z-50 pb-4 pt-6">
           <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-2xl p-5 
             shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-200/30 dark:border-gray-700/30">
             <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
@@ -386,7 +386,7 @@ export default function QuestionList() {
   return (
     <div className="min-h-screen pb-8">
       {/* 筛选器区域 - 固定在顶部 */}
-      <div className="sticky top-0 z-50 pb-4 pt-2">
+      <div className="sticky top-0 z-50 pb-4 pt-6">
         <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-2xl p-5 
           shadow-[0_8px_30px_rgb(0,0,0,0.04),0_4px_12px_rgb(0,0,0,0.02),inset_0_0_0_1px_rgb(255,255,255,0.04)] 
           dark:shadow-[0_8px_30px_rgb(0,0,0,0.1),0_4px_12px_rgb(0,0,0,0.04),inset_0_0_0_1px_rgb(255,255,255,0.04)] 

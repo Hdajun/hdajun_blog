@@ -39,11 +39,10 @@ export default function RootLayout({
               disableTransitionOnChange
             >
               <AuthProvider>
-                <div className="flex h-screen flex-col bg-white text-black dark:bg-gray-950 dark:text-white">
-                  <div className="h-16" aria-hidden="true" />
+                <div className="flex h-screen bg-white text-black dark:bg-gray-950 dark:text-white">
                   <NavbarWrapper />
-                  <main className="flex-1 overflow-auto no-scrollbar">
-                    <div className="mx-auto max-w-6xl px-6 pt-10 pb-8">
+                  <main className="relative flex-1 overflow-auto no-scrollbar pt-12 md:pt-0">
+                    <div className="w-full px-4 md:px-8 pb-6">
                       {children}
                     </div>
                   </main>

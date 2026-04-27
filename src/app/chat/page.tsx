@@ -155,17 +155,18 @@ const useStyle = createStyles(({ token, css }) => {
   return {
     layout: css`
       position: absolute;
-      top: 64px;
+      top: 0;
       left: 0;
-      width: 100vw;
+      width: 100%;
       min-width: 320px;
-      height: calc(100vh - 64px);
+      height: 100%;
       display: flex;
       background: ${token.colorBgContainer};
       font-family: AlibabaPuHuiTi, ${token.fontFamily}, sans-serif;
 
       @media (max-width: 768px) {
-        height: calc(100vh - 64px);
+        top: 48px;
+        height: calc(100% - 48px);
       }
 
       *::-webkit-scrollbar {
@@ -743,7 +744,9 @@ const Independent: React.FC = () => {
           style={{
             height: '100%',
             paddingInline:
-              window.innerWidth > 768 ? 'calc(calc(100% - 900px) /2)' : '8px',
+              typeof window !== 'undefined' && window.innerWidth > 768
+                ? 'calc(calc(100% - 900px) / 2)'
+                : '0px',
           }}
           roles={{
             assistant: {
@@ -780,7 +783,10 @@ const Independent: React.FC = () => {
           direction="vertical"
           size={16}
           style={{
-            paddingInline: 'calc(calc(100% - 850px) /2)',
+            paddingInline:
+              typeof window !== 'undefined' && window.innerWidth > 768
+                ? 'calc(calc(100% - 850px) / 2)'
+                : '0px',
             width: '100%',
           }}
           className={styles.placeholder}

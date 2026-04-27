@@ -20,7 +20,7 @@ const getStableIndex = (str: string, max: number) => {
   let hash = 0
   for (let i = 0; i < str.length; i++) {
     const char = str.charCodeAt(i)
-    hash = ((hash << 5) - hash) + char
+    hash = (hash << 5) - hash + char
     hash = hash & hash // Convert to 32bit integer
   }
   return Math.abs(hash) % max
@@ -97,9 +97,7 @@ export default function NotesPage() {
       // 标题匹配
       const titleMatch = note.title.toLowerCase().includes(query)
       // 标签匹配
-      const tagMatch = note.tags?.some(tag =>
-        tag.toLowerCase().includes(query)
-      )
+      const tagMatch = note.tags?.some(tag => tag.toLowerCase().includes(query))
       return titleMatch || tagMatch
     })
   }, [notes, isAuthenticated, searchKeyword])
@@ -138,55 +136,51 @@ export default function NotesPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-white dark:bg-gray-900">
-        <div className="sticky top-0 z-50 bg-white/80 px-4 py-6 backdrop-blur-lg dark:bg-gray-900/80 border-b border-gray-100 dark:border-gray-800">
-          <div className="max-w-5xl mx-auto">
-            <div className="animate-pulse">
-              <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded-lg w-32 mb-6"></div>
-              <div className="h-12 bg-gray-200 dark:bg-gray-700 rounded-xl w-full"></div>
-            </div>
+      <div>
+        <div className="sticky top-0 z-10 -mx-4 md:-mx-8 px-4 md:px-8 bg-white/30 dark:bg-gray-950/30 backdrop-blur-md py-6 mb-8 relative after:absolute after:bottom-0 after:left-0 after:right-0 after:h-px after:bg-gradient-to-r after:from-transparent after:via-gray-300/70 after:to-transparent dark:after:via-white/[0.08]">
+          <div className="animate-pulse">
+            <div className="h-7 bg-gray-200 dark:bg-gray-700 rounded-lg w-28 mb-1.5"></div>
+            <div className="h-4 bg-gray-100 dark:bg-gray-800 rounded w-40"></div>
           </div>
         </div>
-        <div className="max-w-5xl mx-auto px-4 py-6">
-          <div className="animate-pulse space-y-6">
-            {[1, 2, 3].map(i => (
-              <div
-                key={i}
-                className="bg-gray-50 dark:bg-gray-800/30 rounded-xl p-6"
-              >
-                <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded-lg w-1/3 mb-4"></div>
-                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded-lg w-1/4"></div>
-              </div>
-            ))}
-          </div>
+        <div className="animate-pulse space-y-4">
+          {[1, 2, 3].map(i => (
+            <div
+              key={i}
+              className="bg-gray-50 dark:bg-gray-800/30 rounded-xl p-6"
+            >
+              <div className="h-5 bg-gray-200 dark:bg-gray-700 rounded-lg w-1/3 mb-3"></div>
+              <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded-lg w-1/4"></div>
+            </div>
+          ))}
         </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-900">
-      <div className="sticky top-0 z-50 bg-white/80 backdrop-blur-lg dark:bg-gray-900/80 border-b border-gray-100 dark:border-gray-800">
-        <div className="max-w-5xl mx-auto px-4">
-          <div className="flex justify-between items-center py-6">
-            <div>
-              <h1 className="text-2xl text-gray-900 dark:text-white">
-                我的小记
-              </h1>
-              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                记录，创作，分享我的想法
-              </p>
-            </div>
-            <div className="flex items-center gap-3">
-              {/* 搜索框 */}
-              <div className="relative group">
-                <input
-                  type="text"
-                  placeholder="搜索标题或标签..."
-                  value={searchQuery}
-                  onChange={e => setSearchQuery(e.target.value)}
-                  onKeyDown={handleSearchKeyDown}
-                  className="h-9 w-56 sm:w-64 pl-4 pr-9 text-sm
+    <div>
+      {/* 吸顶页头 */}
+      <div className="sticky top-0 z-10 -mx-4 md:-mx-8 px-4 md:px-8 bg-white/30 dark:bg-gray-950/30 backdrop-blur-md py-6 mb-8 relative after:absolute after:bottom-0 after:left-0 after:right-0 after:h-px after:bg-gradient-to-r after:from-transparent after:via-gray-300/70 after:to-transparent dark:after:via-white/[0.08]">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+              我的小记
+            </h1>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
+              记录，创作，分享我的想法
+            </p>
+          </div>
+          <div className="flex items-center gap-3 flex-shrink-0">
+            {/* 搜索框 */}
+            <div className="relative group">
+              <input
+                type="text"
+                placeholder="搜索标题或标签..."
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+                onKeyDown={handleSearchKeyDown}
+                className="h-9 w-full sm:w-56 md:w-64 pl-4 pr-9 text-sm
                     text-gray-700 dark:text-gray-200
                     border border-gray-200 dark:border-gray-700 rounded-lg 
                     bg-transparent
@@ -198,33 +192,17 @@ export default function NotesPage() {
                     focus:-translate-y-[1px]
                     focus:shadow-sm
                     transition-all duration-300 ease-out"
-                />
-                {searchKeyword ? (
-                  <button
-                    onClick={handleClearSearch}
-                    className="absolute right-2.5 top-1/2 -translate-y-1/2
+              />
+              {searchKeyword ? (
+                <button
+                  onClick={handleClearSearch}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2
                       text-gray-400 hover:text-gray-600 dark:hover:text-gray-300
                       transition-colors"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-4 w-4"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M6 18L18 6M6 6l12 12"
-                      />
-                    </svg>
-                  </button>
-                ) : (
+                >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    className="h-4 w-4 absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400"
+                    className="h-4 w-4"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -233,16 +211,32 @@ export default function NotesPage() {
                       strokeLinecap="round"
                       strokeLinejoin="round"
                       strokeWidth={2}
-                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                      d="M6 18L18 6M6 6l12 12"
                     />
                   </svg>
-                )}
-              </div>
-              {/* 新建按钮 */}
-              {isAuthenticated && (
-                <button
-                  onClick={handleCreateNote}
-                  className="inline-flex items-center h-9 px-4 
+                </button>
+              ) : (
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-4 w-4 absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
+                </svg>
+              )}
+            </div>
+            {/* 新建按钮 */}
+            {isAuthenticated && (
+              <button
+                onClick={handleCreateNote}
+                className="inline-flex items-center h-9 px-4 
                     text-sm text-gray-700 dark:text-gray-200
                     border border-gray-200 dark:border-gray-700 rounded-lg 
                     hover:border-gray-300 dark:hover:border-gray-600
@@ -250,47 +244,45 @@ export default function NotesPage() {
                     active:translate-y-0
                     transition-all duration-200 
                     focus:outline-none focus:ring-2 focus:ring-gray-200 dark:focus:ring-gray-700"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-4 w-4 mr-1.5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
                 >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-4 w-4 mr-1.5"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M12 4v16m8-8H4"
-                    />
-                  </svg>
-                  新建小记
-                </button>
-              )}
-            </div>
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 4v16m8-8H4"
+                  />
+                </svg>
+                新建小记
+              </button>
+            )}
           </div>
-          {/* 搜索结果提示 */}
-          {searchKeyword.trim() && (
-            <div className="pb-4 -mt-2">
-              <p className="text-sm text-gray-500 dark:text-gray-400">
-                搜索 "
-                <span className="text-gray-700 dark:text-gray-300 font-medium">
-                  {searchKeyword}
-                </span>
-                " 找到{' '}
-                <span className="text-gray-700 dark:text-gray-300 font-medium">
-                  {filteredNotes.length}
-                </span>{' '}
-                条结果
-              </p>
-            </div>
-          )}
         </div>
       </div>
 
-      <div className="mx-auto px-4 py-6 pt-8">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      {/* 搜索结果提示 */}
+      {searchKeyword.trim() && (
+        <p className="mb-4 text-sm text-gray-500 dark:text-gray-400">
+          搜索 "
+          <span className="text-gray-700 dark:text-gray-300 font-medium">
+            {searchKeyword}
+          </span>
+          " 找到{' '}
+          <span className="text-gray-700 dark:text-gray-300 font-medium">
+            {filteredNotes.length}
+          </span>{' '}
+          条结果
+        </p>
+      )}
+
+      <div>
+        <div className="grid grid-cols-[repeat(auto-fill,minmax(min(360px,100%),1fr))] gap-5">
           {paginatedNotes?.map(note => {
             const noteId = note._id?.toString() || ''
             const themeColor =
@@ -356,7 +348,7 @@ export default function NotesPage() {
 
         {/* 分页器 */}
         {filteredNotes.length > 0 && (
-          <div className="flex justify-end mt-6">
+          <div className="flex justify-end mt-6 pr-0 md:pr-16">
             <Pagination
               current={currentPage}
               pageSize={pageSize}

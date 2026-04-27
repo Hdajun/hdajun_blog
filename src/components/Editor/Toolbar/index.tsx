@@ -286,7 +286,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
 
   return (
     <>
-      <div className="fixed top-[82px] left-1/2 -translate-x-1/2 z-40 bg-white dark:bg-gray-800 shadow-md rounded-lg px-4 py-2 flex items-center gap-2">
+      <div className="fixed top-[36px] left-1/2 -translate-x-1/2 z-40 bg-white dark:bg-gray-800 shadow-md rounded-lg px-4 py-2 flex items-center gap-2">
         <Dropdown
           menu={{ items: headingOptions, onClick: handleHeadingSelect }}
         >

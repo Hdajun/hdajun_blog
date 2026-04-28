@@ -121,3 +121,8 @@
 .dark .ProseMirror hr {
   border-top-color: rgb(55 65 81);
 }
+
+/* 标题锚点滚动偏移 */
+.ProseMirror [id] {
+  scroll-margin-top: 100px;
+}

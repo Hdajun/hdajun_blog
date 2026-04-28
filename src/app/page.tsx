@@ -4,7 +4,22 @@ import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { navigationItems } from '@/components/Navbar'
 import { ArrowRightOutlined } from '@ant-design/icons'
+import PetCanvas from '@/components/PetCanvas'
 
+// ─── Icon bounce keyframes ─────────────────────────────────────────────────────
+const ICON_BOUNCE_STYLE = `
+@keyframes iconBounce {
+  0%   { transform: scale(1) translateY(0); }
+  30%  { transform: scale(1.15) translateY(-3px); }
+  50%  { transform: scale(0.95) translateY(0); }
+  70%  { transform: scale(1.05) translateY(-1px); }
+  100% { transform: scale(1.1) translateY(0); }
+}
+.nav-card-icon:hover,
+.group:hover .nav-card-icon {
+  animation: iconBounce 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+`
 const TECH_TAGS = [
   'React',
   'TypeScript',
@@ -26,7 +41,9 @@ const ease = [0.22, 1, 0.36, 1] as const
 
 export default function Home() {
   return (
-    <div className="py-6">
+    <>
+      <style dangerouslySetInnerHTML={{ __html: ICON_BOUNCE_STYLE }} />
+      <div className="py-6">
       <div className="grid grid-cols-1 md:grid-cols-4 gap-x-4 gap-y-6">
         {/* ── Hero ─────────────────────────────────────────── */}
         <motion.div
@@ -49,18 +66,18 @@ export default function Home() {
                 Frontend Engineer · AIGC · Low-Code
               </motion.p>
 
-              <h1 className="mb-4 text-3xl md:text-5xl font-bold leading-[1.15] text-gray-900 dark:text-white">
-                嘿，叫我{' '}
+              <h1 className="mb-4 text-2xl md:text-4xl font-bold leading-[1.15] text-gray-900 dark:text-white">
+                嘿，我是{' '}
                 <span className="bg-gradient-to-r from-indigo-500 to-violet-500 bg-clip-text text-transparent">
-                  大俊
+                  西洪柿首富
                 </span>{' '}
-                就好 👋
+                也可以叫我，大俊 👋
               </h1>
 
-              <p className="mb-6 max-w-2xl text-sm leading-relaxed text-gray-500 dark:text-gray-400">
-                一个白天写代码、晚上刷 AI 资讯、睡前还在想架构的家伙。
-                热衷于把「这个能做到吗」变成「你看，做出来了」。
-                偶尔输出一些有用的东西，偶尔也只是想记录一下。
+              <p className="mb-6 text-sm leading-relaxed text-gray-500 dark:text-gray-400">
+                下面那群小家伙是我的线上宠物，点击画布它们就会跑过来找你。
+                再往下那些卡片是我的作品，点击就能穿越过去。
+                两者都有一个共同点——看起来安安静静的，背地里都在偷偷跑。
               </p>
             </div>
 
@@ -106,7 +123,7 @@ export default function Home() {
               </p>
               <span className="text-gray-300 dark:text-gray-600">·</span>
               <p className="text-[11px] text-gray-400 dark:text-gray-500">
-                高级前端工程师
+                前端练习生
               </p>
             </div>
           </div>
@@ -129,6 +146,16 @@ export default function Home() {
           </div>
         </motion.div>
 
+        {/* ── Pet Canvas ──────────────────────────────────────── */}
+        <motion.div
+          className="col-span-1 md:col-span-4 overflow-hidden"
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.55, ease }}
+        >
+          <PetCanvas />
+        </motion.div>
+
         {/* ── Nav cards — 2×2 grid ─────────────────────────── */}
         <div className="col-span-1 md:col-span-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
           {navigationItems.map((item, i) => (
@@ -145,7 +172,7 @@ export default function Home() {
                 <div className="flex items-start gap-4">
                   {/* 图标 */}
                   <div
-                    className={`flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl text-xl transition-transform duration-200 group-hover:scale-110
+                    className={`nav-card-icon flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl text-xl transition-transform duration-200
                     ${
                       item.themeColor === 'amber'
                         ? 'bg-amber-50 text-amber-500 dark:bg-amber-900/20 dark:text-amber-400'
@@ -203,5 +230,6 @@ export default function Home() {
         </div>
       </div>
     </div>
+    </>
   )
 }

@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState, useRef, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { useEditor, EditorContent } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
@@ -23,6 +23,10 @@ import Placeholder from '@tiptap/extension-placeholder'
 import Image from '@tiptap/extension-image'
 import { Markdown } from 'tiptap-markdown'
 import { UploadImage } from '@/components/Editor/extensions/uploadImage'
+import { HeadingWithId } from '@/components/Editor/extensions/headingWithId'
+import { TableOfContents } from '@/components/Editor/TableOfContents'
+import { useEditorHeadings } from '@/hooks/useTocHeadings'
+import { useScrollSpy } from '@/hooks/useScrollSpy'
 import './editor.css'
 import { Toolbar } from '@/components/Editor/Toolbar'
 import TextAlign from '@tiptap/extension-text-align'
@@ -92,10 +96,11 @@ export default function NotePage({ params }: { params: { id: string } }) {
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
-        heading: {
-          levels: [1, 2, 3, 4, 5, 6],
-        },
-        codeBlock: false, // 禁用默认的 codeBlock，使用 CodeBlockLowlight 代替
+        heading: false,
+        codeBlock: false,
+      }),
+      HeadingWithId.configure({
+        levels: [1, 2, 3, 4, 5, 6],
       }),
       CodeBlockLowlight.configure({
         lowlight,
@@ -300,6 +305,23 @@ export default function NotePage({ params }: { params: { id: string } }) {
     }
   }, [note, editor])
 
+  const headings = useEditorHeadings(editor)
+  const headingIds = headings.map(h => h.id).filter(Boolean)
+  const observerActiveId = useScrollSpy(headingIds)
+  const [manualActiveId, setManualActiveId] = useState<string | null>(null)
+  const manualTimerRef = useRef<ReturnType<typeof setTimeout>>()
+  const activeId = manualActiveId ?? observerActiveId
+
+  const handleHeadingClick = useCallback((id: string) => {
+    setManualActiveId(id)
+    clearTimeout(manualTimerRef.current)
+    manualTimerRef.current = setTimeout(() => setManualActiveId(null), 800)
+    const element = document.getElementById(id)
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
+  }, [])
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-white dark:bg-gray-900 p-8">
@@ -319,55 +341,67 @@ export default function NotePage({ params }: { params: { id: string } }) {
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900 rounded-lg">
-      <div className="max-w-4xl mx-auto px-8 pb-8 pt-[130px]">
-        <div className="mb-3">
-          <input
-            ref={titleInputRef}
-            type="text"
-            value={note?.title || ''}
-            onChange={handleTitleChange}
-            placeholder="请输入标题"
-            className="title-input w-full text-[2.5rem] font-bold bg-transparent border-none outline-none 
-              placeholder-gray-400/60 dark:placeholder-gray-500/60 
-              text-gray-900 dark:text-white
-              transition-all duration-200 ease-out
-              focus:ring-0 focus:outline-none
-              leading-[1.2]"
-          />
-        </div>
-        <div className="relative">
-          <Toolbar
-            editor={editor}
-            onSave={
-              note._id === TemplateNoteId && !isAuthenticated
-                ? undefined
-                : saveToServer
-            }
-            saveStatus={saveStatus}
-            isPublic={note.visibility === 'public'}
-            isTop={!!note.isTop}
-            tags={note.tags || []}
-            onNoteChange={async (isPublic, isTop, tags) => {
-              // 调用保存接口更新对应权限字段
-              const response = await api.patch<Note>(`/notes/${params.id}`, {
-                title: note.title,
-                content: note.content,
-                visibility: isPublic !== undefined
-                  ? isPublic
-                    ? 'public'
-                    : 'private'
-                  : undefined,
-                isTop: isTop !== undefined ? isTop : undefined,
-                tags: tags !== undefined ? tags : undefined,
-              })
-              if (response.success) {
-                setNote((response.data || {}) as Note)
-              }
-            }}
-            onDelete={handleDelete}
-            noteId={params.id}
-          />
-          <EditorContent editor={editor} className="min-h-[500px] mt-4" />
+      <div className="max-w-6xl mx-auto px-4 md:px-8 pb-8 pt-[130px]">
+        <div className="flex gap-8">
+          <div className="min-w-0 flex-1 max-w-4xl">
+            <div className="mb-3">
+              <input
+                ref={titleInputRef}
+                type="text"
+                value={note?.title || ''}
+                onChange={handleTitleChange}
+                placeholder="请输入标题"
+                className="title-input w-full text-[2.5rem] font-bold bg-transparent border-none outline-none
+                  placeholder-gray-400/60 dark:placeholder-gray-500/60
+                  text-gray-900 dark:text-white
+                  transition-all duration-200 ease-out
+                  focus:ring-0 focus:outline-none
+                  leading-[1.2]"
+              />
+            </div>
+            <div className="relative">
+              <Toolbar
+                editor={editor}
+                onSave={
+                  note._id === TemplateNoteId && !isAuthenticated
+                    ? undefined
+                    : saveToServer
+                }
+                saveStatus={saveStatus}
+                isPublic={note.visibility === 'public'}
+                isTop={!!note.isTop}
+                tags={note.tags || []}
+                onNoteChange={async (isPublic, isTop, tags) => {
+                  const response = await api.patch<Note>(`/notes/${params.id}`, {
+                    title: note.title,
+                    content: note.content,
+                    visibility: isPublic !== undefined
+                      ? isPublic
+                        ? 'public'
+                        : 'private'
+                      : undefined,
+                    isTop: isTop !== undefined ? isTop : undefined,
+                    tags: tags !== undefined ? tags : undefined,
+                  })
+                  if (response.success) {
+                    setNote((response.data || {}) as Note)
+                  }
+                }}
+                onDelete={handleDelete}
+                noteId={params.id}
+              />
+              <EditorContent editor={editor} className="min-h-[500px] mt-4" />
+            </div>
+          </div>
+          <aside className="hidden md:block w-56 flex-shrink-0">
+            <div className="sticky top-[140px]">
+              <TableOfContents
+                headings={headings}
+                activeId={activeId}
+                onHeadingClick={handleHeadingClick}
+              />
+            </div>
+          </aside>
         </div>
       </div>
     </div>

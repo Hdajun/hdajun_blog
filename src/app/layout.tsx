@@ -5,6 +5,7 @@ import { ThemeProvider } from '@/components/ThemeProvider'
 import { AntdRegistry } from '@ant-design/nextjs-registry'
 import { NavbarWrapper } from '@/components/Navbar'
 import { AuthProvider } from '@/contexts/AuthContext'
+import { PetConfigProvider } from '@/contexts/PetConfigContext'
 import { ConfigProvider } from 'antd'
 import theme from '@/theme/themeConfig'
 
@@ -39,6 +40,7 @@ export default function RootLayout({
               disableTransitionOnChange
             >
               <AuthProvider>
+                <PetConfigProvider>
                 <div className="flex h-screen bg-white text-black dark:bg-gray-950 dark:text-white">
                   <NavbarWrapper />
                   <main className="relative flex-1 overflow-auto no-scrollbar pt-12 md:pt-0">
@@ -47,6 +49,7 @@ export default function RootLayout({
                     </div>
                   </main>
                 </div>
+                </PetConfigProvider>
               </AuthProvider>
             </ThemeProvider>
           </ConfigProvider>

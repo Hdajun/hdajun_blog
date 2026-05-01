@@ -1,5 +1,6 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { navigationItems } from '@/components/Navbar'
@@ -19,7 +20,91 @@ const ICON_BOUNCE_STYLE = `
 .group:hover .nav-card-icon {
   animation: iconBounce 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
 }
+
+@keyframes heartFloat {
+  0%   { opacity: 0; transform: translateY(0) translateX(0) scale(0.4); }
+  12%  { opacity: 1; transform: translateY(-6px) translateX(3px) scale(1); }
+  50%  { opacity: 0.7; transform: translateY(-24px) translateX(-4px) scale(0.85); }
+  80%  { opacity: 0.3; transform: translateY(-40px) translateX(2px) scale(0.7); }
+  100% { opacity: 0; transform: translateY(-50px) translateX(-1px) scale(0.4); }
+}
+.avatar-hearts:hover .heart-particle {
+  animation: heartFloat 1.8s ease-in-out infinite;
+}
 `
+const FALLBACK_QUOTES = [
+  '代码写得好，bug 自然少 🐛',
+  'Ctrl+C 和 Ctrl+V 是人类文明最伟大的发明',
+  '任何能用 JavaScript 写的，终将用 JavaScript 写',
+  '前端不是一个岗位，是一种信仰 ✨',
+  '重构一时爽，一直重构一直爽',
+  '最好的代码，是没有代码',
+  '代码能跑就行，别问为什么 �',
+]
+
+function useHitokoto() {
+  const [data, setData] = useState<{ text: string; from: string } | null>(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    let cancelled = false
+    const controller = new AbortController()
+
+    async function fetchQuote() {
+      try {
+        const res = await fetch('https://v1.hitokoto.cn/?c=a&c=b&c=d&c=i&c=k', {
+          signal: controller.signal,
+        })
+        if (!res.ok) throw new Error('failed')
+        const json = await res.json()
+        if (!cancelled && json.hitokoto) {
+          setData({ text: json.hitokoto, from: json.from || '' })
+        }
+      } catch {
+        if (!cancelled) {
+          const fallback = FALLBACK_QUOTES[Math.floor(Math.random() * FALLBACK_QUOTES.length)]
+          setData({ text: fallback, from: '' })
+        }
+      } finally {
+        if (!cancelled) setLoading(false)
+      }
+    }
+
+    fetchQuote()
+    return () => {
+      cancelled = true
+      controller.abort()
+    }
+  }, [])
+
+  return { data, loading }
+}
+
+const LOADING_HINTS = [
+  '正在召唤一条名言……',
+  '翻箱倒柜中……',
+  '让子弹飞一会儿……',
+  '哲学思考加载中 🤔',
+  '灵感正在赶来的路上 ✨',
+]
+
+function LoadingHint() {
+  const [hint, setHint] = useState(LOADING_HINTS[0])
+  useEffect(() => {
+    setHint(LOADING_HINTS[Math.floor(Math.random() * LOADING_HINTS.length)])
+  }, [])
+  return (
+    <span className="inline-flex items-center gap-2 animate-pulse text-violet-400 dark:text-violet-500">
+      {hint}
+      <span className="inline-flex gap-0.5">
+        <span className="w-1 h-1 rounded-full bg-violet-400 dark:bg-violet-500 animate-bounce" style={{ animationDelay: '0ms' }} />
+        <span className="w-1 h-1 rounded-full bg-violet-400 dark:bg-violet-500 animate-bounce" style={{ animationDelay: '150ms' }} />
+        <span className="w-1 h-1 rounded-full bg-violet-400 dark:bg-violet-500 animate-bounce" style={{ animationDelay: '300ms' }} />
+      </span>
+    </span>
+  )
+}
+
 const TECH_TAGS = [
   'React',
   'TypeScript',
@@ -40,6 +125,7 @@ const PROFILE_STATS = [
 const ease = [0.22, 1, 0.36, 1] as const
 
 export default function Home() {
+  const { data: quote, loading } = useHitokoto()
   return (
     <>
       <style dangerouslySetInnerHTML={{ __html: ICON_BOUNCE_STYLE }} />
@@ -66,13 +152,14 @@ export default function Home() {
                 Frontend Engineer · AIGC · Low-Code
               </motion.p>
 
-              <h1 className="mb-4 text-2xl md:text-4xl font-bold leading-[1.15] text-gray-900 dark:text-white">
-                嘿，我是{' '}
-                <span className="bg-gradient-to-r from-indigo-500 to-violet-500 bg-clip-text text-transparent">
-                  西洪柿首富
-                </span>{' '}
-                也可以叫我，大俊 👋
-              </h1>
+              <div className="mb-6">
+                <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.15em] text-violet-500 dark:text-violet-400">
+                  ✦ 今日一言
+                </p>
+                <h1 className="text-2xl md:text-4xl font-bold leading-[1.15] text-gray-900 dark:text-white truncate">
+                  {loading ? <LoadingHint /> : quote?.text}
+                </h1>
+              </div>
 
               <p className="mb-6 text-sm leading-relaxed text-gray-500 dark:text-gray-400">
                 下面那群小家伙是我的线上宠物，点击画布它们就会跑过来找你。
@@ -106,7 +193,7 @@ export default function Home() {
         >
           {/* 顶部：头像 + 名字 */}
           <div className="flex flex-col items-center gap-3">
-            <div className="relative">
+            <div className="relative avatar-hearts cursor-pointer">
               <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-indigo-500 to-violet-500 p-[3px] shadow-[0_4px_12px_rgba(99,102,241,0.35)]">
                 <div className="h-full w-full rounded-[11px] bg-white dark:bg-gray-800 p-1.5 flex items-center justify-center">
                   <img
@@ -116,6 +203,12 @@ export default function Home() {
                   />
                 </div>
               </div>
+              {/* Hover hearts */}
+              <span className="heart-particle absolute -top-1 -right-2 opacity-0 pointer-events-none" style={{ animationDelay: '0s' }}><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" className="text-pink-400"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></span>
+              <span className="heart-particle absolute -top-2 right-2 opacity-0 pointer-events-none" style={{ animationDelay: '0.36s' }}><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" className="text-pink-500"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></span>
+              <span className="heart-particle absolute -top-1 -left-2 opacity-0 pointer-events-none" style={{ animationDelay: '0.72s' }}><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" className="text-pink-300"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></span>
+              <span className="heart-particle absolute -top-3 left-1 opacity-0 pointer-events-none" style={{ animationDelay: '1.08s' }}><svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor" className="text-rose-400"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></span>
+              <span className="heart-particle absolute -top-1 -right-4 opacity-0 pointer-events-none" style={{ animationDelay: '1.44s' }}><svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor" className="text-pink-400"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></span>
             </div>
             <div className="flex items-center gap-2">
               <p className="text-sm font-bold text-gray-900 dark:text-white">
@@ -148,7 +241,7 @@ export default function Home() {
 
         {/* ── Pet Canvas ──────────────────────────────────────── */}
         <motion.div
-          className="col-span-1 md:col-span-4 overflow-hidden"
+          className="col-span-1 md:col-span-4 overflow-hidden rounded-2xl"
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.55, ease }}

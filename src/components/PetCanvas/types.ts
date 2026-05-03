@@ -192,6 +192,21 @@ export interface SceneryConfig {
   groundLine: boolean
 }
 
+// ─── 气泡场景 ────────────────────────────────────────────────────────────────
+
+/** 气泡场景：day=白天/普通, night=夜间, notfound=404页面 */
+export type ThoughtScene = 'day' | 'night' | 'notfound'
+
+/** 单个场景下的气泡分组（按心情维度） */
+export interface ThoughtGroup {
+  normal: string[]   // 普通心情 (30 < mood < 70)
+  happy: string[]    // 开心 (mood >= 70)
+  sad: string[]      // 不开心 (mood <= 30)
+}
+
+/** 所有场景的自定义气泡配置 */
+export type CustomThoughts = Record<ThoughtScene, ThoughtGroup>
+
 // ─── 全局宠物配置 ──────────────────────────────────────────────────────────────
 
 export interface PetCanvasConfig {
@@ -201,6 +216,7 @@ export interface PetCanvasConfig {
   accessories: Record<string, Accessory[]>
   weather: WeatherConfig
   scenery: SceneryConfig
+  customThoughts?: CustomThoughts
 }
 
 /** 雨滴粒子 */

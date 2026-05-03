@@ -250,6 +250,38 @@ export const THOUGHTS_NIGHT = [
 export const THOUGHT_DURATION = 300
 export const THOUGHT_COOLDOWN = 300
 
+/** 404 页面下的气泡 */
+export const THOUGHTS_404 = [
+  '好像没有这个页面呢…',
+  '要不找找大俊？',
+  '页面走丢了…',
+  '迷路了，怎么办呀',
+  '这里什么都没有…',
+  '要不回首页看看？',
+  '404…是啥意思？',
+  '好像走错地方了~',
+  '大俊快来救我！',
+  '这条路好像不通…',
+]
+
+/** 气泡场景配置 */
+export const THOUGHT_SCENES: Array<{
+  key: import('./types.ts').ThoughtScene
+  label: string
+  description: string
+}> = [
+  { key: 'day',      label: '白天', description: '日常场景下的气泡' },
+  { key: 'night',    label: '夜间', description: '夜晚场景下的气泡' },
+  { key: 'notfound', label: '404',  description: '页面丢失时的气泡' },
+]
+
+/** 心情分组标签 */
+export const MOOD_GROUP_LABELS: Record<string, string> = {
+  normal: '普通',
+  happy:  '开心',
+  sad:    '不开心',
+}
+
 // ─── 食物 ──────────────────────────────────────────────────────────────────────
 
 export const FOOD_TYPES: Array<'fish' | 'bone' | 'banana' | 'worm'> = ['fish', 'bone', 'banana', 'worm']

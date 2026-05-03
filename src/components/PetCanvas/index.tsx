@@ -1,7 +1,7 @@
 'use client'
 
 import { useRef, useEffect, useState, useCallback } from 'react'
-import type { Animal, FoodItem, Scenery, TreeInfo, ClickTarget, Footprint, PetCanvasConfig } from './types'
+import type { Animal, FoodItem, Scenery, TreeInfo, ClickTarget, Footprint, PetCanvasConfig, ThoughtScene } from './types'
 import {
   GROUND_Y_RATIO, SEEK_DURATION, MONKEY_SWITCH_INTERVAL, MAX_FOODS,
   FOOD_LIFETIME, FOOD_TYPES, LOOK_DURATION, EAT_DURATION,
@@ -79,12 +79,14 @@ interface NameInputState {
 
 // ─── Main component ───────────────────────────────────────────────────────────
 
-export default function PetCanvas({ height = 200, thoughts }: { height?: number; thoughts?: string[] }) {
+export default function PetCanvas({ height = 200, thoughts, thoughtScene }: { height?: number; thoughts?: string[]; thoughtScene?: ThoughtScene }) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [nameInput, setNameInput] = useState<NameInputState>({ visible: false, animalType: '', x: 0, y: 0, value: '' })
   const animalsRef = useRef<Animal[] | null>(null)
-  const customThoughtsRef = useRef(thoughts)
-  customThoughtsRef.current = thoughts
+  const thoughtsPropRef = useRef(thoughts)
+  thoughtsPropRef.current = thoughts
+  const thoughtSceneRef = useRef(thoughtScene)
+  thoughtSceneRef.current = thoughtScene
 
   // ── configRef: always fresh, updated on every render before effects ──
   const petConfig = usePetConfig()
@@ -474,7 +476,7 @@ export default function PetCanvas({ height = 200, thoughts }: { height?: number;
       for (const a of groundAnimals) {
         // always update physics for mood/movement consistency
         const result = updateGroundAnimal(a, w, h, animals, foods, clickTarget, isNight, effectiveWeather, treeInfos)
-        updateThought(a, isNight, animals, customThoughtsRef.current)
+        updateThought(a, isNight, animals, thoughtsPropRef.current ?? cfg.customThoughts, thoughtSceneRef.current)
 
         // skip drawing if hidden
         if (cfg.visible[a.type] === false) continue
@@ -550,7 +552,7 @@ export default function PetCanvas({ height = 200, thoughts }: { height?: number;
         }
 
         updateMonkey(monkeyAnimal, w, h, foods, visibleTreeInfos, isNight)
-        updateThought(monkeyAnimal, isNight, animals, customThoughtsRef.current)
+        updateThought(monkeyAnimal, isNight, animals, thoughtsPropRef.current ?? cfg.customThoughts, thoughtSceneRef.current)
 
         if (monkeyAnimal.monkeyOnGround) {
           // ── ground drawing ──
@@ -618,7 +620,7 @@ export default function PetCanvas({ height = 200, thoughts }: { height?: number;
       // ── bird ──
       if (birdAnimal && cfg.visible['bird'] !== false) {
         updateBird(birdAnimal, w, h, foods, isNight, visibleTreeInfos)
-        updateThought(birdAnimal, isNight, animals, customThoughtsRef.current)
+        updateThought(birdAnimal, isNight, animals, thoughtsPropRef.current ?? cfg.customThoughts, thoughtSceneRef.current)
 
         if (birdAnimal.birdOnGround) {
           // ── perched (on tree branch / roof) ──

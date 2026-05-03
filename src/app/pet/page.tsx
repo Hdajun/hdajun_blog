@@ -5,9 +5,10 @@ import { Slider, Switch } from 'antd'
 import { useTheme } from 'next-themes'
 import PetCanvas from '@/components/PetCanvas'
 import { usePetConfig } from '@/contexts/PetConfigContext'
+import { DEFAULT_CUSTOM_THOUGHTS } from '@/contexts/PetConfigContext'
 import { PageGuard } from '@/components/PageGuard'
-import type { AnimalType, WeatherType, Animal, TreeInfo } from '@/components/PetCanvas/types'
-import { DEFAULT_ANIMAL_CONFIGS, PALETTE_LIGHT, PALETTE_DARK, SCENE_THEME_CONFIGS, DEFAULT_THEME_PROPS } from '@/components/PetCanvas/constants'
+import type { AnimalType, WeatherType, Animal, TreeInfo, ThoughtScene } from '@/components/PetCanvas/types'
+import { DEFAULT_ANIMAL_CONFIGS, PALETTE_LIGHT, PALETTE_DARK, SCENE_THEME_CONFIGS, DEFAULT_THEME_PROPS, THOUGHT_SCENES } from '@/components/PetCanvas/constants'
 import { drawGroundAnimal, drawMonkey } from '@/components/PetCanvas/animals'
 
 // ─── 动物元数据 ───────────────────────────────────────────────────────────────
@@ -472,6 +473,117 @@ function VillageIcon({ active }: { active: boolean }) {
   )
 }
 
+// ─── SVG 气泡场景图标 ───────────────────────────────────────────────────────
+
+function DaySceneIcon({ active }: { active: boolean }) {
+  return (
+    <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+      {active && <rect x="0" y="0" width="28" height="28" rx="8" fill="#FEF3C7" opacity="0.5" />}
+      <circle cx="10" cy="11" r="4.5" fill="#FBBF24" />
+      <circle cx="10" cy="11" r="3.2" fill="#FCD34D" />
+      <circle cx="8.8" cy="9.8" r="1.2" fill="#FEF9C3" opacity="0.7" />
+      {[0, 60, 120, 180, 240, 300].map((deg, i) => {
+        const rad = (deg * Math.PI) / 180
+        const x1 = 10 + Math.cos(rad) * 5.8
+        const y1 = 11 + Math.sin(rad) * 5.8
+        const x2 = 10 + Math.cos(rad) * 7.5
+        const y2 = 11 + Math.sin(rad) * 7.5
+        return <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} stroke="#FBBF24" strokeWidth="1.5" strokeLinecap="round" />
+      })}
+      <rect x="4" y="19" width="20" height="7" rx="3" fill="#86EFAC" opacity="0.4" />
+      <path d="M4 22 Q8 19.5 12 21.5 Q16 19 20 21.5 Q24 19.5 28 22" stroke="#22C55E" strokeWidth="1.2" fill="none" opacity="0.5" />
+      <circle cx="18" cy="16" r="1.5" fill="#F9A8D4" opacity="0.7" />
+      <circle cx="21" cy="14" r="1" fill="#A78BFA" opacity="0.6" />
+    </svg>
+  )
+}
+
+function NightSceneIcon({ active }: { active: boolean }) {
+  return (
+    <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+      {active && <rect x="0" y="0" width="28" height="28" rx="8" fill="#312E81" opacity="0.3" />}
+      <path d="M12 5a8 8 0 1 1-7 7 6 6 0 0 0 7-7z" fill="#FDE68A" />
+      <path d="M11 5.5a7.5 7.5 0 0 1 2 1 6 6 0 0 0-5 5.5 6 6 0 0 0 1.5 4" stroke="#FCD34D" strokeWidth="0.6" fill="none" opacity="0.4" />
+      <circle cx="20" cy="7" r="1.2" fill="#E5E7EB" opacity="0.9" />
+      <circle cx="20" cy="7" r="0.5" fill="white" opacity="0.4" />
+      <circle cx="16" cy="4" r="0.7" fill="#D1D5DB" />
+      <circle cx="24" cy="11" r="0.8" fill="#D1D5DB" />
+      <circle cx="23" cy="5" r="0.5" fill="#E5E7EB" />
+      <rect x="3" y="20" width="22" height="7" rx="3" fill="#1E1B4B" opacity="0.2" />
+      <path d="M3 23 Q7 20.5 11 22.5 Q15 20 19 22.5 Q23 20.5 27 23" stroke="#3730A3" strokeWidth="1" fill="none" opacity="0.25" />
+    </svg>
+  )
+}
+
+function NotFoundSceneIcon({ active }: { active: boolean }) {
+  return (
+    <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+      {active && <rect x="0" y="0" width="28" height="28" rx="8" fill="#FEE2E2" opacity="0.4" />}
+      {/* 地面小坡 */}
+      <path d="M4 24 Q10 21 14 23 Q18 21 24 24 L24 28 L4 28 Z" fill="#FCA5A5" opacity="0.3" />
+      {/* 气泡主体 */}
+      <path d="M14 3 Q6 3 5 9 Q4 15 10 15 L12 17 L13 15 Q20 15 22 9 Q23 3 14 3Z" fill="#FEE2E2" stroke="#F87171" strokeWidth="1.2" />
+      {/* 问号 */}
+      <path d="M12.5 7.5 Q12.5 5.8 14 5.8 Q15.5 5.8 15.5 7.5 Q15.5 8.8 14 9 Q13.5 9.2 13.5 10" stroke="#EF4444" strokeWidth="1.3" strokeLinecap="round" fill="none" />
+      <circle cx="13.8" cy="11.8" r="0.7" fill="#EF4444" />
+      {/* 小星星装饰 */}
+      <circle cx="7" cy="5" r="0.8" fill="#FCA5A5" opacity="0.6" />
+      <circle cx="22" cy="4" r="0.6" fill="#FCA5A5" opacity="0.5" />
+      <circle cx="20" cy="13" r="0.5" fill="#FCA5A5" opacity="0.4" />
+    </svg>
+  )
+}
+
+function MoodNormalIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+      <circle cx="8" cy="8" r="6.5" fill="#F3F4F6" stroke="#9CA3AF" strokeWidth="0.8" />
+      <circle cx="5.5" cy="7" r="1" fill="#6B7280" />
+      <circle cx="10.5" cy="7" r="1" fill="#6B7280" />
+      <line x1="5.5" y1="10.5" x2="10.5" y2="10.5" stroke="#6B7280" strokeWidth="0.9" strokeLinecap="round" />
+    </svg>
+  )
+}
+
+function MoodHappyIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+      <circle cx="8" cy="8" r="6.5" fill="#FEF9C3" stroke="#F59E0B" strokeWidth="0.8" />
+      <path d="M5 7 q0.6 -1.2 1.2 0" stroke="#78350F" strokeWidth="0.9" strokeLinecap="round" fill="none" />
+      <path d="M9.8 7 q0.6 -1.2 1.2 0" stroke="#78350F" strokeWidth="0.9" strokeLinecap="round" fill="none" />
+      <path d="M5.5 10 q2.5 2 5 0" stroke="#78350F" strokeWidth="0.9" strokeLinecap="round" fill="none" />
+    </svg>
+  )
+}
+
+function MoodSadIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+      <circle cx="8" cy="8" r="6.5" fill="#FEE2E2" stroke="#F87171" strokeWidth="0.8" />
+      <circle cx="5.5" cy="7.2" r="1" fill="#7F1D1D" />
+      <circle cx="10.5" cy="7.2" r="1" fill="#7F1D1D" />
+      <path d="M5.5 10 q0.8 -1 1.5 0" stroke="#7F1D1D" strokeWidth="0.7" strokeLinecap="round" fill="none" />
+      <path d="M9 10 q0.8 -1 1.5 0" stroke="#7F1D1D" strokeWidth="0.7" strokeLinecap="round" fill="none" />
+      <path d="M5.5 11.5 q2.5 -1.5 5 0" stroke="#7F1D1D" strokeWidth="0.9" strokeLinecap="round" fill="none" />
+      <ellipse cx="4.5" cy="8.8" rx="0.6" ry="0.9" fill="#93C5FD" opacity="0.6" />
+    </svg>
+  )
+}
+
+const THOUGHT_SCENE_ICONS: Record<string, (active: boolean) => React.ReactNode> = {
+  day:      (a) => <DaySceneIcon active={a} />,
+  night:    (a) => <NightSceneIcon active={a} />,
+  notfound: (a) => <NotFoundSceneIcon active={a} />,
+}
+
+const MOOD_ICONS: Record<string, () => React.ReactNode> = {
+  normal: () => <MoodNormalIcon />,
+  happy:  () => <MoodHappyIcon />,
+  sad:    () => <MoodSadIcon />,
+  night:  () => <NightSceneIcon active={false} />,
+  notfound: () => <NotFoundSceneIcon active={false} />,
+}
+
 const THEME_ICONS: Record<string, (active: boolean) => React.ReactNode> = {
   forest:  (a) => <ForestIcon  active={a} />,
   desert:  (a) => <DesertIcon  active={a} />,
@@ -631,16 +743,17 @@ function MiniAnimalCanvas({ type, isDark }: { type: AnimalType; isDark: boolean 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 const TABS = [
-  { key: 'pet'     as const, label: '宠物' },
-  { key: 'weather' as const, label: '天气' },
-  { key: 'scene'   as const, label: '场景' },
+  { key: 'pet'      as const, label: '宠物' },
+  { key: 'weather'  as const, label: '天气' },
+  { key: 'scene'    as const, label: '场景' },
+  { key: 'thoughts' as const, label: '气泡' },
 ]
 
 export default function PetPage() {
   const petConfig = usePetConfig()
   const { resolvedTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
-  const [activeTab, setActiveTab] = useState<'pet' | 'weather' | 'scene'>('pet')
+  const [activeTab, setActiveTab] = useState<'pet' | 'weather' | 'scene' | 'thoughts'>('pet')
   const [selectedAnimal, setSelectedAnimal] = useState<AnimalType>('dog')
   const [nameInput, setNameInput] = useState('')
   const [moodData, setMoodData] = useState<Record<string, number>>({})
@@ -993,7 +1106,222 @@ export default function PetPage() {
     </div>
   )
 
-  const tabContent = { pet: PetTab, weather: WeatherTab, scene: SceneTab }
+  // ─── 气泡 Tab ────────────────────────────────────────────────────────────
+
+  const [thoughtScene, setThoughtScene] = useState<ThoughtScene>('day')
+  const [editingKey, setEditingKey] = useState<string>('normal') // 'normal' | 'happy' | 'sad'
+  const [editText, setEditText] = useState('')
+  const [isEditing, setIsEditing] = useState(false)
+
+  const customThoughts = config.customThoughts ?? DEFAULT_CUSTOM_THOUGHTS
+  const currentThoughtGroup = customThoughts[thoughtScene]
+  const currentList = editingKey === 'happy' && thoughtScene === 'day'
+    ? currentThoughtGroup.happy
+    : editingKey === 'sad' && thoughtScene === 'day'
+      ? currentThoughtGroup.sad
+      : currentThoughtGroup.normal
+
+  // 打开编辑：条目列表转文本
+  const startEdit = (key: string) => {
+    const list = key === 'happy' && thoughtScene === 'day'
+      ? currentThoughtGroup.happy
+      : key === 'sad' && thoughtScene === 'day'
+        ? currentThoughtGroup.sad
+        : currentThoughtGroup.normal
+    setEditingKey(key)
+    setEditText(list.join('\n'))
+    setIsEditing(true)
+  }
+
+  // 保存编辑：文本转条目列表
+  const saveEdit = () => {
+    const lines = editText
+      .split('\n')
+      .map(l => l.trim())
+      .filter(l => l.length > 0)
+    const updated = { ...customThoughts }
+    const group = { ...updated[thoughtScene] }
+    if (editingKey === 'happy' && thoughtScene === 'day') {
+      group.happy = lines
+    } else if (editingKey === 'sad' && thoughtScene === 'day') {
+      group.sad = lines
+    } else {
+      group.normal = lines
+    }
+    updated[thoughtScene] = group
+    updateConfig({ customThoughts: updated })
+    setIsEditing(false)
+  }
+
+  // 重置当前场景全部气泡
+  const resetScene = () => {
+    const updated = { ...customThoughts }
+    updated[thoughtScene] = { ...DEFAULT_CUSTOM_THOUGHTS[thoughtScene] }
+    updateConfig({ customThoughts: updated })
+  }
+
+  // 当前场景可用的子分组
+  const moodGroups = thoughtScene === 'day'
+    ? [
+        { key: 'normal', label: '普通', iconKey: 'normal', count: currentThoughtGroup.normal.length },
+        { key: 'happy',  label: '开心', iconKey: 'happy',  count: currentThoughtGroup.happy.length },
+        { key: 'sad',    label: '不开心', iconKey: 'sad',  count: currentThoughtGroup.sad.length },
+      ]
+    : [
+        { key: 'normal', label: '全部', iconKey: thoughtScene, count: currentThoughtGroup.normal.length },
+      ]
+
+  const ThoughtsTab = (
+    <div className="space-y-4">
+      {/* 场景选择 */}
+      <div className="rounded-2xl bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 shadow-[0_4px_16px_rgba(0,0,0,0.06)] dark:shadow-[0_4px_16px_rgba(0,0,0,0.3)] p-5">
+        <div className="flex items-center gap-2 mb-1">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <rect x="1" y="3" width="14" height="10" rx="4" stroke="#818CF8" strokeWidth="1.2" fill="none" />
+            <circle cx="5" cy="8" r="1" fill="#818CF8" />
+            <circle cx="8" cy="8" r="1" fill="#818CF8" />
+            <circle cx="11" cy="8" r="1" fill="#818CF8" />
+          </svg>
+          <p className="text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">气泡场景</p>
+        </div>
+        <p className="text-xs text-gray-400 dark:text-gray-500 mb-4 ml-6">选择不同场景下的气泡内容</p>
+        <div className="grid grid-cols-3 gap-2.5">
+          {THOUGHT_SCENES.map(s => {
+            const isActive = thoughtScene === s.key
+            return (
+              <button
+                key={s.key}
+                onClick={() => { setThoughtScene(s.key); setEditingKey('normal'); setIsEditing(false) }}
+                className={`group relative flex flex-col items-center gap-2 py-3.5 px-2 rounded-2xl border transition-all duration-200 ${
+                  isActive
+                    ? 'border-indigo-300 dark:border-indigo-600 bg-gradient-to-b from-indigo-50/80 to-indigo-100/40 dark:from-indigo-950/60 dark:to-indigo-900/30 shadow-[0_2px_12px_rgba(99,102,241,0.15)]'
+                    : 'border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 hover:border-indigo-200 dark:hover:border-indigo-800/60 hover:shadow-sm'
+                }`}
+              >
+                {/* 选中指示器 */}
+                {isActive && (
+                  <div className="absolute top-0 left-3 right-3 h-px bg-gradient-to-r from-transparent via-indigo-400 to-transparent" />
+                )}
+                <span className="flex items-center justify-center w-9 h-9">
+                  {THOUGHT_SCENE_ICONS[s.key]?.(isActive)}
+                </span>
+                <span className={`text-[11px] font-semibold ${isActive ? 'text-indigo-600 dark:text-indigo-400' : 'text-gray-500 dark:text-gray-400'}`}>
+                  {s.label}
+                </span>
+                <span className={`text-[10px] leading-tight ${isActive ? 'text-indigo-400/80 dark:text-indigo-500/80' : 'text-gray-400 dark:text-gray-500'}`}>
+                  {s.description}
+                </span>
+              </button>
+            )
+          })}
+        </div>
+      </div>
+
+      {/* 气泡列表 */}
+      <div className="rounded-2xl bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 shadow-[0_4px_16px_rgba(0,0,0,0.06)] dark:shadow-[0_4px_16px_rgba(0,0,0,0.3)] p-5">
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-2">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M8 2 Q4 2 2 5 Q0 8 3 10 L3 13 L5.5 11 Q8 12 11 10 Q14 8 12 5 Q10 2 8 2Z" stroke="#818CF8" strokeWidth="1.1" fill="#EEF2FF" fillOpacity="0.5" />
+              <circle cx="5.5" cy="6.5" r="0.8" fill="#818CF8" />
+              <circle cx="8" cy="6.5" r="0.8" fill="#818CF8" />
+              <circle cx="10.5" cy="6.5" r="0.8" fill="#818CF8" />
+            </svg>
+            <p className="text-xs font-semibold text-gray-700 dark:text-gray-300">气泡列表</p>
+          </div>
+          <button
+            onClick={resetScene}
+            className="text-[11px] font-medium text-gray-400 dark:text-gray-500 border border-gray-100 dark:border-gray-800 rounded-lg px-2.5 py-1 hover:text-indigo-500 dark:hover:text-indigo-400 hover:border-indigo-200 dark:hover:border-indigo-800/60 transition-colors"
+          >
+            恢复默认
+          </button>
+        </div>
+
+        {/* 心情/子分组 tab */}
+        <div className="flex gap-1 mb-4 p-1 bg-gray-50 dark:bg-gray-800/60 rounded-xl">
+          {moodGroups.map(g => (
+            <button
+              key={g.key}
+              onClick={() => { setEditingKey(g.key); setIsEditing(false) }}
+              className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-xs rounded-lg transition-all duration-200 ${
+                editingKey === g.key
+                  ? 'bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 font-semibold shadow-[0_1px_4px_rgba(0,0,0,0.08)] dark:shadow-[0_1px_4px_rgba(0,0,0,0.3)]'
+                  : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+              }`}
+            >
+              <span className="flex-shrink-0">{MOOD_ICONS[g.iconKey]?.()}</span>
+              <span>{g.label}</span>
+              <span className="inline-flex items-center justify-center min-w-[18px] h-[18px] text-[10px] font-medium rounded-full bg-gray-100 dark:bg-gray-600 text-gray-500 dark:text-gray-300 px-1">
+                {g.count}
+              </span>
+            </button>
+          ))}
+        </div>
+
+        {isEditing ? (
+          /* 编辑模式 */
+          <div className="space-y-3">
+            <textarea
+              value={editText}
+              onChange={e => setEditText(e.target.value)}
+              className="w-full h-56 text-sm bg-gray-50/80 dark:bg-gray-800/60 border border-gray-200 dark:border-gray-700 rounded-xl px-3.5 py-3 outline-none focus:border-indigo-400 dark:focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 dark:focus:ring-indigo-900/40 text-gray-800 dark:text-gray-200 placeholder:text-gray-400 resize-none transition-all"
+              placeholder={"每行一条气泡文本\n例如：\n今天天气真好~\n好想出去玩呀"}
+              autoFocus
+            />
+            <div className="flex gap-2">
+              <button
+                onClick={saveEdit}
+                className="flex-1 py-2.5 text-xs font-semibold text-white bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 rounded-xl transition-all shadow-[0_2px_8px_rgba(99,102,241,0.25)]"
+              >
+                保存
+              </button>
+              <button
+                onClick={() => setIsEditing(false)}
+                className="px-5 py-2.5 text-xs font-medium text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+              >
+                取消
+              </button>
+            </div>
+          </div>
+        ) : (
+          /* 预览模式 */
+          <div className="space-y-3">
+            <div className="flex flex-wrap gap-1.5 max-h-56 overflow-y-auto pr-1">
+              {currentList.length === 0 && (
+                <div className="w-full py-6 flex flex-col items-center gap-2">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <path d="M12 4 Q6 4 3 8 Q0 12 4 15 L4 19 L8 16.5 Q12 18 17 15 Q22 12 18 8 Q14 4 12 4Z" stroke="#D1D5DB" strokeWidth="1.2" fill="#F9FAFB" />
+                    <circle cx="8" cy="10.5" r="1" fill="#D1D5DB" />
+                    <circle cx="12" cy="10.5" r="1" fill="#D1D5DB" />
+                    <circle cx="16" cy="10.5" r="1" fill="#D1D5DB" />
+                  </svg>
+                  <p className="text-xs text-gray-400 dark:text-gray-500">
+                    暂无气泡文本，点击下方编辑添加
+                  </p>
+                </div>
+              )}
+              {currentList.map((text, idx) => (
+                <span
+                  key={idx}
+                  className="inline-block text-xs text-gray-600 dark:text-gray-300 bg-gradient-to-br from-indigo-50/60 to-purple-50/40 dark:from-indigo-950/30 dark:to-purple-950/20 border border-indigo-100/60 dark:border-indigo-800/30 rounded-lg px-2.5 py-1.5 leading-relaxed hover:border-indigo-200 dark:hover:border-indigo-700/50 transition-colors"
+                >
+                  {text}
+                </span>
+              ))}
+            </div>
+            <button
+              onClick={() => startEdit(editingKey)}
+              className="w-full py-2.5 text-xs font-semibold text-indigo-500 dark:text-indigo-400 border border-dashed border-indigo-200 dark:border-indigo-800/60 rounded-xl hover:bg-indigo-50/50 dark:hover:bg-indigo-950/30 hover:border-indigo-300 dark:hover:border-indigo-700/60 transition-all"
+            >
+              编辑气泡
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+
+  const tabContent = { pet: PetTab, weather: WeatherTab, scene: SceneTab, thoughts: ThoughtsTab }
 
   // ─── Render ───────────────────────────────────────────────────────────────
 

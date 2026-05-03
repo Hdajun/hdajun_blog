@@ -1,27 +1,79 @@
 // ─── 气泡系统 ──────────────────────────────────────────────────────────────────
 
-import { THOUGHT_DURATION, THOUGHTS, THOUGHTS_SAD, THOUGHTS_HAPPY, THOUGHTS_NIGHT } from './constants'
-import type { Animal } from './types'
+import { THOUGHT_DURATION, THOUGHTS, THOUGHTS_SAD, THOUGHTS_HAPPY, THOUGHTS_NIGHT, THOUGHTS_404 } from './constants'
+import type { Animal, CustomThoughts, ThoughtScene } from './types'
 
-/** 根据心情选择气泡文本池 */
-function getThoughtPool(mood: number, isNight: boolean): string[] {
-  if (isNight) return THOUGHTS_NIGHT
+/** 根据心情 + 场景选择气泡文本池（内置默认） */
+function getDefaultPool(mood: number, scene: ThoughtScene): string[] {
+  if (scene === 'notfound') return THOUGHTS_404
+  if (scene === 'night') return THOUGHTS_NIGHT
+  // scene === 'day'
   if (mood >= 70) return THOUGHTS_HAPPY
   if (mood <= 30) return THOUGHTS_SAD
   return THOUGHTS
 }
 
+/** 从自定义配置中根据心情+场景选池 */
+function getCustomPool(mood: number, scene: ThoughtScene, custom: CustomThoughts): string[] | null {
+  const group = custom[scene]
+  if (!group) return null
+  if (scene === 'notfound') {
+    // 404 场景只有 normal 分组
+    return group.normal.length > 0 ? group.normal : null
+  }
+  if (scene === 'night') {
+    // 夜间场景只有 normal 分组
+    return group.normal.length > 0 ? group.normal : null
+  }
+  // 白天场景按心情选
+  if (mood >= 70 && group.happy.length > 0) return group.happy
+  if (mood <= 30 && group.sad.length > 0) return group.sad
+  if (group.normal.length > 0) return group.normal
+  if (mood >= 70 && THOUGHTS_HAPPY.length > 0) return THOUGHTS_HAPPY
+  if (mood <= 30 && THOUGHTS_SAD.length > 0) return THOUGHTS_SAD
+  return null
+}
+
 /** 随机选取一条气泡文本，如果有名字则带前缀 */
-export function pickThought(mood: number, isNight: boolean, name?: string, customThoughts?: string[]): string {
-  // 自定义气泡池优先
-  const pool = customThoughts && customThoughts.length > 0 ? customThoughts : getThoughtPool(mood, isNight)
+export function pickThought(
+  mood: number,
+  isNight: boolean,
+  name?: string,
+  customThoughts?: CustomThoughts | string[] | null,
+  scene?: ThoughtScene,
+): string {
+  const effectiveScene: ThoughtScene = scene ?? (isNight ? 'night' : 'day')
+
+  let pool: string[] | null = null
+
+  // 优先使用自定义分组气泡
+  if (customThoughts && !Array.isArray(customThoughts) && typeof customThoughts === 'object') {
+    pool = getCustomPool(mood, effectiveScene, customThoughts as CustomThoughts)
+  }
+
+  // 兼容旧的 string[] 格式（如 404 页面直接传入）
+  if (!pool && Array.isArray(customThoughts) && customThoughts.length > 0) {
+    pool = customThoughts
+  }
+
+  // 回退到内置池
+  if (!pool) {
+    pool = getDefaultPool(mood, effectiveScene)
+  }
+
   const text = pool[Math.floor(Math.random() * pool.length)]
   if (name) return `${name}：${text}`
   return text
 }
 
 /** 更新气泡计时器 */
-export function updateThought(animal: Animal, isNight: boolean, allAnimals: Animal[], customThoughts?: string[]) {
+export function updateThought(
+  animal: Animal,
+  isNight: boolean,
+  allAnimals: Animal[],
+  customThoughts?: CustomThoughts | string[] | null,
+  scene?: ThoughtScene,
+) {
   if (animal.thoughtTimer !== undefined && animal.thoughtTimer > 0) {
     animal.thoughtTimer--
     if (animal.thoughtTimer === 0) {
@@ -32,7 +84,7 @@ export function updateThought(animal: Animal, isNight: boolean, allAnimals: Anim
   if (!animal.thoughtText && animal.thoughtTimer === undefined && Math.random() < 0.002) {
     const activeCount = allAnimals.filter(o => o.thoughtText).length
     if (activeCount < 2) {
-      animal.thoughtText = pickThought(animal.mood, isNight, animal.name, customThoughts)
+      animal.thoughtText = pickThought(animal.mood, isNight, animal.name, customThoughts, scene)
       animal.thoughtTimer = THOUGHT_DURATION
     }
   }

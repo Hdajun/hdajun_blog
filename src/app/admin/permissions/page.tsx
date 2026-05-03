@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Switch, Typography, message } from 'antd'
+import { Switch, message } from 'antd'
 import { useAuth } from '@/contexts/AuthContext'
 import { usePermission } from '@/contexts/PermissionContext'
 import { useRouter } from 'next/navigation'
@@ -13,8 +13,6 @@ import {
 } from '@/types/permission'
 import { SHOWCASE_LIST } from '@/constants/showcase'
 import { STORAGE_KEYS } from '@/constants/storage'
-
-const { Text } = Typography
 
 const PAGE_KEYS: PageKey[] = ['showcase', 'notes', 'chat', 'questions', 'pet']
 
@@ -135,15 +133,12 @@ export default function PermissionsPage() {
                 className="flex items-center justify-between py-1.5"
               >
                 <div className="flex items-center gap-2">
-                  <Text strong className="text-sm">
+                  <span className="text-sm font-semibold text-gray-800 dark:text-gray-100">
                     {PAGE_KEY_LABEL[page]}
-                  </Text>
-                  <Text
-                    type="secondary"
-                    className="text-xs"
-                  >
+                  </span>
+                  <span className="text-xs text-gray-400 dark:text-gray-500">
                     {PAGE_KEY_TO_HREF[page]}
-                  </Text>
+                  </span>
                 </div>
                 <Switch
                   checked={config.pages[page] ?? DEFAULT_PAGES[page]}
@@ -167,9 +162,9 @@ export default function PermissionsPage() {
                 className="flex items-center justify-between py-1.5"
               >
                 <div className="flex items-center gap-2 min-w-0">
-                  <Text strong className="text-sm truncate">
+                  <span className="text-sm font-semibold text-gray-800 dark:text-gray-100 truncate">
                     {item.title}
-                  </Text>
+                  </span>
                 </div>
                 <Switch
                   checked={config.showcaseItems[item.id] ?? true}

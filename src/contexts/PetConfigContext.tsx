@@ -1,8 +1,28 @@
 'use client'
 
 import { createContext, useContext, useRef, useState, useCallback, useEffect } from 'react'
-import type { Animal, PetCanvasConfig } from '@/components/PetCanvas/types'
-import { DEFAULT_THEME_PROPS } from '@/components/PetCanvas/constants'
+import type { Animal, PetCanvasConfig, CustomThoughts, ThoughtScene } from '@/components/PetCanvas/types'
+import { DEFAULT_THEME_PROPS, THOUGHTS, THOUGHTS_SAD, THOUGHTS_HAPPY, THOUGHTS_NIGHT, THOUGHTS_404 } from '@/components/PetCanvas/constants'
+
+// ─── 构建默认自定义气泡配置 ─────────────────────────────────────────────────
+
+export const DEFAULT_CUSTOM_THOUGHTS: CustomThoughts = {
+  day: {
+    normal: [...THOUGHTS],
+    happy: [...THOUGHTS_HAPPY],
+    sad: [...THOUGHTS_SAD],
+  },
+  night: {
+    normal: [...THOUGHTS_NIGHT],
+    happy: [],
+    sad: [],
+  },
+  notfound: {
+    normal: [...THOUGHTS_404],
+    happy: [],
+    sad: [],
+  },
+}
 
 // ─── 默认配置 ──────────────────────────────────────────────────────────────────
 
@@ -19,10 +39,27 @@ export const DEFAULT_PET_CONFIG: PetCanvasConfig = {
     thoughts: true,
     groundLine: true,
   },
+  customThoughts: DEFAULT_CUSTOM_THOUGHTS,
 }
 
 const STORAGE_KEY = 'petcanvas-config'
 const LEGACY_NAMES_KEY = 'petcanvas-names'
+
+function deepMergeCustomThoughts(base: CustomThoughts, override: Partial<CustomThoughts>): CustomThoughts {
+  const scenes: ThoughtScene[] = ['day', 'night', 'notfound']
+  const result: CustomThoughts = { ...base }
+  for (const scene of scenes) {
+    const o = override[scene]
+    if (o) {
+      result[scene] = {
+        normal: o.normal ?? base[scene].normal,
+        happy:  o.happy  ?? base[scene].happy,
+        sad:    o.sad    ?? base[scene].sad,
+      }
+    }
+  }
+  return result
+}
 
 function loadConfig(): PetCanvasConfig {
   if (typeof window === 'undefined') return DEFAULT_PET_CONFIG
@@ -43,6 +80,9 @@ function loadConfig(): PetCanvasConfig {
             ...parsed.scenery?.themeProps,
           },
         },
+        customThoughts: parsed.customThoughts
+          ? deepMergeCustomThoughts(DEFAULT_CUSTOM_THOUGHTS, parsed.customThoughts)
+          : DEFAULT_CUSTOM_THOUGHTS,
       }
     }
     // 迁移旧 key

@@ -4,19 +4,6 @@ import Link from 'next/link'
 import { motion } from 'framer-motion'
 import PetCanvas from '@/components/PetCanvas'
 
-const NOT_FOUND_THOUGHTS = [
-  '好像没有这个页面呢…',
-  '要不找找大俊？',
-  '页面走丢了…',
-  '迷路了，怎么办呀',
-  '这里什么都没有…',
-  '要不回首页看看？',
-  '404…是啥意思？',
-  '好像走错地方了~',
-  '大俊快来救我！',
-  '这条路好像不通…',
-]
-
 const ease = [0.22, 1, 0.36, 1] as const
 
 export default function NotFound() {
@@ -44,7 +31,7 @@ export default function NotFound() {
         transition={{ duration: 0.6, delay: 0.2, ease }}
         className="w-full max-w-2xl rounded-2xl overflow-hidden"
       >
-        <PetCanvas height={180} thoughts={NOT_FOUND_THOUGHTS} />
+        <PetCanvas height={180} thoughtScene="notfound" />
       </motion.div>
 
       {/* 返回首页 */}

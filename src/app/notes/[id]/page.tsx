@@ -344,7 +344,7 @@ export default function NotePage({ params }: { params: { id: string } }) {
       <div className="max-w-6xl mx-auto px-4 md:px-8 pb-8 pt-[130px]">
         <div className="flex gap-8">
           <div className="min-w-0 flex-1 max-w-4xl">
-            <div className="mb-3">
+            <div className="mb-6">
               <input
                 ref={titleInputRef}
                 type="text"

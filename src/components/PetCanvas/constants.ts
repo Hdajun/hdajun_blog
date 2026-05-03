@@ -88,6 +88,19 @@ export const PALETTE_LIGHT: Palette = {
   pandaBody: '#F0F0F0',
   pandaBlack: '#2A2A2A',
   pandaBelly: '#FFFFFF',
+  hedgehogBody: '#C4956A',
+  hedgehogBelly: '#E8D5B8',
+  hedgehogSpine: '#5A4A3A',
+  pigBody: '#F5A0B0',
+  pigBelly: '#FDE2E8',
+  pigSnout: '#E88A9A',
+  snakeBody: '#5A8A5A',
+  snakeBelly: '#A8D4A0',
+  snakePattern: '#3D6A3D',
+  birdBody: '#4A90D9',
+  birdBelly: '#E8F0FE',
+  birdWing: '#3B78C2',
+  birdBeak: '#E8A030',
 }
 
 export const PALETTE_DARK: Palette = {
@@ -128,6 +141,19 @@ export const PALETTE_DARK: Palette = {
   pandaBody: '#A0A0A0',
   pandaBlack: '#1A1A1A',
   pandaBelly: '#B8B8B8',
+  hedgehogBody: '#8A6A4A',
+  hedgehogBelly: '#A08868',
+  hedgehogSpine: '#3A2E22',
+  pigBody: '#A06878',
+  pigBelly: '#B89098',
+  pigSnout: '#906068',
+  snakeBody: '#3A5A3A',
+  snakeBelly: '#689060',
+  snakePattern: '#2A4A2A',
+  birdBody: '#3060A0',
+  birdBelly: '#7888A0',
+  birdWing: '#285090',
+  birdBeak: '#A07020',
 }
 
 // ─── 气泡文本 ──────────────────────────────────────────────────────────────────
@@ -226,8 +252,8 @@ export const THOUGHT_COOLDOWN = 300
 
 // ─── 食物 ──────────────────────────────────────────────────────────────────────
 
-export const FOOD_TYPES: Array<'fish' | 'bone' | 'banana'> = ['fish', 'bone', 'banana']
-export const FOOD_COLORS: Record<string, string> = { fish: '#60A5FA', bone: '#F5F5F4', banana: '#FDE047' }
+export const FOOD_TYPES: Array<'fish' | 'bone' | 'banana' | 'worm'> = ['fish', 'bone', 'banana', 'worm']
+export const FOOD_COLORS: Record<string, string> = { fish: '#60A5FA', bone: '#F5F5F4', banana: '#FDE047', worm: '#A3D977' }
 
 // ─── 默认动物配置 ──────────────────────────────────────────────────────────────
 
@@ -242,18 +268,23 @@ export const DEFAULT_ANIMAL_CONFIGS: Array<{
   idleTimer: number
   sitTimer: number
   scale: number
+  canJump?: boolean
   treeIndex?: number
   monkeyPose?: import('./types.ts').MonkeyPose
 }> = [
-  { type: 'dog',      vx:  0.5, dir:  1, frame:   0, state: 'run',  wanderTimer:  60, wanderVx:  0.5, idleTimer: 0, sitTimer: 0, scale: 1    },
-  { type: 'cat',      vx: -0.4, dir: -1, frame:  40, state: 'run',  wanderTimer:  90, wanderVx: -0.4, idleTimer: 0, sitTimer: 0, scale: 0.9  },
-  { type: 'elephant', vx:  0.3, dir:  1, frame:  20, state: 'run',  wanderTimer: 120, wanderVx:  0.3, idleTimer: 0, sitTimer: 0, scale: 0.7  },
-  { type: 'rabbit',   vx:  0.6, dir:  1, frame:  60, state: 'run',  wanderTimer:  40, wanderVx:  0.6, idleTimer: 0, sitTimer: 0, scale: 0.85 },
-  { type: 'giraffe',  vx: -0.2, dir: -1, frame:  10, state: 'run',  wanderTimer: 100, wanderVx: -0.2, idleTimer: 0, sitTimer: 0, scale: 0.65 },
-  { type: 'tiger',    vx:  0.4, dir:  1, frame:  30, state: 'run',  wanderTimer:  80, wanderVx:  0.4, idleTimer: 0, sitTimer: 0, scale: 0.8  },
-  { type: 'lion',     vx: -0.3, dir: -1, frame:  50, state: 'run',  wanderTimer: 110, wanderVx: -0.3, idleTimer: 0, sitTimer: 0, scale: 0.75 },
-  { type: 'panda',    vx:  0.2, dir:  1, frame:  70, state: 'idle', wanderTimer:  20, wanderVx:  0,   idleTimer: 100, sitTimer: 0, scale: 0.75 },
-  { type: 'monkey',   vx:  0,   dir:  1, frame:   0, state: 'idle', wanderTimer:   0, wanderVx:  0,   idleTimer: 0, sitTimer: 0, scale: 0.7, treeIndex: 1, monkeyPose: 'hang' },
+  { type: 'dog',      vx:  0.5, dir:  1, frame:   0, state: 'run',  wanderTimer:  60, wanderVx:  0.5, idleTimer: 0, sitTimer: 0, scale: 1,    canJump: true },
+  { type: 'cat',      vx: -0.4, dir: -1, frame:  40, state: 'run',  wanderTimer:  90, wanderVx: -0.4, idleTimer: 0, sitTimer: 0, scale: 0.9, canJump: true },
+  { type: 'elephant', vx:  0.3, dir:  1, frame:  20, state: 'run',  wanderTimer: 120, wanderVx:  0.3, idleTimer: 0, sitTimer: 0, scale: 0.7, canJump: false },
+  { type: 'rabbit',   vx:  0.6, dir:  1, frame:  60, state: 'run',  wanderTimer:  40, wanderVx:  0.6, idleTimer: 0, sitTimer: 0, scale: 0.85, canJump: true },
+  { type: 'giraffe',  vx: -0.2, dir: -1, frame:  10, state: 'run',  wanderTimer: 100, wanderVx: -0.2, idleTimer: 0, sitTimer: 0, scale: 0.65, canJump: false },
+  { type: 'tiger',    vx:  0.4, dir:  1, frame:  30, state: 'run',  wanderTimer:  80, wanderVx:  0.4, idleTimer: 0, sitTimer: 0, scale: 0.8, canJump: true },
+  { type: 'lion',     vx: -0.3, dir: -1, frame:  50, state: 'run',  wanderTimer: 110, wanderVx: -0.3, idleTimer: 0, sitTimer: 0, scale: 0.75, canJump: true },
+  { type: 'panda',    vx:  0.2, dir:  1, frame:  70, state: 'idle', wanderTimer:  20, wanderVx:  0,   idleTimer: 100, sitTimer: 0, scale: 0.75, canJump: false },
+  { type: 'monkey',   vx:  0,   dir:  1, frame:   0, state: 'idle', wanderTimer:   0, wanderVx:  0,   idleTimer: 0, sitTimer: 0, scale: 0.7, canJump: true, treeIndex: 1, monkeyPose: 'hang' },
+  { type: 'hedgehog', vx:  0.3, dir: -1, frame:  55, state: 'run',  wanderTimer:  70, wanderVx:  0.3, idleTimer: 0, sitTimer: 0, scale: 0.75, canJump: false },
+  { type: 'pig',      vx:  0.35,dir:  1, frame:  80, state: 'run',  wanderTimer:  90, wanderVx:  0.35,idleTimer: 0, sitTimer: 0, scale: 0.85, canJump: false },
+  { type: 'snake',    vx:  0.25,dir: -1, frame: 100, state: 'run',  wanderTimer: 100, wanderVx:  0.25,idleTimer: 0, sitTimer: 0, scale: 0.75, canJump: false },
+  { type: 'bird',     vx:  0,   dir:  1, frame:   0, state: 'idle', wanderTimer:  30, wanderVx:  0,   idleTimer: 50, sitTimer: 0, scale: 0.7, canJump: false },
 ]
 
 // ─── 场景主题配置 ─────────────────────────────────────────────────────────────

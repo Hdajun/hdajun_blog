@@ -6,6 +6,7 @@ import { format } from 'date-fns'
 import { Pagination } from 'antd'
 import { Note } from '@/types/note'
 import { useAuth } from '@/contexts/AuthContext'
+import { PageGuard } from '@/components/PageGuard'
 import { api } from '@/lib/api-client'
 import { FeatureCard } from '@/components/FeatureCard'
 import { colorStyles, ICONS, TemplateIcon } from './icons'
@@ -159,6 +160,7 @@ export default function NotesPage() {
   }
 
   return (
+    <PageGuard pageKey="notes">
     <div>
       {/* 吸顶页头 */}
       <div className="sticky top-0 z-10 -mx-4 md:-mx-8 px-4 md:px-8 bg-white/30 dark:bg-gray-950/30 backdrop-blur-md py-6 mb-8 relative after:absolute after:bottom-0 after:left-0 after:right-0 after:h-px after:bg-gradient-to-r after:from-transparent after:via-gray-300/70 after:to-transparent dark:after:via-white/[0.08]">
@@ -365,5 +367,6 @@ export default function NotesPage() {
         )}
       </div>
     </div>
+    </PageGuard>
   )
 }

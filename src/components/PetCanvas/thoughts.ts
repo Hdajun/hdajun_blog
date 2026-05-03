@@ -12,15 +12,16 @@ function getThoughtPool(mood: number, isNight: boolean): string[] {
 }
 
 /** 随机选取一条气泡文本，如果有名字则带前缀 */
-export function pickThought(mood: number, isNight: boolean, name?: string): string {
-  const pool = getThoughtPool(mood, isNight)
+export function pickThought(mood: number, isNight: boolean, name?: string, customThoughts?: string[]): string {
+  // 自定义气泡池优先
+  const pool = customThoughts && customThoughts.length > 0 ? customThoughts : getThoughtPool(mood, isNight)
   const text = pool[Math.floor(Math.random() * pool.length)]
   if (name) return `${name}：${text}`
   return text
 }
 
 /** 更新气泡计时器 */
-export function updateThought(animal: Animal, isNight: boolean, allAnimals: Animal[]) {
+export function updateThought(animal: Animal, isNight: boolean, allAnimals: Animal[], customThoughts?: string[]) {
   if (animal.thoughtTimer !== undefined && animal.thoughtTimer > 0) {
     animal.thoughtTimer--
     if (animal.thoughtTimer === 0) {
@@ -31,7 +32,7 @@ export function updateThought(animal: Animal, isNight: boolean, allAnimals: Anim
   if (!animal.thoughtText && animal.thoughtTimer === undefined && Math.random() < 0.002) {
     const activeCount = allAnimals.filter(o => o.thoughtText).length
     if (activeCount < 2) {
-      animal.thoughtText = pickThought(animal.mood, isNight, animal.name)
+      animal.thoughtText = pickThought(animal.mood, isNight, animal.name, customThoughts)
       animal.thoughtTimer = THOUGHT_DURATION
     }
   }

@@ -8,6 +8,10 @@ import { drawTiger } from './drawTiger'
 import { drawLion } from './drawLion'
 import { drawPanda } from './drawPanda'
 import { drawMonkeyOnBranch, drawMonkeyOnGround } from './drawMonkey'
+import { drawHedgehog } from './drawHedgehog'
+import { drawPig } from './drawPig'
+import { drawSnake } from './drawSnake'
+import { drawBirdOnGround, drawBirdFlying, drawBirdPerched } from './drawBird'
 
 /** 地面动物的绘制注册表 */
 const groundAnimalDrawers: Record<string, DrawAnimalFn> = {
@@ -20,6 +24,10 @@ const groundAnimalDrawers: Record<string, DrawAnimalFn> = {
   lion: drawLion,
   panda: drawPanda,
   monkey: drawMonkeyOnGround,
+  hedgehog: drawHedgehog,
+  pig: drawPig,
+  snake: drawSnake,
+  bird: drawBirdOnGround,
 }
 
 /** 绘制地面动物（通过 type 分发） */
@@ -35,4 +43,4 @@ export function drawMonkey(ctx: CanvasRenderingContext2D, animal: Animal, treeIn
   drawMonkeyOnBranch(ctx, animal, treeInfo, palette)
 }
 
-export { drawDog, drawCat, drawElephant, drawRabbit, drawGiraffe, drawTiger, drawLion, drawPanda, drawMonkeyOnBranch, drawMonkeyOnGround }
+export { drawDog, drawCat, drawElephant, drawRabbit, drawGiraffe, drawTiger, drawLion, drawPanda, drawMonkeyOnBranch, drawMonkeyOnGround, drawHedgehog, drawPig, drawSnake, drawBirdOnGround, drawBirdFlying, drawBirdPerched }

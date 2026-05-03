@@ -112,9 +112,9 @@ export function updateGroundAnimal(
     }
   }
 
-  // random jump (mood affects jump frequency)
+  // random jump (mood affects jump frequency; only animals with canJump)
   const jumpChance = isNight ? JUMP_CHANCE * 0.2 : JUMP_CHANCE * (0.5 + (a.mood / 100) * 0.8)
-  if (a.jumpOffset === 0 && a.state !== 'eat' && Math.random() < jumpChance) {
+  if (a.canJump && a.jumpOffset === 0 && a.state !== 'eat' && Math.random() < jumpChance) {
     a.jumpVY = JUMP_VELOCITY * (0.6 + Math.random() * 0.5)
   }
 
@@ -396,6 +396,201 @@ export function updateMonkey(
       }
     }
     a.state = 'idle'
+  }
+}
+
+// ─── Bird flight constants ─────────────────────────────────────────────────
+const BIRD_FLY_HEIGHT_MIN = -25
+const BIRD_FLY_HEIGHT_MAX = -40
+const BIRD_PERCH_STAY = 200     // 停歇帧数（约3s）
+const BIRD_FLY_STAY = 300       // 飞行持续帧数（约5s）
+const BIRD_FLAP_SPEED = 0.3     // 翅膀扇动速度
+const BIRD_FLY_SPEED = 1.6      // 飞行时水平速度
+
+/** 更新鸟（双模态：飞行 / 停歇在树上或屋顶） */
+export function updateBird(
+  a: Animal,
+  w: number,
+  h: number,
+  foods: FoodItem[],
+  isNight: boolean,
+  treeInfos: TreeInfo[],
+) {
+  const groundY = h * GROUND_Y_RATIO
+  a.frame++
+  a.wanderTimer = Math.max(0, a.wanderTimer - 1)
+  a.idleTimer = Math.max(0, a.idleTimer - 1)
+  a.sitTimer = Math.max(0, a.sitTimer - 1)
+  a.seekTimer = Math.max(0, a.seekTimer - 1)
+  a.excitementTimer = Math.max(0, a.excitementTimer - 1)
+  a.eatingTimer = Math.max(0, a.eatingTimer - 1)
+  a.birdPerchTimer = Math.max(0, (a.birdPerchTimer ?? 0) - 1)
+  a.birdFlyTimer = Math.max(0, (a.birdFlyTimer ?? 0) - 1)
+
+  // mood decay
+  a.mood = Math.max(0, a.mood - MOOD_DECAY_RATE)
+
+  // Initialize bird fields if needed
+  if (a.birdOnGround === undefined) a.birdOnGround = true
+  if (a.birdFlyY === undefined) a.birdFlyY = 0
+  if (a.birdFlyVY === undefined) a.birdFlyVY = 0
+  if (a.birdFlapPhase === undefined) a.birdFlapPhase = 0
+  if (a.birdPerchTimer === undefined) a.birdPerchTimer = 60 + Math.floor(Math.random() * BIRD_PERCH_STAY)
+
+  if (a.birdOnGround) {
+    // ── 停歇模式（站在树枝/屋顶上）──────────────────────────────────────
+    a.state = 'idle'
+    a.birdFlapPhase = 0
+    a.birdFlyY = 0
+
+    // find food on ground nearby — if food found, swoop down to eat
+    let nearestFood: FoodItem | null = null
+    let nearestDist = Infinity
+    for (const f of foods) {
+      if (f.eaten) continue
+      const dx = f.x - a.x
+      const dist = Math.abs(dx)
+      if (dist < nearestDist) {
+        nearestDist = dist
+        nearestFood = f
+      }
+    }
+    // eating from perch
+    if (a.eatingTimer > 0) {
+      a.state = 'eat'
+      a.eatingTimer = Math.max(0, a.eatingTimer - 1)
+      return
+    }
+    if (nearestFood && nearestDist < 30 && a.birdPerchX !== undefined) {
+      // food right below on ground, eat it
+      nearestFood.eaten = true
+      nearestFood.eatAnim = 0
+      a.eatingTimer = EAT_DURATION
+      a.eatFoodType = nearestFood.type
+      a.mood = Math.min(100, a.mood + MOOD_FEED_BONUS)
+      const foodColor = FOOD_COLORS[nearestFood.type]
+      nearestFood.particles = []
+      for (let i = 0; i < 8; i++) {
+        nearestFood.particles.push({
+          x: nearestFood.x, y: nearestFood.y,
+          vx: (Math.random() - 0.5) * 3,
+          vy: -Math.random() * 3 - 1,
+          life: 1,
+          color: i % 2 === 0 ? foodColor : '#FFD700',
+        })
+      }
+    }
+
+    // direction — occasionally look around
+    if (Math.random() < 0.01) a.dir = (a.dir * -1) as 1 | -1
+
+    // take off after timer expires
+    if (a.birdPerchTimer === 0 && !isNight) {
+      a.birdOnGround = false
+      a.birdFlyY = (a.birdPerchY ?? groundY) - groundY  // start from perch height
+      a.birdFlyVY = -1.5  // slight upward push
+      a.birdFlyTimer = BIRD_FLY_STAY + Math.floor(Math.random() * 200)
+      a.birdFlapPhase = 0
+      a.wanderVx = (Math.random() > 0.5 ? 1 : -1) * BIRD_FLY_SPEED
+    }
+
+    // at night, stay perched
+    if (isNight && a.birdPerchTimer === 0) {
+      a.birdPerchTimer = 300 + Math.floor(Math.random() * 200)
+    }
+  } else {
+    // ── 飞行模式 ────────────────────────────────────────────────────────────
+    a.state = 'run'
+    a.birdFlapPhase += BIRD_FLAP_SPEED
+
+    // horizontal movement
+    if (a.wanderVx === 0) a.wanderVx = (Math.random() > 0.5 ? 1 : -1) * BIRD_FLY_SPEED
+    a.vx = a.vx + (a.wanderVx - a.vx) * 0.03
+
+    // boundary: turn around
+    if (a.x < 50) { a.vx += 0.3; a.wanderVx = Math.abs(a.wanderVx) }
+    if (a.x > w - 50) { a.vx -= 0.3; a.wanderVx = -Math.abs(a.wanderVx) }
+
+    const spd = Math.abs(a.vx)
+    if (spd > BIRD_FLY_SPEED) a.vx = (a.vx / spd) * BIRD_FLY_SPEED
+    a.vx *= 0.99
+    a.x = clamp(a.x + a.vx, 30, w - 30)
+
+    // vertical: fly to altitude, then oscillate
+    const targetFlyY = BIRD_FLY_HEIGHT_MIN + Math.sin(a.frame * 0.008) * 15
+    if (a.birdFlyY > targetFlyY) {
+      a.birdFlyVY -= 0.04
+    } else {
+      a.birdFlyVY += (Math.sin(a.frame * 0.025) * 0.4 - a.birdFlyVY) * 0.015
+    }
+    a.birdFlyY += a.birdFlyVY
+    if (a.birdFlyY > -10) a.birdFlyY = -10
+    if (a.birdFlyY < BIRD_FLY_HEIGHT_MAX) a.birdFlyY = BIRD_FLY_HEIGHT_MAX
+
+    // direction
+    if (a.vx > 0.08) a.dir = 1
+    else if (a.vx < -0.08) a.dir = -1
+
+    // randomly change direction
+    if (Math.random() < 0.004) {
+      a.wanderVx = -a.wanderVx
+    }
+
+    // find perch after timer expires — look for a tree or just land
+    if (a.birdFlyTimer === 0 || isNight) {
+      // look for nearest tree
+      let bestTree: TreeInfo | null = null
+      let bestDist = Infinity
+      for (const t of treeInfos) {
+        const dx = t.x - a.x
+        const dist = Math.abs(dx)
+        if (dist < bestDist) {
+          bestDist = dist
+          bestTree = t
+        }
+      }
+
+      if (bestTree && bestDist < 300) {
+        // fly toward tree
+        const dx = bestTree.x - a.x
+        if (Math.abs(dx) < 20) {
+          // close enough — perch!
+          a.birdOnGround = true
+          const perchY = bestTree.branchY !== 0
+            ? bestTree.groundY + bestTree.branchY * bestTree.scale - 8
+            : bestTree.groundY + (-45) * bestTree.scale - 8
+          a.birdPerchX = bestTree.x + bestTree.branchDir * 14 * bestTree.scale
+          a.birdPerchY = perchY
+          a.birdTreeIndex = treeInfos.indexOf(bestTree)
+          a.x = a.birdPerchX
+          a.y = perchY
+          a.vx = 0
+          a.birdFlyY = 0
+          a.birdFlyVY = 0
+          a.birdFlapPhase = 0
+          a.birdPerchTimer = BIRD_PERCH_STAY + Math.floor(Math.random() * 150)
+          a.dir = bestTree.branchDir as 1 | -1
+        } else {
+          // move toward tree
+          a.wanderVx = Math.sign(dx) * BIRD_FLY_SPEED
+        }
+      } else {
+        // no tree nearby — just perch in air and reset
+        a.birdOnGround = true
+        a.birdPerchX = a.x
+        a.birdPerchY = groundY + (a.birdFlyY ?? 0)
+        a.y = a.birdPerchY
+        a.vx = 0
+        a.birdFlyY = 0
+        a.birdFlyVY = 0
+        a.birdFlapPhase = 0
+        a.birdPerchTimer = BIRD_PERCH_STAY + Math.floor(Math.random() * 150)
+        // no tree → fly again soon
+        if (treeInfos.length === 0) {
+          a.birdPerchTimer = 30
+        }
+      }
+    }
   }
 }
 

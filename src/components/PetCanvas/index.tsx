@@ -10,13 +10,14 @@ import {
 } from './constants'
 import { getPalette, rand, clamp } from './utils'
 import { drawGroundAnimal, drawMonkey } from './animals'
+import { drawBirdFlying, drawBirdPerched } from './animals/drawBird'
 import { drawScenery, drawThemeGround } from './scenery'
 import { getDesertLayout } from './scenery/drawDesert'
 import { getGardenLayout } from './scenery/drawGarden'
 import { getVillageLayout } from './scenery/drawVillage'
 import { drawFoodItem, drawEatEmote, drawFoodNearMouth } from './food'
 import { drawThoughtBubble, drawLookEmote, updateThought } from './thoughts'
-import { updateGroundAnimal, updateMonkey, updateFoods, isNighttime } from './physics'
+import { updateGroundAnimal, updateMonkey, updateFoods, updateBird, isNighttime } from './physics'
 import { createWeatherState, drawWeather, detectWeather } from './weather'
 import type { WeatherState } from './weather'
 import { usePetConfig, DEFAULT_PET_CONFIG } from '@/contexts/PetConfigContext'
@@ -45,10 +46,16 @@ const ANIMAL_HITBOX: Record<string, { hw: number; hh: number; oy: number }> = {
   tiger:    { hw: 28, hh: 26, oy: -4 },
   lion:     { hw: 30, hh: 30, oy: -6 },
   panda:    { hw: 26, hh: 26, oy: -4 },
+  hedgehog: { hw: 22, hh: 22, oy: -4 },
+  pig:      { hw: 30, hh: 26, oy: -2 },
+  snake:    { hw: 36, hh: 12, oy: -2 },
+  bird:     { hw: 20, hh: 20, oy: -6 },
 }
 
 function hitTestAnimal(cx: number, cy: number, animal: Animal, canvasHeight: number): boolean {
   if (animal.type === 'monkey') return false
+  // 鸟在飞行中不可点击
+  if (animal.type === 'bird' && !animal.birdOnGround) return false
   const groundY = canvasHeight * GROUND_Y_RATIO
   const box = ANIMAL_HITBOX[animal.type]
   if (!box) return false
@@ -72,10 +79,12 @@ interface NameInputState {
 
 // ─── Main component ───────────────────────────────────────────────────────────
 
-export default function PetCanvas({ height = 200 }: { height?: number }) {
+export default function PetCanvas({ height = 200, thoughts }: { height?: number; thoughts?: string[] }) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [nameInput, setNameInput] = useState<NameInputState>({ visible: false, animalType: '', x: 0, y: 0, value: '' })
   const animalsRef = useRef<Animal[] | null>(null)
+  const customThoughtsRef = useRef(thoughts)
+  customThoughtsRef.current = thoughts
 
   // ── configRef: always fresh, updated on every render before effects ──
   const petConfig = usePetConfig()
@@ -171,7 +180,16 @@ export default function PetCanvas({ height = 200 }: { height?: number }) {
       // monkey starts on ground with a short timer so it walks immediately
       monkeyOnGround: cfg.type === 'monkey' ? true : undefined,
       monkeyTimer: cfg.type === 'monkey' ? 80 : (cfg.monkeyPose ? MONKEY_SWITCH_INTERVAL : undefined),
+      birdOnGround: cfg.type === 'bird' ? true : undefined,
+      birdFlyY: 0,
+      birdFlyVY: 0,
+      birdFlapPhase: 0,
+      birdPerchTimer: cfg.type === 'bird' ? 60 + Math.floor(Math.random() * 200) : undefined,
+      birdPerchX: undefined,
+      birdPerchY: undefined,
+      birdTreeIndex: undefined,
       jumpOffset: 0, jumpVY: 0, lookTimer: 0, excitementTimer: 0, eatingTimer: 0,
+      canJump: cfg.canJump ?? true,
       mood: 60,
       name: initNames[cfg.type] || undefined,
       visible: true,
@@ -258,7 +276,7 @@ export default function PetCanvas({ height = 200 }: { height?: number }) {
       const groundY = h * GROUND_Y_RATIO
       const margin = 50
       const usable = w - margin * 2
-      const groundAnimals = animals.filter(a => a.type !== 'monkey')
+      const groundAnimals = animals.filter(a => a.type !== 'monkey' && a.type !== 'bird')
       for (let i = 0; i < groundAnimals.length; i++) {
         const a = groundAnimals[i]
         if (a.x === 0) {
@@ -273,6 +291,17 @@ export default function PetCanvas({ height = 200 }: { height?: number }) {
       if (monkeyA && monkeyA.monkeyOnGround && monkeyA.x === 0) {
         monkeyA.x = w * 0.5 + rand(-w * 0.15, w * 0.15)
         monkeyA.y = groundY
+      }
+      // give bird an initial position — start flying
+      const birdA = animals.find(a => a.type === 'bird')
+      if (birdA && birdA.x === 0) {
+        birdA.x = w * 0.5 + rand(-w * 0.15, w * 0.15)
+        birdA.y = groundY
+        birdA.birdOnGround = false
+        birdA.birdFlyY = -30
+        birdA.birdFlyVY = 0
+        birdA.birdFlyTimer = 200 + Math.floor(Math.random() * 200)
+        birdA.wanderVx = (Math.random() > 0.5 ? 1 : -1) * 1.6
       }
       buildScenery(w, h)
       lastEffectiveWeather = ''  // force weather rebuild on resize
@@ -301,7 +330,7 @@ export default function PetCanvas({ height = 200 }: { height?: number }) {
         const groundY = h * GROUND_Y_RATIO
         foods.push({ x: cx, y: Math.min(cy, groundY - 5), type: foodType, timer: FOOD_LIFETIME, eaten: false, eatAnim: 0, particles: [] })
         for (const a of animals) {
-          if ((a.type !== 'monkey' || a.monkeyOnGround) && Math.abs(a.x - cx) < 300) a.excitementTimer = 30
+          if ((a.type !== 'monkey' || a.monkeyOnGround) && (a.type !== 'bird' || a.birdOnGround) && Math.abs(a.x - cx) < 300) a.excitementTimer = 30
         }
       }
       clickTarget.x = cx
@@ -309,7 +338,7 @@ export default function PetCanvas({ height = 200 }: { height?: number }) {
       clickTarget.active = true
       clickTarget.timer = SEEK_DURATION
       for (const a of animals) {
-        if (a.type !== 'monkey' && Math.abs(a.x - cx) < 200)
+        if (a.type !== 'monkey' && a.type !== 'bird' && Math.abs(a.x - cx) < 200)
           a.mood = Math.min(100, a.mood + 5)
       }
     }
@@ -438,13 +467,14 @@ export default function PetCanvas({ height = 200 }: { height?: number }) {
 
       for (const f of foods) drawFoodItem(ctx, f, globalFrame, p)
 
-      const groundAnimals = animals.filter(a => a.type !== 'monkey')
+      const groundAnimals = animals.filter(a => a.type !== 'monkey' && a.type !== 'bird')
       const monkeyAnimal = animals.find(a => a.type === 'monkey')
+      const birdAnimal = animals.find(a => a.type === 'bird')
 
       for (const a of groundAnimals) {
         // always update physics for mood/movement consistency
         const result = updateGroundAnimal(a, w, h, animals, foods, clickTarget, isNight, effectiveWeather, treeInfos)
-        updateThought(a, isNight, animals)
+        updateThought(a, isNight, animals, customThoughtsRef.current)
 
         // skip drawing if hidden
         if (cfg.visible[a.type] === false) continue
@@ -520,7 +550,7 @@ export default function PetCanvas({ height = 200 }: { height?: number }) {
         }
 
         updateMonkey(monkeyAnimal, w, h, foods, visibleTreeInfos, isNight)
-        updateThought(monkeyAnimal, isNight, animals)
+        updateThought(monkeyAnimal, isNight, animals, customThoughtsRef.current)
 
         if (monkeyAnimal.monkeyOnGround) {
           // ── ground drawing ──
@@ -581,6 +611,75 @@ export default function PetCanvas({ height = 200 }: { height?: number }) {
                 drawThoughtBubble(ctx, tree.x, my, monkeyAnimal.thoughtText, THOUGHT_DURATION - monkeyAnimal.thoughtTimer, monkeyAnimal.scale)
               }
             }
+          }
+        }
+      }
+
+      // ── bird ──
+      if (birdAnimal && cfg.visible['bird'] !== false) {
+        updateBird(birdAnimal, w, h, foods, isNight, visibleTreeInfos)
+        updateThought(birdAnimal, isNight, animals, customThoughtsRef.current)
+
+        if (birdAnimal.birdOnGround) {
+          // ── perched (on tree branch / roof) ──
+          const perchX = birdAnimal.birdPerchX ?? birdAnimal.x
+          const perchY = birdAnimal.birdPerchY ?? birdAnimal.y
+          birdAnimal.x = perchX
+          birdAnimal.y = perchY
+
+          ctx.save()
+          ctx.translate(perchX, perchY)
+          ctx.scale(birdAnimal.scale, birdAnimal.scale)
+          ctx.translate(-perchX, -perchY)
+          drawBirdPerched(ctx, birdAnimal, p)
+          ctx.restore()
+
+          // emotes
+          if (birdAnimal.state === 'eat' && birdAnimal.eatingTimer > 0) {
+            drawEatEmote(ctx, perchX, perchY - 15 * birdAnimal.scale, birdAnimal.scale, birdAnimal.frame)
+          }
+          if (sc.thoughts && birdAnimal.thoughtText && birdAnimal.thoughtTimer && birdAnimal.thoughtTimer > 0)
+            drawThoughtBubble(ctx, perchX, perchY - 25 * birdAnimal.scale, birdAnimal.thoughtText, THOUGHT_DURATION - birdAnimal.thoughtTimer, birdAnimal.scale)
+          if (birdAnimal.name) {
+            ctx.save()
+            ctx.globalAlpha = 0.55
+            ctx.font = '9px "PingFang SC", "Microsoft YaHei", sans-serif'
+            ctx.textAlign = 'center'
+            ctx.fillStyle = isNight || effectiveWeather === 'night' ? '#9ca3af' : '#6b7280'
+            ctx.fillText(birdAnimal.name, perchX, perchY + 18 * birdAnimal.scale)
+            ctx.restore()
+          }
+        } else {
+          // ── flying ──
+          const flyDrawY = birdAnimal.y + (birdAnimal.birdFlyY ?? 0)
+
+          // shadow on ground
+          ctx.save()
+          ctx.globalAlpha = 0.03
+          ctx.beginPath()
+          ctx.ellipse(birdAnimal.x, groundY + 6, 8 * birdAnimal.scale, 1.5 * birdAnimal.scale, 0, 0, Math.PI * 2)
+          ctx.fillStyle = '#000'
+          ctx.fill()
+          ctx.restore()
+
+          ctx.save()
+          ctx.translate(birdAnimal.x, flyDrawY)
+          ctx.scale(birdAnimal.scale, birdAnimal.scale)
+          ctx.translate(-birdAnimal.x, -birdAnimal.y)
+          drawBirdFlying(ctx, birdAnimal, p)
+          ctx.restore()
+
+          // thought bubble when flying
+          if (sc.thoughts && birdAnimal.thoughtText && birdAnimal.thoughtTimer && birdAnimal.thoughtTimer > 0)
+            drawThoughtBubble(ctx, birdAnimal.x, flyDrawY - 20 * birdAnimal.scale, birdAnimal.thoughtText, THOUGHT_DURATION - birdAnimal.thoughtTimer, birdAnimal.scale)
+          if (birdAnimal.name) {
+            ctx.save()
+            ctx.globalAlpha = 0.55
+            ctx.font = '9px "PingFang SC", "Microsoft YaHei", sans-serif'
+            ctx.textAlign = 'center'
+            ctx.fillStyle = isNight || effectiveWeather === 'night' ? '#9ca3af' : '#6b7280'
+            ctx.fillText(birdAnimal.name, birdAnimal.x, flyDrawY + 15 * birdAnimal.scale)
+            ctx.restore()
           }
         }
       }

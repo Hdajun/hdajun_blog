@@ -13,6 +13,7 @@ import {
   UserOutlined,
   LogoutOutlined,
   HeartOutlined,
+  SettingOutlined,
 } from '@ant-design/icons'
 import {
   SunIcon,
@@ -23,6 +24,8 @@ import {
 import { motion, AnimatePresence } from 'framer-motion'
 import { LoginModal } from './LoginModal'
 import { useAuth } from '@/contexts/AuthContext'
+import { usePermission } from '@/contexts/PermissionContext'
+import { PageKey } from '@/types/permission'
 
 export const navigationItems = [
   {
@@ -34,6 +37,7 @@ export const navigationItems = [
     actionText: '查看成果',
     tags: ['项目', '证书', '实战'],
     themeColor: 'amber',
+    pageKey: 'showcase' as PageKey,
   },
   {
     href: '/notes',
@@ -44,16 +48,18 @@ export const navigationItems = [
     actionText: '查看小记',
     tags: ['Markdown', '随缘更新', '技术'],
     themeColor: 'purple',
+    pageKey: 'notes' as PageKey,
   },
   {
     href: '/chat',
-    label: 'CHAT',
+    label: '聊天',
     icon: <MessageOutlined />,
     title: '和我聊聊',
     description: '任何技术问题都可以和我交流，让我们一起探讨编程的乐趣。',
     actionText: '开始对话',
     tags: ['DeepSeek', 'AI', '实时对话'],
     themeColor: 'green',
+    pageKey: 'chat' as PageKey,
   },
   {
     href: '/questions',
@@ -64,6 +70,7 @@ export const navigationItems = [
     actionText: '开始刷题',
     tags: ['面试题', 'React', 'Vue'],
     themeColor: 'blue',
+    pageKey: 'questions' as PageKey,
   },
   {
     href: '/pet',
@@ -74,6 +81,7 @@ export const navigationItems = [
     actionText: '去装扮',
     tags: ['个性化', '天气', '场景'],
     themeColor: 'rose',
+    pageKey: 'pet' as PageKey,
   },
 ]
 
@@ -82,6 +90,7 @@ export const navigationItems = [
 function Sidebar({ onLoginOpen }: { onLoginOpen: () => void }) {
   const pathname = usePathname()
   const { isAuthenticated, logout } = useAuth()
+  const { isPageVisible } = usePermission()
   const { theme, setTheme } = useTheme()
   const [collapsed, setCollapsed] = useState(false)
   const [mounted, setMounted] = useState(false)
@@ -199,7 +208,9 @@ function Sidebar({ onLoginOpen }: { onLoginOpen: () => void }) {
           </AnimatePresence>
         </Link>
 
-        {navigationItems.map(item => {
+        {navigationItems
+          .filter(item => isPageVisible(item.pageKey))
+          .map(item => {
           const isActive = pathname.startsWith(item.href)
           return (
             <Link
@@ -235,6 +246,40 @@ function Sidebar({ onLoginOpen }: { onLoginOpen: () => void }) {
             </Link>
           )
         })}
+
+        {/* 管理员专属：权限 */}
+        {isAuthenticated && (
+          <Link
+            href="/admin/permissions"
+            title={collapsed ? '权限' : undefined}
+            className={`flex items-center overflow-hidden rounded-xl text-sm font-medium transition-all duration-200 h-10
+              ${collapsed ? 'justify-center px-0' : 'px-3 gap-3'}
+              ${
+                pathname.startsWith('/admin/permissions')
+                  ? 'bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-white'
+                  : 'text-gray-500 hover:bg-gray-50 hover:text-gray-800 dark:text-gray-400 dark:hover:bg-gray-800/60 dark:hover:text-gray-200'
+              }`}
+          >
+            <span
+              className={`text-base flex-shrink-0 ${pathname.startsWith('/admin/permissions') ? 'text-indigo-500 dark:text-indigo-400' : ''}`}
+            >
+              <SettingOutlined />
+            </span>
+            <AnimatePresence initial={false}>
+              {isExp && (
+                <motion.span
+                  initial={{ opacity: 0, width: 0 }}
+                  animate={{ opacity: 1, width: 'auto' }}
+                  exit={{ opacity: 0, width: 0 }}
+                  transition={{ duration: 0.18, ease: 'easeInOut' }}
+                  className="overflow-hidden whitespace-nowrap"
+                >
+                  权限
+                </motion.span>
+              )}
+            </AnimatePresence>
+          </Link>
+        )}
       </nav>
 
       {/* Bottom — 主题 & 登录 & 收起 */}
@@ -314,6 +359,7 @@ function Sidebar({ onLoginOpen }: { onLoginOpen: () => void }) {
 function MobileTopBar({ onLoginOpen }: { onLoginOpen: () => void }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const { isAuthenticated, logout } = useAuth()
+  const { isPageVisible } = usePermission()
   const { theme, setTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
   useEffect(() => {
@@ -371,7 +417,9 @@ function MobileTopBar({ onLoginOpen }: { onLoginOpen: () => void }) {
               <HomeOutlined className="text-base" />
               首页
             </Link>
-            {navigationItems.map(item => (
+            {navigationItems
+              .filter(item => isPageVisible(item.pageKey))
+              .map(item => (
               <Link
                 key={item.href}
                 href={item.href}
@@ -382,6 +430,17 @@ function MobileTopBar({ onLoginOpen }: { onLoginOpen: () => void }) {
                 {item.label}
               </Link>
             ))}
+            {/* 管理员专属：权限 */}
+            {isAuthenticated && (
+              <Link
+                href="/admin/permissions"
+                onClick={() => setIsMenuOpen(false)}
+                className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
+              >
+                <SettingOutlined className="text-base" />
+                权限
+              </Link>
+            )}
             <button
               onClick={() => {
                 isAuthenticated ? logout() : onLoginOpen()

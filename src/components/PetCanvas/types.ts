@@ -1,9 +1,9 @@
 // ─── PetCanvas 类型定义 ────────────────────────────────────────────────────────
 
-export type AnimalType = 'dog' | 'cat' | 'monkey' | 'elephant' | 'rabbit' | 'giraffe' | 'tiger' | 'lion' | 'panda'
+export type AnimalType = 'dog' | 'cat' | 'monkey' | 'elephant' | 'rabbit' | 'giraffe' | 'tiger' | 'lion' | 'panda' | 'hedgehog' | 'pig' | 'snake' | 'bird'
 export type AnimalState = 'run' | 'idle' | 'sit' | 'eat'
 export type MonkeyPose = 'hang' | 'sit'
-export type FoodType = 'fish' | 'bone' | 'banana'
+export type FoodType = 'fish' | 'bone' | 'banana' | 'worm'
 
 export interface Animal {
   type: AnimalType
@@ -31,6 +31,8 @@ export interface Animal {
   jumpVY: number
   lookTimer: number
   excitementTimer: number
+  // behavior traits
+  canJump: boolean   // 是否会跳跃（蛇不会跳）
   // eating
   eatingTimer: number
   eatFoodType?: FoodType
@@ -41,6 +43,16 @@ export interface Animal {
   // config-driven fields
   visible: boolean
   accessories: Accessory[]
+  // bird flight fields
+  birdOnGround?: boolean   // true=停歇中, false=飞行中
+  birdFlyY?: number        // 飞行时 Y 偏移（负值=在天上）
+  birdFlyVY?: number       // 飞行垂直速度
+  birdFlapPhase?: number   // 翅膀扇动相位
+  birdPerchTimer?: number  // 停歇计时器（倒计时后起飞）
+  birdFlyTimer?: number    // 飞行计时器（倒计时后找停歇点）
+  birdPerchX?: number      // 停歇位置 X
+  birdPerchY?: number      // 停歇位置 Y
+  birdTreeIndex?: number   // 停在哪棵树上
 }
 
 export interface FoodItem {
@@ -125,6 +137,19 @@ export interface Palette {
   pandaBody: string
   pandaBlack: string
   pandaBelly: string
+  hedgehogBody: string
+  hedgehogBelly: string
+  hedgehogSpine: string
+  pigBody: string
+  pigBelly: string
+  pigSnout: string
+  snakeBody: string
+  snakeBelly: string
+  snakePattern: string
+  birdBody: string
+  birdBelly: string
+  birdWing: string
+  birdBeak: string
 }
 
 /** 脚印 */

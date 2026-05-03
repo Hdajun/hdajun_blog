@@ -150,6 +150,60 @@ function drawBanana(ctx: CanvasRenderingContext2D, x: number, y: number, scale: 
   ctx.restore()
 }
 
+function drawWorm(ctx: CanvasRenderingContext2D, x: number, y: number, scale: number, frame: number, p: { line: string }) {
+  ctx.save()
+  ctx.translate(x, y)
+  ctx.scale(scale, scale)
+
+  const wiggle = Math.sin(frame * 0.08) * 0.15
+  ctx.rotate(wiggle)
+
+  // body segments
+  const segCount = 6
+  const segR = 3
+  setStroke(ctx, p.line, 1.5)
+
+  for (let i = 0; i < segCount; i++) {
+    const t = i / (segCount - 1)
+    const sx = -8 + t * 16
+    const sy = Math.sin(t * Math.PI * 2 + frame * 0.1) * 2
+    const alpha = 0.5 + t * 0.2
+
+    ctx.beginPath()
+    ctx.arc(sx, sy, segR - i * 0.1, 0, Math.PI * 2)
+    ctx.fillStyle = '#A3D977'
+    ctx.globalAlpha = alpha
+    ctx.fill()
+    ctx.globalAlpha = 1
+    ctx.stroke()
+  }
+
+  // head (last segment)
+  const headX = 8
+  const headY = Math.sin(Math.PI * 2 + frame * 0.1) * 2
+  ctx.beginPath()
+  ctx.arc(headX, headY, segR + 0.5, 0, Math.PI * 2)
+  ctx.fillStyle = '#8BC466'
+  ctx.globalAlpha = 0.7
+  ctx.fill()
+  ctx.globalAlpha = 1
+  setStroke(ctx, p.line, 1.5)
+  ctx.stroke()
+
+  // eyes on head
+  dot(ctx, headX + 1.5, headY - 1, 0.8, p.line)
+
+  // shine
+  ctx.beginPath()
+  ctx.ellipse(-2, -2, 6, 1.5, 0, 0, Math.PI * 2)
+  ctx.fillStyle = '#fff'
+  ctx.globalAlpha = 0.2
+  ctx.fill()
+  ctx.globalAlpha = 1
+
+  ctx.restore()
+}
+
 /** 绘制单个食物项（含动画） */
 export function drawFoodItem(ctx: CanvasRenderingContext2D, food: FoodItem, frame: number, palette: { line: string }) {
   if (food.eaten) {
@@ -163,6 +217,7 @@ export function drawFoodItem(ctx: CanvasRenderingContext2D, food: FoodItem, fram
       case 'fish': drawFish(ctx, 0, 0, 1, frame, palette); break
       case 'bone': drawBone(ctx, 0, 0, 1, frame, palette); break
       case 'banana': drawBanana(ctx, 0, 0, 1, frame, palette); break
+      case 'worm': drawWorm(ctx, 0, 0, 1, frame, palette); break
     }
     ctx.restore()
     return
@@ -189,6 +244,7 @@ export function drawFoodItem(ctx: CanvasRenderingContext2D, food: FoodItem, fram
     case 'fish': drawFish(ctx, food.x, food.y + bobY, scale, frame, palette); break
     case 'bone': drawBone(ctx, food.x, food.y + bobY, scale, frame, palette); break
     case 'banana': drawBanana(ctx, food.x, food.y + bobY, scale, frame, palette); break
+    case 'worm': drawWorm(ctx, food.x, food.y + bobY, scale, frame, palette); break
   }
   ctx.restore()
 
@@ -244,7 +300,7 @@ export function drawEatEmote(ctx: CanvasRenderingContext2D, x: number, y: number
 /** 根据 type 绘制靠近嘴边的食物 */
 export function drawFoodNearMouth(
   ctx: CanvasRenderingContext2D,
-  type: 'fish' | 'bone' | 'banana',
+  type: 'fish' | 'bone' | 'banana' | 'worm',
   x: number, y: number, scale: number, frame: number,
   palette: { line: string }
 ) {
@@ -252,5 +308,6 @@ export function drawFoodNearMouth(
     case 'fish': drawFish(ctx, x, y, scale, frame, palette); break
     case 'bone': drawBone(ctx, x, y, scale, frame, palette); break
     case 'banana': drawBanana(ctx, x, y, scale, frame, palette); break
+    case 'worm': drawWorm(ctx, x, y, scale, frame, palette); break
   }
 }

@@ -5,6 +5,7 @@ import { Slider, Switch } from 'antd'
 import { useTheme } from 'next-themes'
 import PetCanvas from '@/components/PetCanvas'
 import { usePetConfig } from '@/contexts/PetConfigContext'
+import { PageGuard } from '@/components/PageGuard'
 import type { AnimalType, WeatherType, Animal, TreeInfo } from '@/components/PetCanvas/types'
 import { DEFAULT_ANIMAL_CONFIGS, PALETTE_LIGHT, PALETTE_DARK, SCENE_THEME_CONFIGS, DEFAULT_THEME_PROPS } from '@/components/PetCanvas/constants'
 import { drawGroundAnimal, drawMonkey } from '@/components/PetCanvas/animals'
@@ -21,6 +22,10 @@ const ANIMAL_META: Record<AnimalType, { label: string }> = {
   lion:     { label: '狮子' },
   panda:    { label: '熊猫' },
   monkey:   { label: '猴子' },
+  hedgehog: { label: '刺猬' },
+  pig:      { label: '小猪' },
+  snake:    { label: '小蛇' },
+  bird:     { label: '小鸟' },
 }
 
 const ALL_TYPES = DEFAULT_ANIMAL_CONFIGS.map(c => c.type)
@@ -585,7 +590,9 @@ function MiniAnimalCanvas({ type, isDark }: { type: AnimalType; isDark: boolean 
         scale: 0.6, seekTimer: 0,
         treeIndex: 0, monkeyPose: 'sit', monkeyTimer: 0,
         jumpOffset: 0, jumpVY: 0, lookTimer: 0, excitementTimer: 0, eatingTimer: 0,
+        canJump: true,
         mood: 80, visible: true, accessories: [],
+        birdOnGround: true, birdFlyY: 0, birdFlyVY: 0, birdFlapPhase: 0, birdPerchTimer: 0, birdPerchX: 0, birdPerchY: 0, birdTreeIndex: 0,
       }
       const tree: TreeInfo = {
         x: cx, groundY: MINI_SIZE * 0.82, scale: treeScale,
@@ -599,7 +606,9 @@ function MiniAnimalCanvas({ type, isDark }: { type: AnimalType; isDark: boolean 
         wanderTimer: 0, wanderVx: 0, idleTimer: 100, sitTimer: 0,
         scale: drawScale, seekTimer: 0,
         jumpOffset: 0, jumpVY: 0, lookTimer: 0, excitementTimer: 0, eatingTimer: 0,
+        canJump: true,
         mood: 80, visible: true, accessories: [],
+        birdOnGround: true, birdFlyY: 0, birdFlyVY: 0, birdFlapPhase: 0, birdPerchTimer: 0, birdPerchX: 0, birdPerchY: 0, birdTreeIndex: 0,
       }
       ctx.save()
       ctx.translate(a.x, a.y)
@@ -989,6 +998,7 @@ export default function PetPage() {
   // ─── Render ───────────────────────────────────────────────────────────────
 
   return (
+    <PageGuard pageKey="pet">
     <div className="pt-6">
       {/* 画布预览区 */}
       <div className="mb-8 rounded-2xl overflow-hidden">
@@ -1015,5 +1025,6 @@ export default function PetPage() {
       {/* Tab 内容 */}
       {tabContent[activeTab]}
     </div>
+    </PageGuard>
   )
 }

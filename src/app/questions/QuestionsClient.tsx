@@ -2,9 +2,11 @@
 
 import { BookOpenIcon, PencilSquareIcon } from '@heroicons/react/24/outline'
 import { FeatureCard } from '@/components/FeatureCard'
+import { PageGuard } from '@/components/PageGuard'
 
 export default function QuestionsClient() {
   return (
+    <PageGuard pageKey="questions">
     <div>
       {/* 吸顶页头 */}
       <div className="sticky top-0 z-10 -mx-4 md:-mx-8 px-4 md:px-8 bg-white/30 dark:bg-gray-950/30 backdrop-blur-md py-6 mb-8 relative after:absolute after:bottom-0 after:left-0 after:right-0 after:h-px after:bg-gradient-to-r after:from-transparent after:via-gray-300/70 after:to-transparent dark:after:via-white/[0.08]">
@@ -36,5 +38,6 @@ export default function QuestionsClient() {
         />
       </div>
     </div>
+    </PageGuard>
   )
 }

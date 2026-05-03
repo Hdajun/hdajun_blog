@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { navigationItems } from '@/components/Navbar'
+import { usePermission } from '@/contexts/PermissionContext'
 import { ArrowRightOutlined } from '@ant-design/icons'
 import PetCanvas from '@/components/PetCanvas'
 
@@ -126,6 +127,7 @@ const ease = [0.22, 1, 0.36, 1] as const
 
 export default function Home() {
   const { data: quote, loading } = useHitokoto()
+  const { isPageVisible } = usePermission()
   return (
     <>
       <style dangerouslySetInnerHTML={{ __html: ICON_BOUNCE_STYLE }} />
@@ -251,7 +253,9 @@ export default function Home() {
 
         {/* ── Nav cards — 2×2 grid ─────────────────────────── */}
         <div className="col-span-1 md:col-span-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {navigationItems.map((item, i) => (
+          {navigationItems
+            .filter(item => isPageVisible(item.pageKey))
+            .map((item, i) => (
             <motion.div
               key={item.href}
               initial={{ opacity: 0, y: 20 }}

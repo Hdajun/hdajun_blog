@@ -46,6 +46,7 @@ import { getCustomData } from './customData'
 import { Demo3Icon } from '@/components/icons/Demo3Icon'
 import { Demo1Icon } from '@/components/icons/Demo1Icon'
 import { Demo2Icon } from '@/components/icons/Demo2Icon'
+import { PageGuard } from '@/components/PageGuard'
 
 const md = markdownit({
   html: true,
@@ -956,5 +957,9 @@ const ChatComponent = dynamic(() => Promise.resolve(Independent), {
 
 // 导出一个包装组件
 export default function ChatPage() {
-  return <ChatComponent />
+  return (
+    <PageGuard pageKey="chat">
+      <ChatComponent />
+    </PageGuard>
+  )
 }

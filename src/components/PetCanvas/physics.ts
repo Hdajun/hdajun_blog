@@ -213,8 +213,9 @@ export function updateGroundAnimal(
     }
   }
 
-  if (a.x < 40) a.vx += 0.15
-  if (a.x > w - 40) a.vx -= 0.15
+  // boundary repulsion — use stronger force and larger buffer
+  if (a.x < 60) a.vx += 0.3
+  if (a.x > w - 60) a.vx -= 0.3
 
   const maxSpd = a.seekTimer > 0 ? MAX_SPEED_SEEK : MAX_SPEED_NORMAL
   const spd = Math.abs(a.vx)
@@ -230,8 +231,9 @@ export function updateGroundAnimal(
   else if (a.idleTimer > 0) a.state = 'idle'
   else a.state = Math.abs(a.vx) > 0.15 ? 'run' : 'idle'
 
-  if (a.vx > 0.08) a.dir = 1
-  else if (a.vx < -0.08) a.dir = -1
+  // direction update with hysteresis to prevent rapid flipping
+  if (a.vx > 0.15) a.dir = 1
+  else if (a.vx < -0.15) a.dir = -1
 
   // footprints
   const leftFootprint = a.state === 'run' && Math.random() < FOOTPRINT_CHANCE
@@ -330,9 +332,9 @@ export function updateMonkey(
       a.jumpVY = JUMP_VELOCITY * (0.7 + Math.random() * 0.5)
     }
 
-    // boundary
-    if (a.x < 40) a.vx += 0.2
-    if (a.x > w - 40) a.vx -= 0.2
+    // boundary repulsion — use stronger force and larger buffer
+    if (a.x < 60) a.vx += 0.3
+    if (a.x > w - 60) a.vx -= 0.3
     const spd = Math.abs(a.vx)
     if (spd > MAX_SPEED_NORMAL * 1.3) a.vx = (a.vx / spd) * MAX_SPEED_NORMAL * 1.3
     a.vx *= DAMPING
@@ -340,8 +342,9 @@ export function updateMonkey(
     a.y = groundY
 
     a.state = a.idleTimer > 0 ? 'idle' : (Math.abs(a.vx) > 0.15 ? 'run' : 'idle')
-    if (a.vx > 0.08) a.dir = 1
-    else if (a.vx < -0.08) a.dir = -1
+    // direction update with hysteresis to prevent rapid flipping
+    if (a.vx > 0.15) a.dir = 1
+    else if (a.vx < -0.15) a.dir = -1
 
     // try to climb tree when timer expires
     if (a.monkeyTimer === 0 && a.eatingTimer === 0) {
@@ -527,9 +530,9 @@ export function updateBird(
     if (a.birdFlyY > -10) a.birdFlyY = -10
     if (a.birdFlyY < BIRD_FLY_HEIGHT_MAX) a.birdFlyY = BIRD_FLY_HEIGHT_MAX
 
-    // direction
-    if (a.vx > 0.08) a.dir = 1
-    else if (a.vx < -0.08) a.dir = -1
+    // direction update with hysteresis to prevent rapid flipping
+    if (a.vx > 0.15) a.dir = 1
+    else if (a.vx < -0.15) a.dir = -1
 
     // randomly change direction
     if (Math.random() < 0.004) {

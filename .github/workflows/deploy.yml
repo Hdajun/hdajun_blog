@@ -1,0 +1,131 @@
+name: Deploy to Server
+
+on:
+  push:
+    branches: [main]
+
+concurrency:
+  group: deploy
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Detect dependency changes
+        id: deps
+        run: |
+          git diff HEAD~1 --name-only | grep -q "^package-lock\.json$" && echo "changed=true" >> "$GITHUB_OUTPUT" || echo "changed=false" >> "$GITHUB_OUTPUT"
+
+      - name: Backup current deployment
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd /var/www/blog
+            rm -rf .next.bak
+            [ -d ".next" ] && mv .next .next.bak && echo "Backup created"
+
+      - name: Upload .next
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: ".next"
+          target: "/var/www/blog"
+          strip_components: 0
+
+      - name: Upload public
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: "public"
+          target: "/var/www/blog"
+          strip_components: 0
+
+      - name: Upload package files and install deps
+        if: steps.deps.outputs.changed == 'true'
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: "package.json,package-lock.json"
+          target: "/var/www/blog"
+
+      - name: Install server dependencies
+        if: steps.deps.outputs.changed == 'true'
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            set -e
+            cd /var/www/blog
+            npm install --production
+
+      - name: Restart and verify
+        id: verify
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            set -e
+            cd /var/www/blog
+            pm2 restart blog && pm2 save
+            sleep 3
+            for i in 1 2 3; do
+              STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:3000/ || echo "000")
+              if [ "$STATUS" = "200" ]; then
+                echo "Health check passed: $STATUS"
+                rm -rf .next.bak
+                exit 0
+              fi
+              echo "Attempt $i: status $STATUS, retrying..."
+              sleep 2
+            done
+            echo "Health check failed after 3 attempts"
+            exit 1
+
+      - name: Rollback on failure
+        if: failure()
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd /var/www/blog
+            if [ -d ".next.bak" ]; then
+              rm -rf .next
+              mv .next.bak .next
+              pm2 restart blog && pm2 save
+              echo "Rollback completed"
+            else
+              echo "No backup found, cannot rollback"
+            fi
